@@ -1,6 +1,7 @@
 package combine
 
 type User struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Id       int    `json:"-" db:"_id"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }

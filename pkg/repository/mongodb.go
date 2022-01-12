@@ -9,7 +9,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const timeout = 10 * time.Second
+const (
+	timeout            = 10 * time.Second
+	usersCollection    = "users"
+	foldersCollection  = "folders"
+	accountsCollection = "accounts"
+)
 
 type Config struct {
 	Username string
