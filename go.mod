@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/foolin/gin-template v0.0.0-20190415034731-41efedfb393b // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-gonic/gin v1.7.7 // indirect
@@ -45,5 +46,6 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
+	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

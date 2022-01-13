@@ -8,6 +8,7 @@ import (
 
 type Authorization interface {
 	GenerateToken(ctx context.Context, username, password string) (string, error)
+	ParseToken(token string) (string, error)
 }
 
 type Service struct {

@@ -10,10 +10,7 @@ import (
 )
 
 const (
-	timeout            = 10 * time.Second
-	usersCollection    = "users"
-	foldersCollection  = "folders"
-	accountsCollection = "accounts"
+	timeout = 10 * time.Second
 )
 
 type Config struct {

@@ -4,12 +4,20 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	combine "github.com/korpgoodness/services.git"
+	"github.com/korpgoodness/services.git/internal/domain"
 )
 
-func (h *Handler) singIn(c *gin.Context) {
-	var input combine.User
+func (h *Handler) signInLoad(c *gin.Context) {
+	c.HTML(http.StatusOK, "login.html", gin.H{})
+}
 
+func (h *Handler) signIn(c *gin.Context) {
+	//input := domain.User{
+	//	Username: c.PostForm("username"),
+	//	Password: c.PostForm("password"),
+	//}
+
+	var input domain.User
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
