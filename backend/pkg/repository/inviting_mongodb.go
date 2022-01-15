@@ -33,9 +33,17 @@ func (s *InvitingMongoDB) GetFolders(ctx context.Context, path string) ([]domain
 
 func (s *InvitingMongoDB) CreateFolder(ctx context.Context, folder domain.Folder) error {
 	_, err := s.db.InsertOne(ctx, folder)
-	if err != nil {
-		return err
-	}
+	return err
+}
 
-	return nil
+func (s *InvitingMongoDB) GetDataFolder(ctx context.Context, hash string) (domain.Folder, error) {
+	var folder domain.Folder
+
+	err := s.db.FindOne(ctx, bson.M{"hash": hash}).Decode(&folder)
+	return folder, err
+}
+
+func (s *InvitingMongoDB) RenameFolder(ctx context.Context, hash, name string) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"hash": hash}, bson.M{"$set": bson.M{"name": name}})
+	return err
 }

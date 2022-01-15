@@ -15,6 +15,8 @@ type Authorization interface {
 type Inviting interface {
 	GetFolders(ctx context.Context, path string) ([]domain.Folder, error)
 	CreateFolder(ctx context.Context, folder domain.Folder) error
+	GetDataFolder(ctx context.Context, hash string) (domain.Folder, error)
+	RenameFolder(ctx context.Context, hash, name string) error
 }
 
 type Service struct {

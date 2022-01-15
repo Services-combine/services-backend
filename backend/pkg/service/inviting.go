@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"math/rand"
 
 	"github.com/korpgoodness/service.git/internal/domain"
@@ -18,22 +17,16 @@ func NewInvitingService(repo repository.Inviting) *InvitingService {
 }
 
 func (s *InvitingService) GetFolders(ctx context.Context, path string) ([]domain.Folder, error) {
-	folders, err := s.repo.GetFolders(ctx, "/")
-	if err != nil {
-		return nil, err
-	}
-
+	folders, err := s.repo.GetFolders(ctx, path)
 	return folders, err
 }
 
 func (s *InvitingService) CreateFolder(ctx context.Context, folder domain.Folder) error {
 	hash := GenerateHash()
-	fmt.Println(hash)
 	folder.Hash = hash
-	if err := s.repo.CreateFolder(ctx, folder); err != nil {
-		return err
-	}
-	return nil
+
+	err := s.repo.CreateFolder(ctx, folder)
+	return err
 }
 
 func GenerateHash() string {
@@ -45,4 +38,14 @@ func GenerateHash() string {
 		random_hash[i] = symbols[rand.Intn(len(symbols))]
 	}
 	return string(random_hash)
+}
+
+func (s *InvitingService) GetDataFolder(ctx context.Context, hash string) (domain.Folder, error) {
+	folder, err := s.repo.GetDataFolder(ctx, hash)
+	return folder, err
+}
+
+func (s *InvitingService) RenameFolder(ctx context.Context, hash, name string) error {
+	err := s.repo.RenameFolder(ctx, hash, name)
+	return err
 }
