@@ -60,14 +60,13 @@ func (h *Handler) OpenFolder(c *gin.Context) {
 
 func (h *Handler) MoveFolder(c *gin.Context) {
 	var folderMove domain.FolderMove
-	hash := c.Param("hash")
 
 	if err := c.BindJSON(&folderMove); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := h.services.Folders.Move(c, hash, folderMove.Path); err != nil {
+	if err := h.services.Folders.Move(c, c.Param("hash"), folderMove.Path); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -79,14 +78,13 @@ func (h *Handler) MoveFolder(c *gin.Context) {
 
 func (h *Handler) RenameFolder(c *gin.Context) {
 	var folderName domain.FolderRename
-	hash := c.Param("hash")
 
 	if err := c.BindJSON(&folderName); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := h.services.Folders.Rename(c, hash, folderName.Name); err != nil {
+	if err := h.services.Folders.Rename(c, c.Param("hash"), folderName.Name); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -98,14 +96,13 @@ func (h *Handler) RenameFolder(c *gin.Context) {
 
 func (h *Handler) ChangeChatFolder(c *gin.Context) {
 	var folderChat domain.FolderChat
-	hash := c.Param("hash")
 
 	if err := c.BindJSON(&folderChat); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := h.services.Folders.ChangeChat(c, hash, folderChat.Chat); err != nil {
+	if err := h.services.Folders.ChangeChat(c, c.Param("hash"), folderChat.Chat); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -117,14 +114,31 @@ func (h *Handler) ChangeChatFolder(c *gin.Context) {
 
 func (h *Handler) ChangeUsernamesFolder(c *gin.Context) {
 	var folderUsernames domain.FolderUsernames
-	hash := c.Param("hash")
 
 	if err := c.BindJSON(&folderUsernames); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := h.services.Folders.ChangeUsernames(c, hash, folderUsernames.Usernames); err != nil {
+	if err := h.services.Folders.ChangeUsernames(c, c.Param("hash"), folderUsernames.Usernames); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
+}
+
+func (h *Handler) ChangeMessageFolder(c *gin.Context) {
+	var folderMessage domain.FolderMessage
+
+	if err := c.BindJSON(&folderMessage); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Folders.ChangeMessage(c, c.Param("hash"), folderMessage.Message); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -136,14 +150,13 @@ func (h *Handler) ChangeUsernamesFolder(c *gin.Context) {
 
 func (h *Handler) ChangeGroupsFolder(c *gin.Context) {
 	var folderGroups domain.FolderGroups
-	hash := c.Param("hash")
 
 	if err := c.BindJSON(&folderGroups); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := h.services.Folders.ChangeGroups(c, hash, folderGroups.Groups); err != nil {
+	if err := h.services.Folders.ChangeGroups(c, c.Param("hash"), folderGroups.Groups); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -154,9 +167,7 @@ func (h *Handler) ChangeGroupsFolder(c *gin.Context) {
 }
 
 func (h *Handler) DeleteFolder(c *gin.Context) {
-	hash := c.Param("hash")
-
-	if err := h.services.Folders.Delete(c, hash); err != nil {
+	if err := h.services.Folders.Delete(c, c.Param("hash")); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}

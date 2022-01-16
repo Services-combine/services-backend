@@ -67,6 +67,11 @@ func (s *FoldersService) ChangeUsernames(ctx context.Context, hash string, usern
 	return err
 }
 
+func (s *FoldersService) ChangeMessage(ctx context.Context, hash, message string) error {
+	err := s.repo.ChangeMessage(ctx, hash, message)
+	return err
+}
+
 func (s *FoldersService) ChangeGroups(ctx context.Context, hash string, groups []string) error {
 	err := s.repo.ChangeGroups(ctx, hash, groups)
 	return err

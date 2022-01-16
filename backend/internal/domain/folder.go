@@ -9,8 +9,7 @@ type Folder struct {
 	Path              string             `json:"path"`
 	Chat              string             `json:"chat"`
 	Usernames         []string           `json:"usernames"`
-	Messages          []string           `json:"messages"`
-	Message_command   string             `json:"message_command"`
+	Message           string             `json:"message"`
 	Groups            []string           `json:"groups"`
 	Inviting          bool               `json:"inviting"`
 	Mailing_usernames bool               `json:"mailing_usernames"`
@@ -31,9 +30,13 @@ type FolderChat struct {
 }
 
 type FolderUsernames struct {
-	Usernames []string `json:"usernames"`
+	Usernames []string `json:"usernames" binding:"required"`
+}
+
+type FolderMessage struct {
+	Message string `json:"message" binding:"required"`
 }
 
 type FolderGroups struct {
-	Groups []string `json:"groups"`
+	Groups []string `json:"groups" binding:"required"`
 }

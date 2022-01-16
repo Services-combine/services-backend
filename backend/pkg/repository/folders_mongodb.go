@@ -63,6 +63,11 @@ func (s *FoldersRepo) ChangeUsernames(ctx context.Context, hash string, username
 	return err
 }
 
+func (s *FoldersRepo) ChangeMessage(ctx context.Context, hash, message string) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"hash": hash}, bson.M{"$set": bson.M{"message": message}})
+	return err
+}
+
 func (s *FoldersRepo) ChangeGroups(ctx context.Context, hash string, groups []string) error {
 	_, err := s.db.UpdateOne(ctx, bson.M{"hash": hash}, bson.M{"$set": bson.M{"groups": groups}})
 	return err

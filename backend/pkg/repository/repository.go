@@ -20,6 +20,7 @@ type Folders interface {
 	Rename(ctx context.Context, hash, name string) error
 	ChangeChat(ctx context.Context, hash, chat string) error
 	ChangeUsernames(ctx context.Context, hash string, usernames []string) error
+	ChangeMessage(ctx context.Context, hash, message string) error
 	ChangeGroups(ctx context.Context, hash string, groups []string) error
 	Delete(ctx context.Context, hash string) error
 }
