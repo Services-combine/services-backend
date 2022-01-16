@@ -12,21 +12,26 @@ type Authorization interface {
 	ParseToken(token string) (string, error)
 }
 
-type Inviting interface {
-	GetFolders(ctx context.Context, path string) ([]domain.Folder, error)
-	CreateFolder(ctx context.Context, folder domain.Folder) error
-	GetDataFolder(ctx context.Context, hash string) (domain.Folder, error)
-	RenameFolder(ctx context.Context, hash, name string) error
+type Folders interface {
+	Get(ctx context.Context, path string) ([]domain.Folder, error)
+	Create(ctx context.Context, folder domain.Folder) error
+	GetData(ctx context.Context, hash string) (domain.Folder, error)
+	Move(ctx context.Context, hash, path string) error
+	Rename(ctx context.Context, hash, name string) error
+	ChangeChat(ctx context.Context, hash, chat string) error
+	ChangeUsernames(ctx context.Context, hash string, usernames []string) error
+	ChangeGroups(ctx context.Context, hash string, groups []string) error
+	Delete(ctx context.Context, hash string) error
 }
 
 type Service struct {
 	Authorization
-	Inviting
+	Folders
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos),
-		Inviting:      NewInvitingService(repos),
+		Folders:       NewFoldersService(repos),
 	}
 }

@@ -8,15 +8,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type AuthMongoDB struct {
+type AuthRepo struct {
 	db *mongo.Collection
 }
 
-func NewAuthMongoDB(db *mongo.Database) *AuthMongoDB {
-	return &AuthMongoDB{db: db.Collection(usersCollection)}
+func NewAuthRepo(db *mongo.Database) *AuthRepo {
+	return &AuthRepo{db: db.Collection(usersCollection)}
 }
 
-func (s *AuthMongoDB) GetUser(ctx context.Context, username, password string) (domain.User, error) {
+func (s *AuthRepo) GetUser(ctx context.Context, username, password string) (domain.User, error) {
 	var user domain.User
 	filter := bson.M{"username": username, "password": password}
 

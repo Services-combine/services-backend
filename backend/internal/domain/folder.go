@@ -16,3 +16,24 @@ type Folder struct {
 	Mailing_usernames bool               `json:"mailing_usernames"`
 	Mailing_groups    bool               `json:"mailing_groups"`
 }
+
+type FolderMove struct {
+	Name string `json:"name" binding:"required"`
+	Path string `json:"path" binding:"required"`
+}
+
+type FolderRename struct {
+	Name string `json:"name" binding:"required"`
+}
+
+type FolderChat struct {
+	Chat string `json:"chat" binding:"required"`
+}
+
+type FolderUsernames struct {
+	Usernames []string `json:"usernames"`
+}
+
+type FolderGroups struct {
+	Groups []string `json:"groups"`
+}

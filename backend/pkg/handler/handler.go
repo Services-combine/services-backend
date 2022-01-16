@@ -19,7 +19,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router.LoadHTMLGlob("ui/templates/*.html")
 	router.Static("/static", "./ui/static")
 
-	//router.GET("/sign-in", h.signInLoad)
 	router.POST("/sign-in", h.signIn)
 
 	services := router.Group("/", h.userIdentity)
@@ -28,30 +27,30 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		inviting := services.Group("/inviting")
 		{
 			inviting.GET("/", h.Inviting)
-			inviting.POST("/create-folder", h.CreateFolder)
+			inviting.POST("/create", h.CreateFolder)
 			inviting.GET("/:hash", h.OpenFolder)
-			inviting.POST("/:hash/create-folder", h.CreateFolder)
+			inviting.POST("/:hash/create", h.CreateFolder)
 
 			inviting.POST("/:hash/create-account")
-			inviting.POST("/:hash/move-folder")
-			inviting.POST("/:hash/rename-folder", h.RenameFolder)
-			inviting.POST("/:hash/change-chat")
-			inviting.POST("/:hash/add-usernames")
-			inviting.POST("/:hash/add-messages")
-			inviting.POST("/:hash/add-groups")
+			inviting.POST("/:hash/move", h.MoveFolder)
+			inviting.POST("/:hash/rename", h.RenameFolder)
+			inviting.POST("/:hash/change-chat", h.ChangeChatFolder)
+			inviting.POST("/:hash/change-usernames", h.ChangeUsernamesFolder)
+			inviting.POST("/:hash/change-messages")
+			inviting.POST("/:hash/change-groups", h.ChangeGroupsFolder)
 			inviting.GET("/:hash/generate-interval")
 			inviting.GET("/:hash/check-block")
-			inviting.GET("/:hash/delete-folder")
+			inviting.GET("/:hash/delete", h.DeleteFolder)
 			inviting.GET("/:hash/launch-inviting")
 			inviting.GET("/:hash/launch-mailing-usernames")
 			inviting.GET("/:hash/launch-mailing-groups")
 
 			inviting.GET("/:hash/:id")
-			inviting.GET("/:hash/:id/delete-account")
-			inviting.GET("/:hash/:id/login-account")
-			inviting.GET("/:hash/:id/send-code-account")
+			inviting.GET("/:hash/:id/delete")
+			inviting.GET("/:hash/:id/login")
+			inviting.GET("/:hash/:id/send-code")
 			inviting.POST("/:hash/:id/parsing-api")
-			inviting.POST("/:hash/:id/verify-account")
+			inviting.POST("/:hash/:id/verify")
 		}
 	}
 
