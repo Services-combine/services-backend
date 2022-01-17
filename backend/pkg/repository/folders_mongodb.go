@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/korpgoodness/service.git/internal/domain"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -36,44 +38,45 @@ func (s *FoldersRepo) Create(ctx context.Context, folder domain.Folder) error {
 	return err
 }
 
-func (s *FoldersRepo) GetData(ctx context.Context, hash string) (domain.Folder, error) {
+func (s *FoldersRepo) GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error) {
 	var folder domain.Folder
 
-	err := s.db.FindOne(ctx, bson.M{"hash": hash}).Decode(&folder)
+	err := s.db.FindOne(ctx, bson.M{"_id": folderID}).Decode(&folder)
 	return folder, err
 }
 
-func (s *FoldersRepo) Move(ctx context.Context, hash, path string) error {
-	_, err := s.db.UpdateOne(ctx, bson.M{"hash": hash}, bson.M{"$set": bson.M{"path": path}})
+func (s *FoldersRepo) Move(ctx context.Context, folderID primitive.ObjectID, path string) error {
+	fmt.Println(folderID, path)
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": folderID}, bson.M{"$set": bson.M{"path": path}})
 	return err
 }
 
-func (s *FoldersRepo) Rename(ctx context.Context, hash, name string) error {
-	_, err := s.db.UpdateOne(ctx, bson.M{"hash": hash}, bson.M{"$set": bson.M{"name": name}})
+func (s *FoldersRepo) Rename(ctx context.Context, folderID primitive.ObjectID, name string) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": folderID}, bson.M{"$set": bson.M{"name": name}})
 	return err
 }
 
-func (s *FoldersRepo) ChangeChat(ctx context.Context, hash, chat string) error {
-	_, err := s.db.UpdateOne(ctx, bson.M{"hash": hash}, bson.M{"$set": bson.M{"chat": chat}})
+func (s *FoldersRepo) ChangeChat(ctx context.Context, folderID primitive.ObjectID, chat string) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": folderID}, bson.M{"$set": bson.M{"chat": chat}})
 	return err
 }
 
-func (s *FoldersRepo) ChangeUsernames(ctx context.Context, hash string, usernames []string) error {
-	_, err := s.db.UpdateOne(ctx, bson.M{"hash": hash}, bson.M{"$set": bson.M{"usernames": usernames}})
+func (s *FoldersRepo) ChangeUsernames(ctx context.Context, folderID primitive.ObjectID, usernames []string) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": folderID}, bson.M{"$set": bson.M{"usernames": usernames}})
 	return err
 }
 
-func (s *FoldersRepo) ChangeMessage(ctx context.Context, hash, message string) error {
-	_, err := s.db.UpdateOne(ctx, bson.M{"hash": hash}, bson.M{"$set": bson.M{"message": message}})
+func (s *FoldersRepo) ChangeMessage(ctx context.Context, folderID primitive.ObjectID, message string) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": folderID}, bson.M{"$set": bson.M{"message": message}})
 	return err
 }
 
-func (s *FoldersRepo) ChangeGroups(ctx context.Context, hash string, groups []string) error {
-	_, err := s.db.UpdateOne(ctx, bson.M{"hash": hash}, bson.M{"$set": bson.M{"groups": groups}})
+func (s *FoldersRepo) ChangeGroups(ctx context.Context, folderID primitive.ObjectID, groups []string) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": folderID}, bson.M{"$set": bson.M{"groups": groups}})
 	return err
 }
 
-func (s *FoldersRepo) Delete(ctx context.Context, hash string) error {
-	_, err := s.db.DeleteOne(ctx, bson.M{"hash": hash})
+func (s *FoldersRepo) Delete(ctx context.Context, folderID primitive.ObjectID) error {
+	_, err := s.db.DeleteOne(ctx, bson.M{"_id": folderID})
 	return err
 }

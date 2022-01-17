@@ -5,7 +5,6 @@ import "go.mongodb.org/mongo-driver/bson/primitive"
 type Folder struct {
 	ID                primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Name              string             `json:"name" binding:"required"`
-	Hash              string             `json:"hash"`
 	Path              string             `json:"path"`
 	Chat              string             `json:"chat"`
 	Usernames         []string           `json:"usernames"`
@@ -17,7 +16,6 @@ type Folder struct {
 }
 
 type FolderMove struct {
-	Name string `json:"name" binding:"required"`
 	Path string `json:"path" binding:"required"`
 }
 

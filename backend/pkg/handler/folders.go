@@ -5,12 +5,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/korpgoodness/service.git/internal/domain"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (h *Handler) Inviting(c *gin.Context) {
+func (h *Handler) MainPage(c *gin.Context) {
 	folders, err := h.services.Folders.Get(c, "/")
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{
@@ -22,10 +24,10 @@ func (h *Handler) CreateFolder(c *gin.Context) {
 	var folder domain.Folder
 	var path string
 
-	if c.Param("hash") == "" {
+	if c.Param("folderID") == "" {
 		path = "/"
 	} else {
-		path = c.Param("hash")
+		path = c.Param("folderID")
 	}
 
 	if err := c.BindJSON(&folder); err != nil {
@@ -48,9 +50,16 @@ func (h *Handler) CreateFolder(c *gin.Context) {
 }
 
 func (h *Handler) OpenFolder(c *gin.Context) {
-	folder, err := h.services.Folders.GetData(c, c.Param("hash"))
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	folder, err := h.services.Folders.GetData(c, folderID)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{
@@ -66,7 +75,13 @@ func (h *Handler) MoveFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.Move(c, c.Param("hash"), folderMove.Path); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Folders.Move(c, folderID, folderMove.Path); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -84,7 +99,13 @@ func (h *Handler) RenameFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.Rename(c, c.Param("hash"), folderName.Name); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Folders.Rename(c, folderID, folderName.Name); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -102,7 +123,13 @@ func (h *Handler) ChangeChatFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.ChangeChat(c, c.Param("hash"), folderChat.Chat); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Folders.ChangeChat(c, folderID, folderChat.Chat); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -120,7 +147,13 @@ func (h *Handler) ChangeUsernamesFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.ChangeUsernames(c, c.Param("hash"), folderUsernames.Usernames); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Folders.ChangeUsernames(c, folderID, folderUsernames.Usernames); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -138,7 +171,13 @@ func (h *Handler) ChangeMessageFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.ChangeMessage(c, c.Param("hash"), folderMessage.Message); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Folders.ChangeMessage(c, folderID, folderMessage.Message); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -156,7 +195,13 @@ func (h *Handler) ChangeGroupsFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.ChangeGroups(c, c.Param("hash"), folderGroups.Groups); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Folders.ChangeGroups(c, folderID, folderGroups.Groups); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -167,7 +212,13 @@ func (h *Handler) ChangeGroupsFolder(c *gin.Context) {
 }
 
 func (h *Handler) DeleteFolder(c *gin.Context) {
-	if err := h.services.Folders.Delete(c, c.Param("hash")); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Folders.Delete(c, folderID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}

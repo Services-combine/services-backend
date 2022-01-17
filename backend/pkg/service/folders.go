@@ -7,6 +7,7 @@ import (
 
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type FoldersService struct {
@@ -35,49 +36,46 @@ func (s *FoldersService) Get(ctx context.Context, path string) ([]domain.Folder,
 }
 
 func (s *FoldersService) Create(ctx context.Context, folder domain.Folder) error {
-	hash := GenerateHash()
-	folder.Hash = hash
-
 	err := s.repo.Create(ctx, folder)
 	return err
 }
 
-func (s *FoldersService) GetData(ctx context.Context, hash string) (domain.Folder, error) {
-	folder, err := s.repo.GetData(ctx, hash)
+func (s *FoldersService) GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error) {
+	folder, err := s.repo.GetData(ctx, folderID)
 	return folder, err
 }
 
-func (s *FoldersService) Move(ctx context.Context, hash, path string) error {
-	err := s.repo.Move(ctx, hash, path)
+func (s *FoldersService) Move(ctx context.Context, folderID primitive.ObjectID, path string) error {
+	err := s.repo.Move(ctx, folderID, path)
 	return err
 }
 
-func (s *FoldersService) Rename(ctx context.Context, hash, name string) error {
-	err := s.repo.Rename(ctx, hash, name)
+func (s *FoldersService) Rename(ctx context.Context, folderID primitive.ObjectID, name string) error {
+	err := s.repo.Rename(ctx, folderID, name)
 	return err
 }
 
-func (s *FoldersService) ChangeChat(ctx context.Context, hash, chat string) error {
-	err := s.repo.ChangeChat(ctx, hash, chat)
+func (s *FoldersService) ChangeChat(ctx context.Context, folderID primitive.ObjectID, chat string) error {
+	err := s.repo.ChangeChat(ctx, folderID, chat)
 	return err
 }
 
-func (s *FoldersService) ChangeUsernames(ctx context.Context, hash string, usernames []string) error {
-	err := s.repo.ChangeUsernames(ctx, hash, usernames)
+func (s *FoldersService) ChangeUsernames(ctx context.Context, folderID primitive.ObjectID, usernames []string) error {
+	err := s.repo.ChangeUsernames(ctx, folderID, usernames)
 	return err
 }
 
-func (s *FoldersService) ChangeMessage(ctx context.Context, hash, message string) error {
-	err := s.repo.ChangeMessage(ctx, hash, message)
+func (s *FoldersService) ChangeMessage(ctx context.Context, folderID primitive.ObjectID, message string) error {
+	err := s.repo.ChangeMessage(ctx, folderID, message)
 	return err
 }
 
-func (s *FoldersService) ChangeGroups(ctx context.Context, hash string, groups []string) error {
-	err := s.repo.ChangeGroups(ctx, hash, groups)
+func (s *FoldersService) ChangeGroups(ctx context.Context, folderID primitive.ObjectID, groups []string) error {
+	err := s.repo.ChangeGroups(ctx, folderID, groups)
 	return err
 }
 
-func (s *FoldersService) Delete(ctx context.Context, hash string) error {
-	err := s.repo.Delete(ctx, hash)
+func (s *FoldersService) Delete(ctx context.Context, folderID primitive.ObjectID) error {
+	err := s.repo.Delete(ctx, folderID)
 	return err
 }
