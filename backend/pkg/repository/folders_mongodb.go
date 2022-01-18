@@ -80,3 +80,33 @@ func (s *FoldersRepo) Delete(ctx context.Context, folderID primitive.ObjectID) e
 	_, err := s.db.DeleteOne(ctx, bson.M{"_id": folderID})
 	return err
 }
+
+func (s *FoldersRepo) LaunchInviting(ctx context.Context, folderID primitive.ObjectID) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": folderID}, bson.M{"$set": bson.M{"inviting": true}})
+	if err != nil {
+		return err
+	}
+
+	_, err = s.db.Database().Collection(accountsCollection).UpdateMany(ctx, bson.M{"folder": folderID}, bson.M{"$set": bson.M{"launch": true}})
+	return err
+}
+
+func (s *FoldersRepo) LaunchMailingUsernames(ctx context.Context, folderID primitive.ObjectID) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": folderID}, bson.M{"$set": bson.M{"mailing_usernames": true}})
+	if err != nil {
+		return err
+	}
+
+	_, err = s.db.Database().Collection(accountsCollection).UpdateMany(ctx, bson.M{"folder": folderID}, bson.M{"$set": bson.M{"launch": true}})
+	return err
+}
+
+func (s *FoldersRepo) LaunchMailingGroups(ctx context.Context, folderID primitive.ObjectID) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": folderID}, bson.M{"$set": bson.M{"mailing_groups": true}})
+	if err != nil {
+		return err
+	}
+
+	_, err = s.db.Database().Collection(accountsCollection).UpdateMany(ctx, bson.M{"folder": folderID}, bson.M{"$set": bson.M{"launch": true}})
+	return err
+}

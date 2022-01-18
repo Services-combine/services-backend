@@ -34,6 +34,7 @@ func (h *Handler) CreateFolder(c *gin.Context) {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
+
 	folder.Path = path
 	folder.Inviting = false
 	folder.Mailing_usernames = false
@@ -219,6 +220,57 @@ func (h *Handler) DeleteFolder(c *gin.Context) {
 	}
 
 	if err := h.services.Folders.Delete(c, folderID); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
+}
+
+func (h *Handler) LaunchInviting(c *gin.Context) {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Folders.LaunchInviting(c, folderID); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
+}
+
+func (h *Handler) LaunchMailingUsernames(c *gin.Context) {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Folders.LaunchMailingUsernames(c, folderID); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
+}
+
+func (h *Handler) LaunchMailingGroups(c *gin.Context) {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Folders.LaunchMailingGroups(c, folderID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}

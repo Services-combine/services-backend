@@ -79,3 +79,18 @@ func (s *FoldersService) Delete(ctx context.Context, folderID primitive.ObjectID
 	err := s.repo.Delete(ctx, folderID)
 	return err
 }
+
+func (s *FoldersService) LaunchInviting(ctx context.Context, folderID primitive.ObjectID) error {
+	err := s.repo.LaunchInviting(ctx, folderID)
+	return err
+}
+
+func (s *FoldersService) LaunchMailingUsernames(ctx context.Context, folderID primitive.ObjectID) error {
+	err := s.repo.LaunchMailingUsernames(ctx, folderID)
+	return err
+}
+
+func (s *FoldersService) LaunchMailingGroups(ctx context.Context, folderID primitive.ObjectID) error {
+	err := s.repo.LaunchMailingGroups(ctx, folderID)
+	return err
+}

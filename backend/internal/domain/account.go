@@ -16,7 +16,7 @@ type Account struct {
 }
 
 type AccountSettings struct {
-	ID           primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	ID           primitive.ObjectID `json:"id" bson:"_id"`
 	Name         string             `json:"name" binding:"required"`
 	Phone        string             `json:"phone" binding:"required"`
 	Launch       bool               `json:"launch"`
@@ -24,4 +24,12 @@ type AccountSettings struct {
 	Status_block string             `json:"status_block"`
 	Folder_name  string             `json:"folder_name"`
 	Chat         string             `json:"chat"`
+}
+
+type AccountUpdate struct {
+	ID       primitive.ObjectID `json:"id" bson:"_id"`
+	Name     string             `json:"name" binding:"required"`
+	FolderID string             `json:"folder_id" binding:"required"`
+	Folder   primitive.ObjectID `json:"folder"`
+	Interval uint8              `json:"interval" binding:"required"`
 }

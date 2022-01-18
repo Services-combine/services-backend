@@ -22,9 +22,6 @@ func (h *Handler) CreateAccount(c *gin.Context) {
 		return
 	}
 	accountCreate.Folder = folderID
-	accountCreate.Verify = false
-	accountCreate.Launch = false
-	accountCreate.Status_block = "clean"
 
 	if err := h.services.Accounts.Create(c, accountCreate); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -61,7 +58,35 @@ func (h *Handler) OpenAccount(c *gin.Context) {
 }
 
 func (h *Handler) UpdateAccount(c *gin.Context) {
+	var accountUpdate domain.AccountUpdate
 
+	if err := c.BindJSON(&accountUpdate); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accountID, err := primitive.ObjectIDFromHex(c.Param("accountID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	accountUpdate.ID = accountID
+
+	folderObjectID, err := primitive.ObjectIDFromHex(accountUpdate.FolderID)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	accountUpdate.Folder = folderObjectID
+
+	if err := h.services.Accounts.UpdateAccount(c, accountUpdate); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
 }
 
 func (h *Handler) DeleteAccount(c *gin.Context) {
@@ -72,6 +97,23 @@ func (h *Handler) DeleteAccount(c *gin.Context) {
 	}
 
 	if err := h.services.Accounts.Delete(c, accountID); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
+}
+
+func (h *Handler) GenerateInterval(c *gin.Context) {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Accounts.GenerateInterval(c, folderID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
