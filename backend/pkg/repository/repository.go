@@ -17,6 +17,8 @@ type Folders interface {
 	Get(ctx context.Context, path string) ([]domain.Folder, error)
 	Create(ctx context.Context, folder domain.Folder) error
 	GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)
+	GetAccountByFolderID(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error)
+	GetCountAccounts(ctx context.Context, folderID primitive.ObjectID) (domain.AccountsCount, error)
 	Move(ctx context.Context, folderID primitive.ObjectID, path string) error
 	Rename(ctx context.Context, folderID primitive.ObjectID, name string) error
 	ChangeChat(ctx context.Context, folderID primitive.ObjectID, chat string) error

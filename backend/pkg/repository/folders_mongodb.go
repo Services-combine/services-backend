@@ -45,6 +45,46 @@ func (s *FoldersRepo) GetData(ctx context.Context, folderID primitive.ObjectID) 
 	return folder, err
 }
 
+func (s *FoldersRepo) GetAccountByFolderID(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error) {
+	var accounts []domain.Account
+
+	cur, err := s.db.Database().Collection(accountsCollection).Find(ctx, bson.M{"folder": folderID})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cur.All(ctx, &accounts); err != nil {
+		return nil, err
+	}
+
+	return accounts, nil
+}
+
+func (s *FoldersRepo) GetCountAccounts(ctx context.Context, folderID primitive.ObjectID) (domain.AccountsCount, error) {
+	var countAccounts domain.AccountsCount
+	var accounts []domain.Account
+
+	cur, err := s.db.Database().Collection(accountsCollection).Find(ctx, bson.M{"folder": folderID})
+	if err != nil {
+		return countAccounts, err
+	}
+
+	if err := cur.All(ctx, &accounts); err != nil {
+		return countAccounts, err
+	}
+
+	for _, account := range accounts {
+		countAccounts.CountAll++
+		if account.Status_block == "clean" {
+			countAccounts.CountClean++
+		} else {
+			countAccounts.CountBlock++
+		}
+	}
+
+	return countAccounts, nil
+}
+
 func (s *FoldersRepo) Move(ctx context.Context, folderID primitive.ObjectID, path string) error {
 	fmt.Println(folderID, path)
 	_, err := s.db.UpdateOne(ctx, bson.M{"_id": folderID}, bson.M{"$set": bson.M{"path": path}})

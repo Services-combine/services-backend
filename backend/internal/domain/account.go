@@ -33,3 +33,9 @@ type AccountUpdate struct {
 	Folder   primitive.ObjectID `json:"folder"`
 	Interval uint8              `json:"interval" binding:"required"`
 }
+
+type AccountsCount struct {
+	CountAll   int `json:"count_all"`
+	CountClean int `json:"count_clean"`
+	CountBlock int `json:"count_block"`
+}

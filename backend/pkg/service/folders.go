@@ -40,9 +40,15 @@ func (s *FoldersService) Create(ctx context.Context, folder domain.Folder) error
 	return err
 }
 
-func (s *FoldersService) GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error) {
+func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, []domain.Account, domain.AccountsCount, error) {
+	var accounts []domain.Account
+	var countAccounts domain.AccountsCount
+
 	folder, err := s.repo.GetData(ctx, folderID)
-	return folder, err
+	accounts, err = s.repo.GetAccountByFolderID(ctx, folderID)
+	countAccounts, err = s.repo.GetCountAccounts(ctx, folderID)
+
+	return folder, accounts, countAccounts, err
 }
 
 func (s *FoldersService) Move(ctx context.Context, folderID primitive.ObjectID, path string) error {

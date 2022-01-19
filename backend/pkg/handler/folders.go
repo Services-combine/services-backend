@@ -57,14 +57,16 @@ func (h *Handler) OpenFolder(c *gin.Context) {
 		return
 	}
 
-	folder, err := h.services.Folders.GetData(c, folderID)
+	folder, accounts, countAccounts, err := h.services.Folders.OpenFolder(c, folderID)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"folder": folder,
+		"folder":        folder,
+		"accounts":      accounts,
+		"countAccounts": countAccounts,
 	})
 }
 
