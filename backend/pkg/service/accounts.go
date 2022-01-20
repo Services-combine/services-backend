@@ -2,12 +2,22 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"math/rand"
+	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+const (
+	link_get_password = "https://my.telegram.org/auth/send_password"
+	link_authorized   = "https://my.telegram.org/auth/login"
+	link_apps         = "https://my.telegram.org/apps"
 )
 
 type AccountsService struct {
@@ -74,4 +84,64 @@ func (s *AccountsService) Delete(ctx context.Context, accountID primitive.Object
 func (s *AccountsService) GenerateInterval(ctx context.Context, folderID primitive.ObjectID) error {
 	err := s.repo.GenerateInterval(ctx, folderID)
 	return err
+}
+
+func (s *AccountsService) LoginApi(ctx context.Context, accountID primitive.ObjectID) error {
+	account, err := s.repo.GetData(ctx, accountID)
+	if err != nil {
+		return err
+	}
+
+	data := url.Values{
+		"phone": {account.Phone},
+	}
+
+	resp, err := http.PostForm(link_get_password, data)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("Login api: %s", resp.Status)
+	}
+
+	var getData map[string]interface{}
+	json.NewDecoder(resp.Body).Decode(&getData)
+	if err != nil {
+		return err
+	}
+	randomHash := getData["random_hash"].(string)
+	if err := s.repo.AddRandomHash(ctx, accountID, randomHash); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *AccountsService) ParsingApi(ctx context.Context, accountLogin domain.AccountLogin) error {
+	account, err := s.repo.GetData(ctx, accountLogin.ID)
+	if err != nil {
+		return err
+	}
+
+	data := url.Values{
+		"phone":       {account.Phone},
+		"random_hash": {account.Random_hash},
+		"password":    {accountLogin.Password},
+	}
+
+	resp, err := http.PostForm(link_authorized, data)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("Login api: %s", resp.Status)
+	}
+
+	return nil
 }

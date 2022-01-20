@@ -48,10 +48,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			inviting.POST("/:folderID/:accountID", h.UpdateAccount)
 			inviting.GET("/:folderID/:accountID", h.OpenAccount)
 			inviting.GET("/:folderID/:accountID/delete", h.DeleteAccount)
-			inviting.GET("/:folderID/:accountID/login")
-			inviting.GET("/:folderID/:accountID/send-code")
-			inviting.POST("/:folderID/:accountID/parsing-api")
-			inviting.POST("/:folderID/:accountID/verify")
+			inviting.GET("/:folderID/:accountID/login-api", h.LoginApi)
+			inviting.POST("/:folderID/:accountID/parsing-api", h.ParsingApi)
+			inviting.GET("/:folderID/:accountID/get-code-session", h.GetCodeSession)
+			inviting.POST("/:folderID/:accountID/create-session", h.CreateSession)
 		}
 	}
 

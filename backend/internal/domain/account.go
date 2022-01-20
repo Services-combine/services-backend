@@ -13,6 +13,7 @@ type Account struct {
 	Launch       bool               `json:"launch"`
 	Interval     uint8              `json:"interval"`
 	Status_block string             `json:"status_block"`
+	Random_hash  string             `json:"random_hash"`
 }
 
 type AccountSettings struct {
@@ -38,4 +39,24 @@ type AccountsCount struct {
 	CountAll   int `json:"count_all"`
 	CountClean int `json:"count_clean"`
 	CountBlock int `json:"count_block"`
+}
+
+type AccountLogin struct {
+	ID          primitive.ObjectID `json:"id" bson:"_id"`
+	Phone       string             `json:"phone"`
+	Random_hash string             `json:"random_hash"`
+	Password    string             `json:"password"`
+}
+
+type AccountUserAgent struct {
+	UserAgent string `json:"user_agent"`
+}
+
+type AccountCreateApp struct {
+	Hash         string `json:"hash"`
+	AppTitle     string `json:"app_title"`
+	AppShortname string `json:"app_shortname"`
+	AppUrl       string `json:"app_url"`
+	AppPlatform  string `json:"app_platform"`
+	AppDesc      string `json:"app_desc"`
 }

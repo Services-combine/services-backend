@@ -38,6 +38,7 @@ type Accounts interface {
 	UpdateAccount(ctx context.Context, account domain.AccountUpdate) error
 	Delete(ctx context.Context, accountID primitive.ObjectID) error
 	GenerateInterval(ctx context.Context, folderID primitive.ObjectID) error
+	AddRandomHash(ctx context.Context, accountID primitive.ObjectID, randomHash string) error
 }
 
 type Repository struct {

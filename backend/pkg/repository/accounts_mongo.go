@@ -83,3 +83,8 @@ func (s *AccountsRepo) GenerateInterval(ctx context.Context, folderID primitive.
 
 	return nil
 }
+
+func (s *AccountsRepo) AddRandomHash(ctx context.Context, accountID primitive.ObjectID, randomHash string) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"random_hash": randomHash}})
+	return err
+}
