@@ -39,6 +39,8 @@ type Accounts interface {
 	Delete(ctx context.Context, accountID primitive.ObjectID) error
 	GenerateInterval(ctx context.Context, folderID primitive.ObjectID) error
 	AddRandomHash(ctx context.Context, accountID primitive.ObjectID, randomHash string) error
+	AddPhoneHash(ctx context.Context, accountID primitive.ObjectID, phoneCodeHash string) error
+	AddApi(ctx context.Context, accountSettings domain.AccountApi) error
 }
 
 type Repository struct {

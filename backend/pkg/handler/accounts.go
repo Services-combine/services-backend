@@ -130,7 +130,7 @@ func (h *Handler) LoginApi(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Accounts.LoginApi(c, accountID); err != nil {
+	if err := h.services.AccountVerify.LoginApi(c, accountID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -155,7 +155,7 @@ func (h *Handler) ParsingApi(c *gin.Context) {
 	}
 	accountLogin.ID = accountID
 
-	if err := h.services.Accounts.ParsingApi(c, accountLogin); err != nil {
+	if err := h.services.AccountVerify.ParsingApi(c, accountLogin); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -166,9 +166,43 @@ func (h *Handler) ParsingApi(c *gin.Context) {
 }
 
 func (h *Handler) GetCodeSession(c *gin.Context) {
+	accountID, err := primitive.ObjectIDFromHex(c.Param("accountID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
+	if err := h.services.AccountVerify.GetCodeSession(c, accountID); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
 }
 
 func (h *Handler) CreateSession(c *gin.Context) {
+	var accountLogin domain.AccountLogin
 
+	if err := c.BindJSON(&accountLogin); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	accountID, err := primitive.ObjectIDFromHex(c.Param("accountID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	accountLogin.ID = accountID
+
+	if err := h.services.AccountVerify.CreateSession(c, accountLogin); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
 }

@@ -35,14 +35,20 @@ type Accounts interface {
 	UpdateAccount(ctx context.Context, account domain.AccountUpdate) error
 	Delete(ctx context.Context, accountID primitive.ObjectID) error
 	GenerateInterval(ctx context.Context, folderID primitive.ObjectID) error
+}
+
+type AccountVerify interface {
 	LoginApi(ctx context.Context, accountID primitive.ObjectID) error
 	ParsingApi(ctx context.Context, accountLogin domain.AccountLogin) error
+	GetCodeSession(ctx context.Context, accountID primitive.ObjectID) error
+	CreateSession(ctx context.Context, accountLogin domain.AccountLogin) error
 }
 
 type Service struct {
 	Authorization
 	Folders
 	Accounts
+	AccountVerify
 }
 
 func NewService(repos *repository.Repository) *Service {
@@ -50,5 +56,6 @@ func NewService(repos *repository.Repository) *Service {
 		Authorization: NewAuthService(repos.Authorization),
 		Folders:       NewFoldersService(repos.Folders),
 		Accounts:      NewAccountsService(repos.Accounts),
+		AccountVerify: NewAccountVerifyService(repos.Accounts),
 	}
 }

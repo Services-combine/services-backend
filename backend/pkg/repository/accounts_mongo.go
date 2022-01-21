@@ -88,3 +88,13 @@ func (s *AccountsRepo) AddRandomHash(ctx context.Context, accountID primitive.Ob
 	_, err := s.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"random_hash": randomHash}})
 	return err
 }
+
+func (s *AccountsRepo) AddPhoneHash(ctx context.Context, accountID primitive.ObjectID, phoneCodeHash string) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"phone_code_hash": phoneCodeHash}})
+	return err
+}
+
+func (s AccountsRepo) AddApi(ctx context.Context, accountSettings domain.AccountApi) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": accountSettings.ID}, bson.M{"$set": bson.M{"api_id": accountSettings.ApiId, "api_hash": accountSettings.ApiHash}})
+	return err
+}
