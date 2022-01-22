@@ -10,14 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-const (
-	link_get_password  = "https://my.telegram.org/auth/send_password"
-	link_authorized    = "https://my.telegram.org/auth/login"
-	link_apps          = "https://my.telegram.org/apps"
-	link_create_app    = "https://my.telegram.org/apps/create"
-	error_many_request = "Sorry, too many tries. Please try again later."
-)
-
 type AccountsService struct {
 	repo repository.Accounts
 }
@@ -47,9 +39,10 @@ func (s *AccountsService) Create(ctx context.Context, accountCreate domain.Accou
 
 func (s *AccountsService) GetSettings(ctx context.Context, folderID, accountID primitive.ObjectID) (domain.AccountSettings, error) {
 	var accountSettings domain.AccountSettings
+
 	account, err := s.repo.GetData(ctx, accountID)
 	if err != nil {
-		return accountSettings, err
+		return domain.AccountSettings{}, err
 	}
 	accountSettings.ID = account.ID
 	accountSettings.Name = account.Name
@@ -58,15 +51,28 @@ func (s *AccountsService) GetSettings(ctx context.Context, folderID, accountID p
 	accountSettings.Interval = account.Interval
 	accountSettings.Status_block = account.Status_block
 
-	var folder domain.Folder
-	folder, err = s.repo.GetFolderByID(ctx, folderID)
+	folder, err := s.repo.GetFolderByID(ctx, folderID)
 	if err != nil {
-		return accountSettings, err
+		return domain.AccountSettings{}, err
 	}
-	accountSettings.Folder_name = folder.Name
+	accountSettings.FolderName = folder.Name
+	accountSettings.FolderID = folderID
 	accountSettings.Chat = folder.Chat
 
-	return accountSettings, err
+	foldersMove := map[string]primitive.ObjectID{}
+	foldersMove_, err := s.repo.GetFolders(ctx)
+	if err != nil {
+		return domain.AccountSettings{}, err
+	}
+
+	for Name, ObjectID := range foldersMove_ {
+		if ObjectID != folderID {
+			foldersMove[Name] = ObjectID
+		}
+	}
+
+	accountSettings.FoldersMove = foldersMove
+	return accountSettings, nil
 }
 
 func (s *AccountsService) UpdateAccount(ctx context.Context, account domain.AccountUpdate) error {

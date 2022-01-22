@@ -45,8 +45,19 @@ func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.Obje
 	var countAccounts domain.AccountsCount
 
 	folder, err := s.repo.GetData(ctx, folderID)
+	if err != nil {
+		return domain.Folder{}, []domain.Account{}, domain.AccountsCount{}, err
+	}
+
 	accounts, err = s.repo.GetAccountByFolderID(ctx, folderID)
+	if err != nil {
+		return folder, []domain.Account{}, domain.AccountsCount{}, err
+	}
+
 	countAccounts, err = s.repo.GetCountAccounts(ctx, folderID)
+	if err != nil {
+		return folder, accounts, domain.AccountsCount{}, err
+	}
 
 	return folder, accounts, countAccounts, err
 }

@@ -40,6 +40,26 @@ func (s *AccountsRepo) GetData(ctx context.Context, accountID primitive.ObjectID
 	return account, err
 }
 
+func (s *AccountsRepo) GetFolders(ctx context.Context) (map[string]primitive.ObjectID, error) {
+	var folders []domain.Folder
+	foldersMove := map[string]primitive.ObjectID{}
+
+	cur, err := s.db.Database().Collection(foldersCollection).Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cur.All(ctx, &folders); err != nil {
+		return nil, err
+	}
+
+	for _, folder := range folders {
+		foldersMove[folder.Name] = folder.ID
+	}
+
+	return foldersMove, err
+}
+
 func (s *AccountsRepo) GetFolderByID(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error) {
 	var folder domain.Folder
 
