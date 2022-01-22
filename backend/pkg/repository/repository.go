@@ -17,6 +17,7 @@ type Folders interface {
 	Get(ctx context.Context, path string) ([]domain.Folder, error)
 	Create(ctx context.Context, folder domain.Folder) error
 	GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)
+	GetFolders(ctx context.Context) ([]domain.Folder, error)
 	GetAccountByFolderID(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error)
 	GetCountAccounts(ctx context.Context, folderID primitive.ObjectID) (domain.AccountsCount, error)
 	Move(ctx context.Context, folderID primitive.ObjectID, path string) error
@@ -34,7 +35,7 @@ type Folders interface {
 type Accounts interface {
 	Create(ctx context.Context, accountCreate domain.Account) error
 	GetData(ctx context.Context, accountID primitive.ObjectID) (domain.Account, error)
-	GetFolders(ctx context.Context) (map[string]primitive.ObjectID, error)
+	GetFolders(ctx context.Context) (map[string]string, error)
 	GetFolderByID(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)
 	UpdateAccount(ctx context.Context, account domain.AccountUpdate) error
 	Delete(ctx context.Context, accountID primitive.ObjectID) error

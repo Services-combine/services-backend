@@ -40,26 +40,107 @@ func (s *FoldersService) Create(ctx context.Context, folder domain.Folder) error
 	return err
 }
 
-func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, []domain.Account, domain.AccountsCount, error) {
+func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, []domain.Account, domain.AccountsCount, map[string]string, error) {
 	var accounts []domain.Account
 	var countAccounts domain.AccountsCount
 
 	folder, err := s.repo.GetData(ctx, folderID)
 	if err != nil {
-		return domain.Folder{}, []domain.Account{}, domain.AccountsCount{}, err
+		return domain.Folder{}, nil, domain.AccountsCount{}, nil, err
 	}
 
 	accounts, err = s.repo.GetAccountByFolderID(ctx, folderID)
 	if err != nil {
-		return folder, []domain.Account{}, domain.AccountsCount{}, err
+		return folder, nil, domain.AccountsCount{}, nil, err
 	}
 
 	countAccounts, err = s.repo.GetCountAccounts(ctx, folderID)
 	if err != nil {
-		return folder, accounts, domain.AccountsCount{}, err
+		return folder, accounts, domain.AccountsCount{}, nil, err
 	}
 
-	return folder, accounts, countAccounts, err
+	foldersMove, err := GetFoldersMove(ctx, folderID, folder.Path, s.repo)
+	if err != nil {
+		return folder, accounts, countAccounts, nil, err
+	}
+
+	return folder, accounts, countAccounts, foldersMove, nil
+}
+
+func ConvertPath(path string) (primitive.ObjectID, error) {
+	ObjectID, err := primitive.ObjectIDFromHex(path)
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	return ObjectID, nil
+}
+
+func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path string, db repository.Folders) (map[string]string, error) {
+	foldersMove := map[string]string{}
+
+	if path != "/" {
+		ObjectID, err := ConvertPath(path)
+		if err != nil {
+			return nil, err
+		}
+		mainFolder, err := db.GetData(ctx, ObjectID)
+		if err != nil {
+			return nil, err
+		}
+		foldersMove[mainFolder.Name] = path
+	} else {
+		foldersMove["/"] = "/"
+	}
+
+	folders, err := db.GetFolders(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, folder := range folders {
+		if folderID != folder.ID && path != folder.ID.Hex() {
+			path_ := folder.Path
+			folderID_ := folder.ID
+			status := 0
+
+			for {
+				switch path_ {
+				case "/":
+					break
+				case folderID_.Hex():
+					status = 1
+					break
+				}
+
+				nextFolder, err := db.GetData(ctx, folderID_)
+				if err != nil {
+					return nil, err
+				}
+				path_ = nextFolder.Path
+
+				pathObject, err := ConvertPath(path_)
+				if err != nil {
+					return nil, err
+				}
+				nextFolder, err = db.GetData(ctx, pathObject)
+				if err != nil {
+					return nil, err
+				}
+				folderID_ = nextFolder.ID
+			}
+
+			if status == 0 {
+				foldersMove[folder.Name] = folder.ID.Hex()
+			}
+		}
+	}
+
+	if _, found := foldersMove["/"]; !found {
+		foldersMove["/"] = "/"
+	}
+
+	return foldersMove, nil
 }
 
 func (s *FoldersService) Move(ctx context.Context, folderID primitive.ObjectID, path string) error {

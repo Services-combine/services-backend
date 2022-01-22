@@ -45,6 +45,21 @@ func (s *FoldersRepo) GetData(ctx context.Context, folderID primitive.ObjectID) 
 	return folder, err
 }
 
+func (s *FoldersRepo) GetFolders(ctx context.Context) ([]domain.Folder, error) {
+	var folders []domain.Folder
+
+	cur, err := s.db.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cur.All(ctx, &folders); err != nil {
+		return nil, err
+	}
+
+	return folders, err
+}
+
 func (s *FoldersRepo) GetAccountByFolderID(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error) {
 	var accounts []domain.Account
 

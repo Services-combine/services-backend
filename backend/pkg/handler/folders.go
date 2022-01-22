@@ -57,7 +57,7 @@ func (h *Handler) OpenFolder(c *gin.Context) {
 		return
 	}
 
-	folder, accounts, countAccounts, err := h.services.Folders.OpenFolder(c, folderID)
+	folder, accounts, countAccounts, foldersMove, err := h.services.Folders.OpenFolder(c, folderID)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -67,6 +67,8 @@ func (h *Handler) OpenFolder(c *gin.Context) {
 		"folder":        folder,
 		"accounts":      accounts,
 		"countAccounts": countAccounts,
+		"foldersMove":   foldersMove,
+		"path":          "",
 	})
 }
 

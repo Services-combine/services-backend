@@ -18,16 +18,16 @@ type Account struct {
 }
 
 type AccountSettings struct {
-	ID           primitive.ObjectID            `json:"id" bson:"_id"`
-	Name         string                        `json:"name" binding:"required"`
-	Phone        string                        `json:"phone" binding:"required"`
-	Launch       bool                          `json:"launch"`
-	Interval     uint8                         `json:"interval"`
-	Status_block string                        `json:"status_block"`
-	FolderName   string                        `json:"folder_name"`
-	FolderID     primitive.ObjectID            `json:"folder_id"`
-	FoldersMove  map[string]primitive.ObjectID `json:"folders_move"`
-	Chat         string                        `json:"chat"`
+	ID           primitive.ObjectID `json:"id" bson:"_id"`
+	Name         string             `json:"name" binding:"required"`
+	Phone        string             `json:"phone" binding:"required"`
+	Launch       bool               `json:"launch"`
+	Interval     uint8              `json:"interval"`
+	Status_block string             `json:"status_block"`
+	FolderName   string             `json:"folder_name"`
+	FolderID     string             `json:"folder_id"`
+	FoldersMove  map[string]string  `json:"folders_move"`
+	Chat         string             `json:"chat"`
 }
 
 type AccountUpdate struct {

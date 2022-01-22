@@ -56,22 +56,22 @@ func (s *AccountsService) GetSettings(ctx context.Context, folderID, accountID p
 		return domain.AccountSettings{}, err
 	}
 	accountSettings.FolderName = folder.Name
-	accountSettings.FolderID = folderID
+	accountSettings.FolderID = folderID.Hex()
 	accountSettings.Chat = folder.Chat
 
-	foldersMove := map[string]primitive.ObjectID{}
+	foldersMove := map[string]string{}
 	foldersMove_, err := s.repo.GetFolders(ctx)
 	if err != nil {
 		return domain.AccountSettings{}, err
 	}
 
 	for Name, ObjectID := range foldersMove_ {
-		if ObjectID != folderID {
+		if ObjectID != folderID.Hex() {
 			foldersMove[Name] = ObjectID
 		}
 	}
-
 	accountSettings.FoldersMove = foldersMove
+
 	return accountSettings, nil
 }
 
