@@ -2,12 +2,21 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"time"
 
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+const (
+	COUNT_INVITING_USERS   = 5
+	COUNT_MAINING_USERS    = 5
+	MODE_INVITING          = "inviting"
+	MODE_MAILING_USERNAMES = "mailing-usernames"
+	MODE_MAILING_GROUPS    = "mailing-groups"
 )
 
 type FoldersService struct {
@@ -67,7 +76,7 @@ func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.Obje
 	}
 	folderData["foldersMove"] = foldersMove
 
-	pathHash, err := GetpathHash(ctx, folderID, folder.Path, s.repo)
+	pathHash, err := GetPathHash(ctx, folderID, folder.Path, s.repo)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +159,7 @@ func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path strin
 	return foldersMove, nil
 }
 
-func GetpathHash(ctx context.Context, folderID primitive.ObjectID, path string, db repository.Folders) (map[string]string, error) {
+func GetPathHash(ctx context.Context, folderID primitive.ObjectID, path string, db repository.Folders) (map[string]string, error) {
 	foldersHash := map[string]string{}
 	pathHash := map[string]string{}
 
@@ -218,17 +227,81 @@ func (s *FoldersService) Delete(ctx context.Context, folderID primitive.ObjectID
 	return err
 }
 
+func CheckingEnteredData(ctx context.Context, folderID primitive.ObjectID, db repository.Folders, mode string) error {
+	folderData, err := db.GetData(ctx, folderID)
+	if err != nil {
+		return err
+	}
+
+	accounts, err := db.GetAccountByFolderID(ctx, folderID)
+	if err != nil {
+		return err
+	}
+
+	checkInternal := 0
+	for _, account := range accounts {
+		if account.Interval != 0 {
+			checkInternal++
+		}
+	}
+
+	if len(folderData.Usernames) == 0 {
+		if mode == MODE_INVITING || mode == MODE_MAILING_USERNAMES {
+			return fmt.Errorf("First specify the usernames")
+		}
+	} else if folderData.Chat == "" {
+		if mode == MODE_INVITING {
+			return fmt.Errorf("First specify the chat")
+		}
+	} else if len(folderData.Usernames) < (len(accounts) * COUNT_INVITING_USERS) {
+		if mode == MODE_INVITING {
+			return fmt.Errorf("The number of usernames is not enough for all accounts")
+		}
+	} else if len(folderData.Usernames) < (len(accounts) * COUNT_MAINING_USERS) {
+		if mode == MODE_MAILING_USERNAMES {
+			return fmt.Errorf("The number of usernames is not enough for all accounts")
+		}
+	} else if folderData.Message == "" {
+		if mode == MODE_MAILING_GROUPS || mode == MODE_MAILING_USERNAMES {
+			return fmt.Errorf("First specify the message")
+		}
+	} else if len(folderData.Groups) == 0 {
+		if mode == MODE_MAILING_GROUPS {
+			return fmt.Errorf("First specify the groups")
+		}
+	} else if checkInternal == 0 {
+		return fmt.Errorf("The %d accounts do not have intervals set", checkInternal)
+	}
+
+	return nil
+}
+
 func (s *FoldersService) LaunchInviting(ctx context.Context, folderID primitive.ObjectID) error {
-	err := s.repo.LaunchInviting(ctx, folderID)
+	err := CheckingEnteredData(ctx, folderID, s.repo, MODE_INVITING)
+	if err != nil {
+		return err
+	}
+
+	err = s.repo.LaunchInviting(ctx, folderID)
 	return err
 }
 
 func (s *FoldersService) LaunchMailingUsernames(ctx context.Context, folderID primitive.ObjectID) error {
-	err := s.repo.LaunchMailingUsernames(ctx, folderID)
+	err := CheckingEnteredData(ctx, folderID, s.repo, MODE_MAILING_USERNAMES)
+	if err != nil {
+		return err
+	}
+
+	err = s.repo.LaunchMailingUsernames(ctx, folderID)
 	return err
 }
 
 func (s *FoldersService) LaunchMailingGroups(ctx context.Context, folderID primitive.ObjectID) error {
-	err := s.repo.LaunchMailingGroups(ctx, folderID)
+	err := CheckingEnteredData(ctx, folderID, s.repo, MODE_MAILING_GROUPS)
+	if err != nil {
+		return err
+	}
+
+	err = s.repo.LaunchMailingGroups(ctx, folderID)
 	return err
 }
