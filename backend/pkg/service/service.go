@@ -16,7 +16,7 @@ type Authorization interface {
 type Folders interface {
 	Get(ctx context.Context, path string) ([]domain.Folder, error)
 	Create(ctx context.Context, folder domain.Folder) error
-	OpenFolder(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, []domain.Account, domain.AccountsCount, map[string]string, error)
+	OpenFolder(ctx context.Context, folderID primitive.ObjectID) (map[string]interface{}, error)
 	Move(ctx context.Context, folderID primitive.ObjectID, path string) error
 	Rename(ctx context.Context, folderID primitive.ObjectID, name string) error
 	ChangeChat(ctx context.Context, folderID primitive.ObjectID, chat string) error
