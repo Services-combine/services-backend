@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"math/rand"
 	"time"
 
+	"github.com/gotd/td/telegram"
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -88,4 +90,34 @@ func (s *AccountsService) Delete(ctx context.Context, accountID primitive.Object
 func (s *AccountsService) GenerateInterval(ctx context.Context, folderID primitive.ObjectID) error {
 	err := s.repo.GenerateInterval(ctx, folderID)
 	return err
+}
+
+func (s *AccountsService) CheckBlock(ctx context.Context, folderID primitive.ObjectID) error {
+	accounts, err := s.repo.GetAccountsFolder(ctx, folderID)
+	if err != nil {
+		return err
+	}
+
+	for _, account := range accounts {
+		if account.Api_id != 0 && account.Api_hash != "" && account.Verify {
+			fmt.Println(account)
+		}
+	}
+
+	return nil
+}
+
+func GetStatusBlock(ctx context.Context, account domain.Account) (string, error) {
+	client := telegram.NewClient(account.Api_id, account.Api_hash, telegram.Options{})
+
+	if err := client.Run(ctx, func(ctx context.Context) error {
+		api := client.API()
+		fmt.Println(api)
+
+		return nil
+	}); err != nil {
+		return "", err
+	}
+
+	return "", nil
 }

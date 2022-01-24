@@ -302,13 +302,21 @@ func (s *AccountVerifyService) GetCodeSession(ctx context.Context, accountID pri
 
 	client := telegram.NewClient(account.Api_id, account.Api_hash, telegram.Options{})
 
-	//if err := client.Run(ctx, func(ctx context.Context) error {
-	//	api := client.API()
-	//	fmt.Println(api)
-	//	return nil
-	//}); err != nil {
-	//	return err
-	//}
+	if err := client.Run(ctx, func(ctx context.Context) error {
+		api := client.API()
+		fmt.Println(api)
+
+		//api.AccountSendConfirmPhoneCode(ctx)
+		pass, err := api.AccountGetPassword(ctx)
+		if err != nil {
+			return err
+		}
+		fmt.Println(pass.HasPassword)
+
+		return nil
+	}); err != nil {
+		return err
+	}
 
 	codePrompt := func(ctx context.Context, sentCode *tg.AuthSentCode) (string, error) {
 		fmt.Print("Enter code: ")

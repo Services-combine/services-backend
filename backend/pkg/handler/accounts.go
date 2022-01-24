@@ -124,5 +124,18 @@ func (h *Handler) GenerateInterval(c *gin.Context) {
 }
 
 func (h *Handler) CheckBlock(c *gin.Context) {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
 
+	if err := h.services.Accounts.CheckBlock(c, folderID); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
 }

@@ -39,7 +39,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			inviting.POST("/:folderID/change-groups", h.ChangeGroupsFolder)
 			inviting.POST("/:folderID/create-account", h.CreateAccount)
 			inviting.GET("/:folderID/generate-interval", h.GenerateInterval)
-			inviting.GET("/:folderID/check-block")
+			inviting.GET("/:folderID/check-block", h.CheckBlock)
 			inviting.GET("/:folderID/delete", h.DeleteFolder)
 			inviting.GET("/:folderID/launch-inviting", h.LaunchInviting)
 			inviting.GET("/:folderID/launch-mailing-usernames", h.LaunchMailingUsernames)

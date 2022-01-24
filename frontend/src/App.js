@@ -1,20 +1,26 @@
-import React, {useState, useEffect} from 'react'
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import './styles/App.css';
+import {BrowserRouter, Routes, Route, Link} from "react-router-dom"
+import About from './pages/About';
+import Posts from './pages/Posts';
 
-function App() {
-  const [] = useState(null)
+function App() { 
+	return (
+		<BrowserRouter>
+			<div className='navbar'>
+				<div className='navbar__lings'>
+					<Link to='/about'>О сайте</Link>
+					<Link to='/posts'>Посты</Link>
+				</div>
+			</div>
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-
-        </p>
-      </header>
-    </div>
-  );
+			<Routes>
+				<Route  path="/about" element={<About />} />
+				<Route  path="/posts" element={<Posts />} />
+				<Route  path="*" element={<Posts />} />
+			</Routes>
+		</BrowserRouter>
+	)
 }
 
 export default App;

@@ -35,6 +35,7 @@ type Folders interface {
 type Accounts interface {
 	Create(ctx context.Context, accountCreate domain.Account) error
 	GetData(ctx context.Context, accountID primitive.ObjectID) (domain.Account, error)
+	GetAccountsFolder(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error)
 	GetFolders(ctx context.Context) (map[string]string, error)
 	GetFolderByID(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)
 	UpdateAccount(ctx context.Context, account domain.AccountUpdate) error
@@ -43,6 +44,7 @@ type Accounts interface {
 	AddRandomHash(ctx context.Context, accountID primitive.ObjectID, randomHash string) error
 	AddPhoneHash(ctx context.Context, accountID primitive.ObjectID, phoneCodeHash string) error
 	AddApi(ctx context.Context, accountSettings domain.AccountApi) error
+	ChangeStatusBlock(ctx context.Context, accountID primitive.ObjectID, status string) error
 }
 
 type Repository struct {

@@ -40,6 +40,21 @@ func (s *AccountsRepo) GetData(ctx context.Context, accountID primitive.ObjectID
 	return account, err
 }
 
+func (s *AccountsRepo) GetAccountsFolder(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error) {
+	var accounts []domain.Account
+
+	cur, err := s.db.Find(ctx, bson.M{"folder": folderID})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cur.All(ctx, &accounts); err != nil {
+		return nil, err
+	}
+
+	return accounts, nil
+}
+
 func (s *AccountsRepo) GetFolders(ctx context.Context) (map[string]string, error) {
 	var folders []domain.Folder
 	foldersMove := map[string]string{}
@@ -114,7 +129,12 @@ func (s *AccountsRepo) AddPhoneHash(ctx context.Context, accountID primitive.Obj
 	return err
 }
 
-func (s AccountsRepo) AddApi(ctx context.Context, accountSettings domain.AccountApi) error {
+func (s *AccountsRepo) AddApi(ctx context.Context, accountSettings domain.AccountApi) error {
 	_, err := s.db.UpdateOne(ctx, bson.M{"_id": accountSettings.ID}, bson.M{"$set": bson.M{"api_id": accountSettings.ApiId, "api_hash": accountSettings.ApiHash}})
+	return err
+}
+
+func (s *AccountsRepo) ChangeStatusBlock(ctx context.Context, accountID primitive.ObjectID, status string) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"status_block": status}})
 	return err
 }

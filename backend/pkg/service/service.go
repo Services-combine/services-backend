@@ -35,6 +35,7 @@ type Accounts interface {
 	UpdateAccount(ctx context.Context, account domain.AccountUpdate) error
 	Delete(ctx context.Context, accountID primitive.ObjectID) error
 	GenerateInterval(ctx context.Context, folderID primitive.ObjectID) error
+	CheckBlock(ctx context.Context, folderID primitive.ObjectID) error
 }
 
 type AccountVerify interface {
