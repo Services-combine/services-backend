@@ -23,6 +23,10 @@
     align-items: center;
 }
 
+.post_btns {
+    display: flex;
+}
+
 .not-found {
     color: rgb(161, 161, 161);
     text-align: center;

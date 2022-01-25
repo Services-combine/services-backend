@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import PostList from '../components/PostList';
 import PostForm from '../components/PostForm';
 import MyModal from '../components/UI/modal/MyModal';
@@ -7,6 +7,7 @@ import PostService from '../API/PostService';
 import Loader from '../components/UI/loader/Loader';
 import { useFetching } from '../hooks/useFetching';
 import {getPagesCount, getPagesArray} from '../utils/pages';
+import { useObserver } from '../hooks/useObserver';
 
 function Posts() { 
 	const [posts, setPosts] = useState([
@@ -18,14 +19,19 @@ function Posts() {
 	const [totalPages, setTotalPages] = useState(0);
 	const [limit, setLimit] = useState(10);
 	const [page, setPage] = useState(1);
+	const lastElement = useRef();
 
 	let pagesArray = getPagesArray(totalPages);
 
 	const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
 		const response = await PostService.getAll(limit, page);
-		setPosts(response.data)
+		setPosts([...posts, ...response.data])
 		const totalCount = response.headers['x-total-count']
 		setTotalPages(getPagesCount(totalCount, limit));
+	})
+
+	useObserver(lastElement, page < totalPages, isPostsLoading, () => {
+		setPage(page + 1);
 	})
 
 	useEffect(() => {
@@ -57,17 +63,12 @@ function Posts() {
 			{postError &&
 				<h2>Произошла ошибка $(postError)</h2>
 			}
+			<PostList remove={removePost} posts={posts} />
+			<div ref={lastElement} style={{height: 20}}></div>
 
-			{isPostsLoading
-				? <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
-				: <PostList remove={removePost} posts={posts} />
+			{isPostsLoading &&
+				<div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
 			}
-
-			<div style={{marginTop: 20, marginBottom: 10}}>
-				{pagesArray.map(p =>
-					<MyButton onClick={() => changePage(p)}>{p}</MyButton>
-				)}
-			</div>
 		</div>
 	);
 }
