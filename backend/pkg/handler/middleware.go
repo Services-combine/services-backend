@@ -15,8 +15,6 @@ const (
 func (h *Handler) userIdentity(c *gin.Context) {
 	header := c.GetHeader(authorizationHeader)
 	if header == "" {
-		//location := url.URL{Path: "/sign-in"}
-		//c.Redirect(http.StatusFound, location.RequestURI())
 		newErrorResponse(c, http.StatusUnauthorized, "empty auth header")
 		return
 	}

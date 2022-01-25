@@ -1,9 +1,9 @@
-.myBtn {
-    padding: 8px 18px;
+.Btn {
+    padding: 7px 20px;
     color: #000;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: bold;
-    background: rgb(221, 221, 221);
+    background: #dedede;
     border: none;
     border-radius: 5px;
     cursor: pointer;

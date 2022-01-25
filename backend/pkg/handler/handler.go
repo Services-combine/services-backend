@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/korpgoodness/service.git/pkg/service"
 )
@@ -16,14 +17,23 @@ func NewHandler(services *service.Service) *Handler {
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.Default()
 
-	router.LoadHTMLGlob("ui/templates/*.html")
-	router.Static("/static", "./ui/static")
+	router.Use(cors.Default())
+	/*router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"POST", "PUT", "PATCH", "DELETE"},
+		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers"},
+	}))*/
 
-	router.POST("/sign-in", h.signIn)
+	//router.LoadHTMLGlob("ui/templates/*.html")
+	//router.Static("/static", "./ui/static")
+
+	router.POST("/login", h.Login)
 
 	services := router.Group("/", h.userIdentity)
 	{
 		services.GET("/", h.Index)
+		services.POST("/logout", h.Logout)
+
 		inviting := services.Group("/inviting")
 		{
 			inviting.GET("/", h.MainPage)

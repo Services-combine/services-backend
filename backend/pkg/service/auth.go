@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	salt       = "yrty56y6ytuuiui6778l;afjslGH"
-	signingKey = "qrkjk#4gdsglytryjk#4353KSFjH"
-	tokenTTL   = 12 * time.Hour
+	salt      = "yrty56y6ytuuiui6778l;afjslGH"
+	secretKey = "qrkjk#4gdsglytryjk#4353KSFjH"
+	tokenTTL  = 12 * time.Hour
 )
 
 type AuthService struct {
@@ -37,7 +37,7 @@ func (s *AuthService) GenerateToken(ctx context.Context, username, password stri
 		Subject:   user.ID.Hex(),
 	})
 
-	return token.SignedString([]byte(signingKey))
+	return token.SignedString([]byte(secretKey))
 }
 
 func (s *AuthService) ParseToken(accessToken string) (string, error) {
@@ -46,7 +46,7 @@ func (s *AuthService) ParseToken(accessToken string) (string, error) {
 			return nil, errors.New("invalid signing method")
 		}
 
-		return []byte(signingKey), nil
+		return []byte(secretKey), nil
 	})
 
 	if err != nil {

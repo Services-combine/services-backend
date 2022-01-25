@@ -1,0 +1,26 @@
+.login {
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 130px;
+}
+
+.form-login {
+    max-width: 330px;
+    padding: 25px;
+    margin: 0 auto;
+    border-radius: 10px;
+    background-color: #474747;
+}
+
+.form-input {
+    text-align: left;
+    margin-top: 20px;
+}
+
+.title {
+    text-align: center;
+}
+
+Button {
+    margin-top: 10px;
+}
