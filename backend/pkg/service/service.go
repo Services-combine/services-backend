@@ -8,8 +8,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type userData struct {
+	AccessToken  string
+	RefreshToken string
+	UserID       string
+}
+
 type Authorization interface {
-	GenerateToken(ctx context.Context, username, password string) (string, error)
+	Login(ctx context.Context, username, password string) (userData, error)
+	Refresh(ctx context.Context, refreshToken string) (userData, error)
+	Logout(ctx context.Context, refreshToken string) error
 	ParseToken(token string) (string, error)
 }
 

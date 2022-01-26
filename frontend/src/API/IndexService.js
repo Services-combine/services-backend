@@ -5,10 +5,10 @@ export default class IndexService {
         const headers = { 
             'Content-Type': 'application/json',
             'Authorization': 'Bearer my-token',
-            'My-Custom-Header': 'foobar'
+            'Access-Control-Allow-Origin': 'X-Uid, X-Authentication'
         };
 
-        const response = await axios.get('http://127.0.0.1:8000')
+        const response = await axios.get('http://127.0.0.1:8000/api/user/', {headers})
         return response;
     }
 }

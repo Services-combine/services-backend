@@ -11,6 +11,9 @@ import (
 
 type Authorization interface {
 	GetUser(ctx context.Context, username, password string) (domain.User, error)
+	SetSession(ctx context.Context, userID primitive.ObjectID, session domain.Session) error
+	GetByRefreshToken(ctx context.Context, refreshToken string) (domain.User, error)
+	RemoveRefreshToken(ctx context.Context, refreshToken string) error
 }
 
 type Folders interface {

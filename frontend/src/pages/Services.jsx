@@ -17,7 +17,7 @@ const Services = () => {
 		fetchIndex()
 	}, [])
 
-    let navigate = useNavigate();
+    //let navigate = useNavigate();
 
 	return (
         <div className='services'>
@@ -32,8 +32,8 @@ const Services = () => {
             </ul>
 
             {indexError &&
-				//<Error>Произошла ошибка: {indexError}</Error>
-                navigate("/login")
+				<Error>Произошла ошибка: {indexError}</Error>
+                //navigate("/login")
 			}
 
             {isIndexLoading &&

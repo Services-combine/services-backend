@@ -46,10 +46,11 @@ func (s *Server) Run() error {
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services)
+	routes := handlers.InitRoutes()
 
 	s.httpServer = &http.Server{
 		Addr:           ":" + viper.GetString("http.port"),
-		Handler:        handlers.InitRoutes(),
+		Handler:        routes,
 		MaxHeaderBytes: viper.GetInt("http.maxHeaderBytes"),
 		ReadTimeout:    viper.GetDuration("http.readTimeout"),
 		WriteTimeout:   viper.GetDuration("http.writeTimeout"),

@@ -9,11 +9,10 @@ export default class LoginService {
         const headers = { 
             'Content-Type': 'application/json',
             'Authorization': 'Bearer my-token',
-            'My-Custom-Header': 'foobar',
             'Access-Control-Allow-Origin': 'X-Uid, X-Authentication'
         };
 
-        const response = await axios.post('http://127.0.0.1:8000/login', article, {headers})
+        const response = await axios.post('http://127.0.0.1:8000/api/login', article, {headers})
         return response;
     }
 }
