@@ -4,6 +4,7 @@ import Services from "../pages/Services";
 
 export const privateRoutes = [
     {path: '/', element: Services},
+    {path: '/login', element: Login},
     {path: '/inviting', element: Inviting},
 ]
 

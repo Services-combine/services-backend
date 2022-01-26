@@ -1,23 +1,20 @@
-import React, {useEffect} from 'react'
-import {Link, useNavigate} from "react-router-dom"
+import React, {useEffect, useContext} from 'react'
+import {Link} from "react-router-dom"
 import '../styles/Services.css';
+import {Context} from "../index";
 import Loader from '../components/UI/loader/Loader';
-import { useFetching } from '../hooks/useFetching';
-import IndexService from '../API/IndexService';
-import Error from '../components/UI/error/Error';
+import { observer } from 'mobx-react-lite';
 
 const Services = () => {
-    const [fetchIndex, isIndexLoading, indexError] = useFetching(async () => {
-		const response = await IndexService.index();
-        console.log(response);
-		//const resultCheckToken = response.data
-	})
+    const {store} = useContext(Context)
 
     useEffect(() => {
-		fetchIndex()
+
 	}, [])
 
-    //let navigate = useNavigate();
+    if (store.isLoading) {
+        <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
+    }
 
 	return (
         <div className='services'>
@@ -30,17 +27,8 @@ const Services = () => {
                     </Link>
                 </li>
             </ul>
-
-            {indexError &&
-				<Error>Произошла ошибка: {indexError}</Error>
-                //navigate("/login")
-			}
-
-            {isIndexLoading &&
-				<div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
-			}
         </div>
 	);
 }
 
-export default Services;
+export default observer(Services);

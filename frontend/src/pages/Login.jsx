@@ -1,49 +1,41 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import '../styles/Login.css';
+import {Context} from "../index";
+import {useNavigate} from "react-router-dom"
 import Button from '../components/UI/button/Button';
 import Input from '../components/UI/input/Input';
-import Loader from '../components/UI/loader/Loader';
-import LoginService from '../API/LoginService';
-import { useFetching } from '../hooks/useFetching';
-import Error from '../components/UI/error/Error';
+import { observer } from 'mobx-react-lite';
 
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const {store} = useContext(Context)
 
-    const [fetchLogin, isLoginLoading, loginError] = useFetching(async () => {
-		const response = await LoginService.loginUser(username, password);
-		//const resultAuth = response
-        console.log(response);
-	})
+    let navigate = useNavigate();
 
     const login = async (e) => {
         e.preventDefault();
-        fetchLogin()
+        store.login(username, password)
+    }
+
+    if (store.isAuth) {
+        navigate("/")
     }
 
     return (
         <div className='login'>
-            <form onSubmit={login} className="form-login">
+            <form className="form-login">
                 <h3 className='title'>Авторизация</h3>
                 <div className="form-input">
                     <Input onChange={e => setUsername(e.target.value)} type='text' placeholder='Введите логин' />
                     <Input onChange={e => setPassword(e.target.value)} type='password' placeholder='Введите пароль' />
                 </div>
                 
-                <Button>Войти</Button>
+                <Button onClick={login}>Войти</Button>
             </form>
-
-            {loginError &&
-				<Error>Произошла ошибка: {loginError}</Error>
-			}
-
-            {isLoginLoading &&
-				<div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
-			}
         </div>
     );
 };
 
-export default Login;
+export default observer(Login);
