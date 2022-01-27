@@ -1,33 +1,19 @@
-import React, {useEffect, useContext} from 'react'
-import {Link} from "react-router-dom"
-import '../styles/Services.css';
-import {Context} from "../index";
-import Loader from '../components/UI/loader/Loader';
+import React, {useContext} from 'react'
 import { observer } from 'mobx-react-lite';
+import {Context} from "../index";
+import Login from '../components/Login';
+import ListServices from '../components/ListServices';
 
 const Services = () => {
     const {store} = useContext(Context)
 
-    useEffect(() => {
-
-	}, [])
-
-    if (store.isLoading) {
-        <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
-    }
-
 	return (
-        <div className='services'>
-            <h3>Сервисы</h3>
-            
-            <ul className="services__list btn-toolbar" role="toolbar">
-                <li className="services__list-item">
-                    <Link to="/inviting" className="services__list-item_link">
-                        <h6 className="title">Инвайтинг & Рассылка</h6>
-                    </Link>
-                </li>
-            </ul>
-        </div>
+        store.isAuth
+            ?
+            <ListServices/>
+            : 
+            <Login/>
+
 	);
 }
 

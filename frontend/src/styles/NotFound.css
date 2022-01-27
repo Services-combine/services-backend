@@ -1,0 +1,27 @@
+.not-foung-page {
+    width: 100%;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.error {
+    color: #e2e2e2;
+    font-size: 7rem;
+    position: relative;
+    line-height: 1;
+    width: 12.5rem;
+}
+
+.lead {
+    font-size: 1.25rem;
+    font-weight: 300;
+}
+
+.again {
+    font-size: 1.15rem;
+    font-weight: 300;
+}
+
+.again-link {
+    text-decoration: none;
+}

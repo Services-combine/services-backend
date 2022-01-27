@@ -1,7 +1,7 @@
-import React, {useContext, useEffect} from 'react'
+import React, {useContext} from 'react'
 import {Routes, Route} from "react-router-dom"
 import {Context} from "../index";
-import ErrorPage from '../pages/ErrorPage';
+import NotFound from '../pages/NotFound';
 import { privateRoutes, publicRoutes } from '../router';
 import { observer } from 'mobx-react-lite';
 import Loader from '../components/UI/loader/Loader';
@@ -9,15 +9,11 @@ import Loader from '../components/UI/loader/Loader';
 const AppRoute = () => {
     const {store} = useContext(Context);
 
-	useEffect(() => {
-		if (localStorage.getItem('token')) {
-			store.checkAuth()
-		}
-	}, [])
-
     if (store.isLoading) {
         return (
-            <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
+            <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}>
+                <Loader/>
+            </div>
         );
     }
 
@@ -32,7 +28,7 @@ const AppRoute = () => {
                         key={route.path}
                     />
                 )}
-                <Route  path="*" element={<ErrorPage />} />
+                <Route  path="*" element={<NotFound />} />
             </Routes>
             :
             <Routes>
@@ -43,9 +39,8 @@ const AppRoute = () => {
                         key={route.path}
                     />
                 )}
-                <Route  path="*" element={<ErrorPage />} />
+                <Route  path="*" element={<NotFound />} />
             </Routes>
-
     );
 };
 

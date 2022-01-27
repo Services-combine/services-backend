@@ -37,9 +37,9 @@ func (h *Handler) Login(c *gin.Context) {
 	})
 
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"accessToken":  res.AccessToken,
-		"refreshToken": res.RefreshToken,
-		"userID":       res.UserID,
+		"accessToken": res.AccessToken,
+		//"refreshToken": res.RefreshToken,
+		//"userID":       res.UserID,
 	})
 }
 
@@ -69,9 +69,9 @@ func (h *Handler) Refresh(c *gin.Context) {
 	})
 
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"accessToken":  res.AccessToken,
-		"refreshToken": res.RefreshToken,
-		"userID":       res.UserID,
+		"accessToken": res.AccessToken,
+		//"refreshToken": res.RefreshToken,
+		//"userID":       res.UserID,
 	})
 }
 
@@ -94,6 +94,7 @@ func (h *Handler) Logout(c *gin.Context) {
 
 	http.SetCookie(c.Writer, &http.Cookie{
 		Name:   "refreshToken",
+		Value:  "",
 		MaxAge: -1,
 	})
 

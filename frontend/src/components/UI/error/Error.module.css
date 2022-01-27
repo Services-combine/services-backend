@@ -1,5 +1,6 @@
 .Err {
     width: 100%;
+    text-align: center;
     background: rgb(228, 87, 87);
     border: none;
     border-radius: 5px;

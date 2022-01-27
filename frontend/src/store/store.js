@@ -5,8 +5,10 @@ import { API_URL } from "../API";
 
 export default class Store {
     isAuth = false;
-    isLoadning = false;
-    
+    isLoading = false;
+    isError = null;
+    timeout = 3000;
+
     constructor() {
         makeAutoObservable(this);
     }
@@ -16,28 +18,36 @@ export default class Store {
     }
 
     setLoading(bool) {
-        this.isLoadning = bool;
+        this.isLoading = bool;
+    }
+
+    setError(error) {
+        this.isError = error;
     }
 
     async login(username, password) {
         try {
             const response = await AuthService.login(username, password)
-            console.log(response)
             localStorage.setItem('token', response.data.accessToken);
             this.setAuth(true);
         } catch (e) {
-            console.log(e.response?.data?.message);
+            this.setError(e.response?.data?.message);
+            setTimeout(() => {
+                this.setError(null)
+            }, this.timeout)
         }
     }
 
     async logout() {
         try {
             const response = await AuthService.logout()
-            console.log(response)
             localStorage.removeItem('token');
             this.setAuth(false);
         } catch (e) {
-            console.log(e.response?.data?.message);
+            this.setError(e.response?.data?.message);
+            setTimeout(() => {
+                this.setError(null)
+            }, this.timeout)
         }
     }
 
@@ -45,14 +55,15 @@ export default class Store {
         this.setLoading(true);
         try {
             const response = await axios.get(`${API_URL}/refresh`, {withCredentials: true})
-            console.log(response);
             localStorage.setItem('token', response.data.accessToken);
             this.setAuth(true);
         } catch (e) {
-            console.log(e.response?.data?.message);
+            this.setError(e.response?.data?.message);
+            setTimeout(() => {
+                this.setError(null)
+            }, this.timeout)
         } finally {
             this.setLoading(false);
-            console.log(this.isAuth)
         }
     }
 }
