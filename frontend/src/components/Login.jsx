@@ -13,21 +13,23 @@ const Login = () => {
     const {store} = useContext(Context)
 
     return (
-        <div className='login'>
-            <div className="form-login">
-                <h3>Аутентификация</h3>
-                <div className="form-input">
-                    <Input onChange={e => setUsername(e.target.value)} type='text' placeholder='Введите логин' />
-                    <Input onChange={e => setPassword(e.target.value)} type='password' placeholder='Введите пароль' />
+        <>
+            <div className='login'>
+                <div className="form-login">
+                    <h3>Аутентификация</h3>
+                    <div className="form-input">
+                        <Input onChange={e => setUsername(e.target.value)} type='text' placeholder='Введите логин' />
+                        <Input onChange={e => setPassword(e.target.value)} type='password' placeholder='Введите пароль' />
+                    </div>
+                    
+                    <Button onClick={() => store.login(username, password)}>Войти</Button>
                 </div>
-                
-                <Button onClick={() => store.login(username, password)}>Войти</Button>
             </div>
 
             {store.isError &&
                 <Error>{store.isError}</Error>
             }
-        </div>
+        </>
     );
 };
 

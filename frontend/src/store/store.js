@@ -1,7 +1,7 @@
 import {makeAutoObservable} from "mobx";
-import AuthService from "../API/AuthService";
 import axios from "axios";
 import { API_URL } from "../API";
+import AuthService from "../API/AuthService";
 
 export default class Store {
     isAuth = false;
@@ -27,7 +27,7 @@ export default class Store {
 
     async login(username, password) {
         try {
-            const response = await AuthService.login(username, password)
+            const response = await AuthService.login(username, password);
             localStorage.setItem('token', response.data.accessToken);
             this.setAuth(true);
         } catch (e) {

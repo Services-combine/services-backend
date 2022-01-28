@@ -1,10 +1,10 @@
 .Btn {
-    padding: 7px 20px;
+    padding: 7px 15px;
     color: #000;
     font-size: 16px;
     font-weight: bold;
     background: #dedede;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
 }

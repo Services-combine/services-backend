@@ -1,0 +1,37 @@
+.folders {
+    margin-top: 20px;
+}
+
+.folders .folder {
+    border: none;
+    border-radius: 10px;
+    text-align: center;
+    width: 100px;
+    height: 100px;
+    display: block;
+    text-decoration: none;
+    margin: 5px;
+    color: rgb(187, 187, 187);
+    overflow: hidden;
+}
+
+.folders .folder:hover {
+    background-color: #3d3d3d;
+    overflow: visible;
+}
+
+.folders .folder__icon {
+    font-size: 50px;
+    margin-top: 7px;
+}
+
+.folders .folder__name {
+    font-size: 17px;
+    word-wrap: break-word; 
+    padding: 0px 5px;
+    color: rgb(187, 187, 187);
+}
+
+.folders .folder__name:hover {
+    cursor: pointer;
+}
