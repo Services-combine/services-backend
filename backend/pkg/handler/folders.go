@@ -14,10 +14,7 @@ func (h *Handler) MainPage(c *gin.Context) {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"folders": folders,
-	})
+	c.JSON(http.StatusOK, folders)
 }
 
 func (h *Handler) CreateFolder(c *gin.Context) {
