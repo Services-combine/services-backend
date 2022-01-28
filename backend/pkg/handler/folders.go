@@ -60,9 +60,7 @@ func (h *Handler) OpenFolder(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"folderData": folderData,
-	})
+	c.JSON(http.StatusOK, folderData)
 }
 
 func (h *Handler) MoveFolder(c *gin.Context) {

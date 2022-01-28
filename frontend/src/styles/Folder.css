@@ -1,7 +1,65 @@
+.header .path {
+    display: inline-block;
+}
+
+.header .path .path__item {
+    text-decoration: none;
+    color: #dedede;
+    font-weight: bold;
+    font-size: 22px;
+}
+
+.header .count-accounts {
+    display: block;
+    float: right;
+}
+
+.header .count-accounts h6 {
+    display: inline;
+    margin-right: 10px;
+    font-size: 18px;
+}
+
 .menu {
-    margin-top: 20px;
+    margin-top: 15px;
+}
+
+.menu .menu__group {
+    margin: 0 7px 7px 0;
+    background: rgb(59, 56, 56);
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
 }
 
 .menu Button {
     margin: 5px;
+}
+
+.alert {
+    background-color: #dedede;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 15px;
+}
+
+.alert .open-account {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+}
+
+.alert .open-account:hover {
+    color: rgb(63, 63, 63);
+}
+
+.alert .actions {
+    float: right;
+    margin-top: -4px;
+}
+
+.alert .btn-delete {
+    border-radius: 10px;
+    padding: 4px 11px;
+    margin-right: 10px;
 }

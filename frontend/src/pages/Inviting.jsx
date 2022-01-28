@@ -1,10 +1,12 @@
 import React, {useEffect, useState} from 'react'
 import '../styles/Inviting.css';
 import {Link} from "react-router-dom"
+import { useFetching } from '../hooks/useFetching';
 import InvitingService from '../API/InvitingService';
 import Error from '../components/UI/error/Error';
 import Button from '../components/UI/button/Button';
 import Modal from '../components/UI/modal/Modal';
+import Loader from '../components/UI/loader/Loader';
 import CreateFolderForm from '../components/CreateFolderForm';
 
 const Inviting = () => {
@@ -13,26 +15,19 @@ const Inviting = () => {
     const [modal, setModal] = useState(false);
     const timeout = 3000;
 
-    useEffect(() => {
-        getFolders();
-    }, [])
+    const [fetchFolders, isFetchLoading, fetchError] = useFetching(async () => {
+        const response = await InvitingService.fetchFolders();
+        setFolders(response.data);
+    })
 
-    async function getFolders() {
-        try {
-            const response = await InvitingService.fetchMainFolders();
-            setFolders(response.data);
-        } catch (e) {
-            setIsError('Ошибка при получении папок');
-            setTimeout(() => {
-                setIsError(null)
-            }, timeout)
-        }
-    }
+    useEffect(() => {
+        fetchFolders();
+    }, [])
     
-    async function addFolderDB(folderName) {
+    async function createFolder(folderName) {
         try {
-            const response = await InvitingService.createFolder(folderName);
-            getFolders();
+            await InvitingService.createFolder(folderName);
+            fetchFolders();
         } catch (e) {
             setIsError('Ошибка при создании папки');
             setTimeout(() => {
@@ -41,9 +36,9 @@ const Inviting = () => {
         }
     }
 
-    const createFolder = (newFolder) => {
-        addFolderDB(newFolder.folderName);
-		setModal(false);
+    const modalCreateFolder = (newFolder) => {
+        setModal(false);
+        createFolder(newFolder.folderName);
 	}
 
     return (
@@ -53,22 +48,30 @@ const Inviting = () => {
                 <Button onClick={() => setModal(true)}><i className="fas fa-plus"></i> Создать папку</Button>
             </div>
 
+            <Modal visible={modal} setVisible={setModal}>
+                <CreateFolderForm create={modalCreateFolder}/>
+            </Modal>
+
+            {fetchError &&
+                <Error>Ошибка при получении папок</Error>
+            }
+
             {isError &&
                 <Error>{isError}</Error>
             }
 
-            <Modal visible={modal} setVisible={setModal}>
-                <CreateFolderForm create={createFolder}/>
-            </Modal>
-
-            <div className='folders btn-toolbar' role="toolbar">
-                {folders.map(folder => 
-                    <Link to={'/inviting/' + folder.id} key={folder.id} className='folder'>
-                        <i className="fas fa-folder-open folder__icon"></i>
-                        <h6 className="folder__name">{folder.name}</h6>
-                    </Link>
-                )}
-            </div>
+            {isFetchLoading 
+                ? <div style={{display: "flex", justifyContent: "center", marginTop: 50}}><Loader/></div>
+                : 
+                <div className='folders btn-toolbar' role="toolbar">
+                    {folders.map(folder => 
+                        <Link to={`/inviting/${folder.id}`} key={folder.id} className='folder'>
+                            <i className="fas fa-folder-open folder__icon"></i>
+                            <h6 className="folder__name">{folder.name}</h6>
+                        </Link>
+                    )}
+                </div> 
+            }
         </div>
 	);
 }

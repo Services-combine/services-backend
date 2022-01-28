@@ -11,7 +11,7 @@
     display: block;
     text-decoration: none;
     margin: 5px;
-    color: rgb(187, 187, 187);
+    color: #dedede;
     overflow: hidden;
 }
 
@@ -29,7 +29,7 @@
     font-size: 17px;
     word-wrap: break-word; 
     padding: 0px 5px;
-    color: rgb(187, 187, 187);
+    color: #dedede;
 }
 
 .folders .folder__name:hover {

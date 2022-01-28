@@ -64,6 +64,12 @@ func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.Obje
 	}
 	folderData["accounts"] = accounts
 
+	folders, err := s.repo.Get(ctx, folderID.Hex())
+	if err != nil {
+		return map[string]interface{}{}, err
+	}
+	folderData["folders"] = folders
+
 	countAccounts, err := s.repo.GetCountAccounts(ctx, folderID)
 	if err != nil {
 		return map[string]interface{}{}, err
