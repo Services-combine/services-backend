@@ -9,6 +9,11 @@
     font-size: 22px;
 }
 
+.header .path b {
+    font-size: 22px;
+    padding: 0px 10px;
+}
+
 .header .count-accounts {
     display: block;
     float: right;
@@ -24,16 +29,16 @@
     margin-top: 15px;
 }
 
-.menu .menu__group {
-    margin: 0 7px 7px 0;
-    background: rgb(59, 56, 56);
-    border: none;
-    border-radius: 10px;
-    padding: 5px;
+.menu .delete {
+    float: left;
 }
 
 .menu Button {
     margin: 5px;
+}
+
+.accounts {
+    margin-top: 5px;
 }
 
 .alert {

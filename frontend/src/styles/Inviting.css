@@ -1,5 +1,5 @@
 .folders {
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 .folders .folder {
@@ -10,7 +10,6 @@
     height: 100px;
     display: block;
     text-decoration: none;
-    margin: 5px;
     color: #dedede;
     overflow: hidden;
 }
@@ -34,4 +33,10 @@
 
 .folders .folder__name:hover {
     cursor: pointer;
+}
+
+.notification {
+    text-align: center;
+    margin-top: 100px;
+    color: #9e9e9e;
 }

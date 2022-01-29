@@ -214,14 +214,18 @@ func (h *Handler) DeleteFolder(c *gin.Context) {
 		return
 	}
 
+	folder, err := h.services.Folders.GetData(c, folderID)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	if err := h.services.Folders.Delete(c, folderID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"status": "ok",
-	})
+	c.JSON(http.StatusOK, folder.Path)
 }
 
 func (h *Handler) LaunchInviting(c *gin.Context) {

@@ -49,10 +49,19 @@ func (s *FoldersService) Create(ctx context.Context, folder domain.Folder) error
 	return err
 }
 
+func (s *FoldersService) GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error) {
+	folder, err := s.repo.GetData(ctx, folderID)
+	if err != nil {
+		return domain.Folder{}, err
+	}
+
+	return folder, nil
+}
+
 func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.ObjectID) (map[string]interface{}, error) {
 	folderData := map[string]interface{}{}
 
-	folder, err := s.repo.GetData(ctx, folderID)
+	folder, err := s.GetData(ctx, folderID)
 	if err != nil {
 		return map[string]interface{}{}, err
 	}
@@ -86,6 +95,7 @@ func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.Obje
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(pathHash)
 	folderData["pathHash"] = pathHash
 
 	return folderData, nil

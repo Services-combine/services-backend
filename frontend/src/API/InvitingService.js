@@ -20,4 +20,16 @@ export default class InvitingService {
     static async renameFolder(folderID, folderName) {
         return $api.post(`/user/inviting/${folderID}/rename`, {name: folderName})
     }
+
+    static async changeChat(folderID, chatName) {
+        return $api.post(`/user/inviting/${folderID}/change-chat`, {chat: chatName})
+    }
+
+    static async addMessage(folderID, message) {
+        return $api.post(`/user/inviting/${folderID}/change-message`, {message: message})
+    }
+
+    static async deleteFolder(folderID) {
+        return $api.get(`/user/inviting/${folderID}/delete`)
+    }
 }
