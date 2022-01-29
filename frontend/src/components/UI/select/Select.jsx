@@ -4,6 +4,7 @@ import classes from './Select.module.css'
 const Select = ({options, defaultValue, value, onChange}) => {
     return (
         <select 
+            className={classes.Select}
             value={value}
             onChange={event => onChange(event.target.value)}
         >

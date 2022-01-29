@@ -3,16 +3,20 @@
 }
 
 .header .logo {
-    text-decoration: none;
     color: #fff;
     font-size: 25px;
     font-weight: bold;
     display: inline-block;
+    margin-top: 2px;
 }
 
-.header Button {
+.header .header__btns {
     display: block;
     float: right;
+}
+
+.header .header__btns Button {
+    margin: 0 5px;
 }
 
 .services__list {

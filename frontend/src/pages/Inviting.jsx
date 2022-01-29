@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import '../styles/Inviting.css';
+import { useNavigate } from 'react-router-dom';
 import InvitingService from '../API/InvitingService';
 import Error from '../components/UI/error/Error';
 import Button from '../components/UI/button/Button';
@@ -7,8 +8,10 @@ import Modal from '../components/UI/modal/Modal';
 import Loader from '../components/UI/loader/Loader';
 import ModalForm from '../components/ModalForm';
 import FolderList from '../components/FolderList';
+//import CountAccounts from '../components/CountAccounts';
 
 const Inviting = () => {
+    let navigate = useNavigate();
     const [folders, setFolders] = useState([]);
     const [isError, setIsError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -57,7 +60,11 @@ const Inviting = () => {
         <div>
             <div className='header'>
                 <h3 className='logo'>Инвайтинг & Рассылка</h3>
-                <Button onClick={() => setModal(true)}><i className="fas fa-plus"></i> Создать папку</Button>
+                <div className='header__btns'>
+                    <Button onClick={() => navigate("/")}><i className="fas fa-home"></i> На главную</Button>
+                    <Button ><i className="fas fa-chart-pie"></i> Показатели</Button>
+                    <Button onClick={() => setModal(true)}><i className="fas fa-plus"></i> Создать папку</Button>
+                </div>
             </div>
 
             {isError &&

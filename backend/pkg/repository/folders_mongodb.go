@@ -89,11 +89,11 @@ func (s *FoldersRepo) GetCountAccounts(ctx context.Context, folderID primitive.O
 	}
 
 	for _, account := range accounts {
-		countAccounts.CountAll++
+		countAccounts.All++
 		if account.Status_block == "clean" {
-			countAccounts.CountClean++
+			countAccounts.Clean++
 		} else {
-			countAccounts.CountBlock++
+			countAccounts.Block++
 		}
 	}
 

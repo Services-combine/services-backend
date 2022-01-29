@@ -1,5 +1,4 @@
 import React from 'react'
-import Button from './UI/button/Button';
 import {Link, useNavigate, useParams} from 'react-router-dom'
 
 const AccountItem = (props) => {
@@ -8,7 +7,7 @@ const AccountItem = (props) => {
     
     return (
         <div className='alert alert-secondary'>
-            <Link to={`/inviting/${params.folderID}/${props.account.id}`} className='open-account'>
+            <Link to={`/inviting/${params.folderID}/${props.account.id}`} className='account__link'>
                 {props.index+1}. {props.account.name} (+{props.account.phone})
             </Link>
 

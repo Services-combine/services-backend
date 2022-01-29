@@ -15,8 +15,7 @@
 }
 
 .header .count-accounts {
-    display: block;
-    float: right;
+    margin-top: 8px;
 }
 
 .header .count-accounts h6 {
@@ -46,15 +45,16 @@
     border: none;
     border-radius: 10px;
     padding: 12px 15px;
+    margin-bottom: 12px;
 }
 
-.alert .open-account {
+.alert .account__link {
     text-decoration: none;
     color: #000;
     font-weight: bold;
 }
 
-.alert .open-account:hover {
+.alert .account__link:hover {
     color: rgb(63, 63, 63);
 }
 

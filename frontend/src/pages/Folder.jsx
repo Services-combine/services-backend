@@ -6,9 +6,11 @@ import Error from '../components/UI/error/Error';
 import Button from '../components/UI/button/Button';
 import Loader from '../components/UI/loader/Loader';
 import Modal from '../components/UI/modal/Modal';
+import CountAccounts from '../components/CountAccounts';
 import FolderList from '../components/FolderList';
 import AccountList from '../components/AccountList';
 import ModalForm from '../components/ModalForm';
+import ModalMoveFolder from '../components/ModalMoveFolder';
 
 const Folder = () => {
     const params = useParams();
@@ -21,11 +23,11 @@ const Folder = () => {
     const [foldersHash, setFoldersHash] = useState({});
     const [isError, setIsError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
-	const [selectMove, setSelectMove] = useState('');
     const [modalCreateFolder, setModalCreateFolder] = useState(false);
     const [modalRename, setModalRename] = useState(false);
 	const [modalChat, setModalChat] = useState(false);
 	const [modalMessage, setModalMessage] = useState(false);
+	const [modalMove, setModalMove] = useState(false);
     const timeout = 3000;
 
     useEffect(() => {
@@ -37,7 +39,6 @@ const Folder = () => {
 			setIsLoading(true);
 			const response = await InvitingService.fetchDataFolder(params.folderID);
 			//console.log(response.data.pathHash)
-			//console.log(response.data.countAccounts)
 
 			if (response.data.folders != null)
 				setFolders(response.data.folders);
@@ -51,11 +52,10 @@ const Folder = () => {
 
 			setIsLoading(false);
 
-			//setCountAccounts(response.data.countAccounts);
-			//setDataFolder(response.data.folder);
-			//setFoldersMove(response.data.foldersMove);
-			//setFoldersHash(response.data.foldersHash);
-			//console.log("res", countAccounts)
+			setCountAccounts(response.data.countAccounts);
+			setDataFolder(response.data.folder);
+			setFoldersMove(response.data.foldersMove);
+			setFoldersHash(response.data.foldersHash);
 		} catch (e) {
 			setIsError('Ошибка при получении данных папки');
             setTimeout(() => {
@@ -110,6 +110,17 @@ const Folder = () => {
 		}
 	}
 
+	async function moveFolder(path) {
+		try {
+			await InvitingService.moveFolder(params.folderID, path);
+		} catch (e) {
+			setIsError('Ошибка при перемещении папки');
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
+		}
+	}
+
 	async function deleteFolder() {
 		try {
 			const response = await InvitingService.deleteFolder(params.folderID);
@@ -126,23 +137,29 @@ const Folder = () => {
 		}
 	}
 
-	const getModalData = (getData) => {
-		if (getData.mode === "createFolder") {
+	const getModalInput = (getInput) => {
+		if (getInput.mode === "createFolder") {
 			setModalCreateFolder(false);
-			createFolder(getData.text);
+			createFolder(getInput.text);
 		} 
-		else if (getData.mode === "renameFolder") {
+		else if (getInput.mode === "renameFolder") {
 			setModalRename(false);
-			renameFolder(getData.text);
+			renameFolder(getInput.text);
 		}
-        else if (getData.mode === "changeChat") {
+        else if (getInput.mode === "changeChat") {
 			setModalChat(false);
-			changeChat(getData.text);
+			changeChat(getInput.text);
 		}
-		else if (getData.mode === "changeMessage") {
+		else if (getInput.mode === "changeMessage") {
 			setModalMessage(false);
-			changeMessage(getData.text);
+			changeMessage(getInput.text);
 		}
+	}
+
+	const getModalSelect = (getSelect) => {
+		setModalMove(false);
+		//moveFolder(getSelect.path);
+		console.log(getSelect);
 	}
 
     return (
@@ -151,11 +168,9 @@ const Folder = () => {
                 <div className='path'>
                     <Link to='/inviting' className='path__item'>Главная</Link>
                 </div>
-                <div className="count-accounts">
-                    <h6><i className="fas fa-user-alt"></i> - </h6>
-                    <h6><i className="fas fa-check"></i> - </h6>
-                    <h6><i className="fas fa-info-circle"></i> - </h6>
-                </div>
+				<div className='header__btns'>
+					<CountAccounts all={countAccounts.all} clean={countAccounts.clean} block={countAccounts.block} />
+				</div>
             </div>
 
             <div className='menu btn-toolbar' role="toolbar">
@@ -180,7 +195,7 @@ const Folder = () => {
                 <Button className='btn-action' onClick={() => setModalCreateFolder(true)}><i className="fas fa-folder-plus"></i> Папка</Button>
                 <Button className='btn-action'><i className="fas fa-user-plus"></i> Аккаунт</Button>
 
-                <Button className='btn-action'><i className="fas fa-angle-double-right"></i> Переместить</Button>
+                <Button className='btn-action' onClick={() => setModalMove(true)}><i className="fas fa-angle-double-right"></i> Переместить</Button>
                 <Button className='btn-action' onClick={() => setModalRename(true)}><i className="fas fa-signature"></i> Переименовать</Button>
                 <Button className='btn-action'><i className="fas fa-random"></i> Сгенерировать</Button>
             </div>
@@ -202,19 +217,23 @@ const Folder = () => {
             }
 
 			<Modal visible={modalCreateFolder} setVisible={setModalCreateFolder}>
-                <ModalForm create={getModalData} title="Создание папки" buttonText="Создать" mode="createFolder"/>
+                <ModalForm create={getModalInput} title="Создание папки" buttonText="Создать" mode="createFolder"/>
             </Modal>
 
 			<Modal visible={modalRename} setVisible={setModalRename}>
-                <ModalForm create={getModalData} title="Переименование папки" buttonText="Сохранить" mode="renameFolder"/>
+                <ModalForm create={getModalInput} title="Переименование папки" buttonText="Сохранить" mode="renameFolder"/>
             </Modal>
 
 			<Modal visible={modalChat} setVisible={setModalChat}>
-                <ModalForm create={getModalData} title="Изменение чата" buttonText="Сохранить" mode="changeChat"/>
+                <ModalForm create={getModalInput} title="Изменение чата" buttonText="Сохранить" mode="changeChat"/>
             </Modal>
 
 			<Modal visible={modalMessage} setVisible={setModalMessage}>
-                <ModalForm create={getModalData} title="Изменение сообщения" buttonText="Сохранить" mode="changeMessage"/>
+                <ModalForm create={getModalInput} title="Изменение сообщения" buttonText="Сохранить" mode="changeMessage"/>
+            </Modal>
+
+			<Modal visible={modalMove} setVisible={setModalMove}>
+                <ModalMoveFolder create={getModalSelect} foldersMove={foldersMove} defaultPath={dataFolder.path}/>
             </Modal>
         </div>
 	);

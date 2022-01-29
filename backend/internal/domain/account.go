@@ -39,9 +39,9 @@ type AccountUpdate struct {
 }
 
 type AccountsCount struct {
-	CountAll   int `json:"count_all"`
-	CountClean int `json:"count_clean"`
-	CountBlock int `json:"count_block"`
+	All   int `json:"all"`
+	Clean int `json:"clean"`
+	Block int `json:"block"`
 }
 
 type AccountLogin struct {

@@ -29,6 +29,10 @@ export default class InvitingService {
         return $api.post(`/user/inviting/${folderID}/change-message`, {message: message})
     }
 
+    static async moveFolder(folderID, path) {
+        return $api.get(`/user/inviting/${folderID}/move`, {path: path})
+    }
+
     static async deleteFolder(folderID) {
         return $api.get(`/user/inviting/${folderID}/delete`)
     }
