@@ -1,8 +1,7 @@
 import React from 'react'
-import {Link, useNavigate, useParams} from 'react-router-dom'
+import {Link, useParams} from 'react-router-dom'
 
 const AccountItem = (props) => {
-    const navigate = useNavigate()
     const params = useParams();
     
     return (
@@ -12,7 +11,7 @@ const AccountItem = (props) => {
             </Link>
 
             <div className="actions">
-                <button className='btn btn-danger btn-delete'>
+                <button className='btn btn-danger btn-delete' onClick={() => props.remove(props.account)}>
                     <i className="fas fa-trash-alt"></i>
                 </button>
             </div>

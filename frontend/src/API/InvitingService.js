@@ -29,11 +29,39 @@ export default class InvitingService {
         return $api.post(`/user/inviting/${folderID}/change-message`, {message: message})
     }
 
+    static async changeUsernames(folderID, usernames) {
+        return $api.post(`/user/inviting/${folderID}/change-usernames`, {usernames: usernames})
+    }
+
+    static async changeGroups(folderID, groups) {
+        return $api.post(`/user/inviting/${folderID}/change-groups`, {groups: groups})
+    }
+
     static async moveFolder(folderID, path) {
         return $api.get(`/user/inviting/${folderID}/move`, {path: path})
     }
 
     static async deleteFolder(folderID) {
         return $api.get(`/user/inviting/${folderID}/delete`)
+    }
+
+    static async createAccount(folderID, name, phone) {
+        return $api.post(`/user/inviting/${folderID}/create-account`, {name: name, phone: phone})
+    }
+
+    static async fetchDataAccount(folderID, accountID) {
+        return $api.get(`/user/inviting/${folderID}/${accountID}`)
+    }
+
+    static async saveSettingsAccount(folderID, accountID, name, interval, folder) {
+        return $api.post(`/user/inviting/${folderID}/${accountID}`, {name: name, interval: interval, folder_id: folder})
+    }
+
+    static async deleteAccount(folderID, accountID) {
+        return $api.get(`/user/inviting/${folderID}/${accountID}/delete`)
+    }
+
+    static async geterateInterval(folderID) {
+        return $api.get(`/user/inviting/${folderID}/generate-interval`)
     }
 }

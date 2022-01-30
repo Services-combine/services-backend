@@ -9,8 +9,10 @@ import Modal from '../components/UI/modal/Modal';
 import CountAccounts from '../components/CountAccounts';
 import FolderList from '../components/FolderList';
 import AccountList from '../components/AccountList';
-import ModalForm from '../components/ModalForm';
-import ModalMoveFolder from '../components/ModalMoveFolder';
+import ModalFormInput from '../components/ModalFormInput';
+import ModalFormSelect from '../components/ModalFormSelect';
+import ModalFormTextarea from '../components/ModalFormTextarea';
+import ModalFormCreateAccount from '../components/ModalFormCreateAccount';
 
 const Folder = () => {
     const params = useParams();
@@ -19,6 +21,7 @@ const Folder = () => {
     const [folders, setFolders] = useState([]);
     const [countAccounts, setCountAccounts] = useState({});
     const [dataFolder, setDataFolder] = useState({});
+	const [messageText, setMessageText] = useState('');
     const [foldersMove, setFoldersMove] = useState({});
     const [foldersHash, setFoldersHash] = useState({});
     const [isError, setIsError] = useState(null);
@@ -27,18 +30,20 @@ const Folder = () => {
     const [modalRename, setModalRename] = useState(false);
 	const [modalChat, setModalChat] = useState(false);
 	const [modalMessage, setModalMessage] = useState(false);
+	const [modalUsernames, setModalUsernames] = useState(false);
+	const [modalGroups, setModalGroups] = useState(false);
 	const [modalMove, setModalMove] = useState(false);
+	const [modalCreateAccount, setModaleCreateAccount] = useState(false);
     const timeout = 3000;
 
     useEffect(() => {
         fetchDataFolder();
-    }, [params.folderID])
+    }, [params.folderID, dataFolder.message])
 
 	async function fetchDataFolder() {
 		try {
 			setIsLoading(true);
 			const response = await InvitingService.fetchDataFolder(params.folderID);
-			//console.log(response.data.pathHash)
 
 			if (response.data.folders != null)
 				setFolders(response.data.folders);
@@ -51,9 +56,10 @@ const Folder = () => {
 				setAccounts([]);
 
 			setIsLoading(false);
-
-			setCountAccounts(response.data.countAccounts);
+			
 			setDataFolder(response.data.folder);
+			setMessageText(response.data.folder.mesage);
+			setCountAccounts(response.data.countAccounts);
 			setFoldersMove(response.data.foldersMove);
 			setFoldersHash(response.data.foldersHash);
 		} catch (e) {
@@ -102,8 +108,32 @@ const Folder = () => {
 	async function changeMessage(message) {
 		try {
 			await InvitingService.addMessage(params.folderID, message);
+			setMessageText(message);
+			fetchDataFolder();
 		} catch (e) {
 			setIsError('Ошибка при изменении сообщения');
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
+		}
+	}
+
+	async function changeUsernames(usernames) {
+		try {
+			await InvitingService.changeUsernames(params.folderID, usernames.split('\n'));
+		} catch (e) {
+			setIsError('Ошибка при добавлении usernames');
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
+		}
+	}
+
+	async function changeGroups(groups) {
+		try {
+			await InvitingService.changeGroups(params.folderID, groups.split('\n'));
+		} catch (e) {
+			setIsError('Ошибка при добавлении групп');
 			setTimeout(() => {
 				setIsError(null)
 			}, timeout)
@@ -137,6 +167,42 @@ const Folder = () => {
 		}
 	}
 
+	async function createAccount(name, phone) {
+		try {
+			await InvitingService.createAccount(params.folderID, name, phone);
+			fetchDataFolder();
+		} catch (e) {
+			setIsError('Ошибка при создании аккаунта');
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
+		}
+	}
+
+	async function deleteAccount(account) {
+        try {
+			await InvitingService.deleteAccount(params.folderID, account.id);
+			fetchDataFolder();
+		} catch (e) {
+			setIsError('Ошибка при удалении аккаунта');
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
+		}
+    }
+
+	async function geterateInterval() {
+		try {
+			await InvitingService.geterateInterval(params.folderID);
+			fetchDataFolder();
+		} catch (e) {
+			setIsError('Ошибка при генерации интервалов');
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
+		}
+	}
+
 	const getModalInput = (getInput) => {
 		if (getInput.mode === "createFolder") {
 			setModalCreateFolder(false);
@@ -153,6 +219,18 @@ const Folder = () => {
 		else if (getInput.mode === "changeMessage") {
 			setModalMessage(false);
 			changeMessage(getInput.text);
+		}
+		else if (getInput.mode === "changeUsernames") {
+			setModalUsernames(false);
+			changeUsernames(getInput.text);
+		}
+		else if (getInput.mode === "changeGroups") {
+			setModalGroups(false);
+			changeGroups(getInput.text);
+		}
+		else if (getInput.mode === "createAccount") {
+			setModaleCreateAccount(false);
+			createAccount(getInput.name, getInput.phone);
 		}
 	}
 
@@ -187,17 +265,35 @@ const Folder = () => {
 					</Button>
 				}
 
-                <Button className='btn-action' onClick={() => setModalMessage(true)}><i className="fas fa-comment-dots"></i> Сообщение</Button>
-                <Button className='btn-action'><i className="fas fa-users"></i> Группы</Button>
-                <Button className='btn-action'><i className="fas fa-file-signature"></i> Username</Button>
-                <Button className='btn-action' onClick={() => setModalChat(true)}><i className="fas fa-user-friends"></i> Чат</Button>
+                <Button className='btn-action' onClick={() => setModalMessage(true)}>
+					<i className="fas fa-comment-dots"></i> Сообщение
+				</Button>
+                <Button className='btn-action' onClick={() => setModalGroups(true)}>
+					<i className="fas fa-users"></i> Группы
+				</Button>
+                <Button className='btn-action' onClick={() => setModalUsernames(true)}>
+					<i className="fas fa-file-signature"></i> Username
+				</Button>
+                <Button className='btn-action' onClick={() => setModalChat(true)}>
+					<i className="fas fa-user-friends"></i> Чат
+				</Button>
 
-                <Button className='btn-action' onClick={() => setModalCreateFolder(true)}><i className="fas fa-folder-plus"></i> Папка</Button>
-                <Button className='btn-action'><i className="fas fa-user-plus"></i> Аккаунт</Button>
+                <Button className='btn-action' onClick={() => setModalCreateFolder(true)}>
+					<i className="fas fa-folder-plus"></i> Папка
+				</Button>
+                <Button className='btn-action' onClick={() => setModaleCreateAccount(true)}>
+					<i className="fas fa-user-plus"></i> Аккаунт
+				</Button>
 
-                <Button className='btn-action' onClick={() => setModalMove(true)}><i className="fas fa-angle-double-right"></i> Переместить</Button>
-                <Button className='btn-action' onClick={() => setModalRename(true)}><i className="fas fa-signature"></i> Переименовать</Button>
-                <Button className='btn-action'><i className="fas fa-random"></i> Сгенерировать</Button>
+                <Button className='btn-action' onClick={() => setModalMove(true)}>
+					<i className="fas fa-angle-double-right"></i> Переместить
+				</Button>
+                <Button className='btn-action' onClick={() => setModalRename(true)}>
+					<i className="fas fa-signature"></i> Переименовать
+				</Button>
+                <Button className='btn-action' onClick={geterateInterval}>
+					<i className="fas fa-random"></i> Сгенерировать
+				</Button>
             </div>
 
             {isError &&
@@ -210,30 +306,42 @@ const Folder = () => {
                 <>
 					<FolderList folders={folders} />
 					{accounts.length
-						? <AccountList accounts={accounts} />
+						? <AccountList remove={deleteAccount} accounts={accounts} />
 						: <h4 className='notification'>У вас пока нет аккаунтов</h4>
 					}
                 </>
             }
 
 			<Modal visible={modalCreateFolder} setVisible={setModalCreateFolder}>
-                <ModalForm create={getModalInput} title="Создание папки" buttonText="Создать" mode="createFolder"/>
+                <ModalFormInput create={getModalInput} title="Создание папки" buttonText="Создать" mode="createFolder"/>
             </Modal>
 
 			<Modal visible={modalRename} setVisible={setModalRename}>
-                <ModalForm create={getModalInput} title="Переименование папки" buttonText="Сохранить" mode="renameFolder"/>
+                <ModalFormInput create={getModalInput} title="Переименование папки" buttonText="Сохранить" mode="renameFolder" defaultData={dataFolder.name}/>
             </Modal>
 
 			<Modal visible={modalChat} setVisible={setModalChat}>
-                <ModalForm create={getModalInput} title="Изменение чата" buttonText="Сохранить" mode="changeChat"/>
+                <ModalFormInput create={getModalInput} title="Изменение чата" buttonText="Сохранить" mode="changeChat" defaultData={dataFolder.chat}/>
             </Modal>
 
 			<Modal visible={modalMessage} setVisible={setModalMessage}>
-                <ModalForm create={getModalInput} title="Изменение сообщения" buttonText="Сохранить" mode="changeMessage"/>
+                <ModalFormTextarea create={getModalInput} title="Изменение сообщения" buttonText="Сохранить" mode="changeMessage" placeholderText="Введите сообщение" defaultData={messageText}/>
+            </Modal>
+
+			<Modal visible={modalUsernames} setVisible={setModalUsernames}>
+                <ModalFormTextarea create={getModalInput} title="Добавление usernames" buttonText="Сохранить" mode="changeUsernames" placeholderText="Введите пользователей"/>
+            </Modal>
+
+			<Modal visible={modalGroups} setVisible={setModalGroups}>
+                <ModalFormTextarea create={getModalInput} title="Добавление групп" buttonText="Сохранить" mode="changeGroups" placeholderText="Введите группы"/>
             </Modal>
 
 			<Modal visible={modalMove} setVisible={setModalMove}>
-                <ModalMoveFolder create={getModalSelect} foldersMove={foldersMove} defaultPath={dataFolder.path}/>
+                <ModalFormSelect create={getModalSelect} foldersMove={foldersMove} defaultPath={dataFolder.path}/>
+            </Modal>
+
+			<Modal visible={modalCreateAccount} setVisible={setModaleCreateAccount}>
+                <ModalFormCreateAccount create={getModalInput} mode="createAccount"/>
             </Modal>
         </div>
 	);

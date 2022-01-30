@@ -1,0 +1,53 @@
+.header .header__left {
+    display: inline-block;
+    margin-top: 2px;
+}
+
+.header .again {
+    color: #dedede;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.header .title {
+    color: #dedede;
+    font-size: 25px;
+    font-weight: bold;
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.header .header__btns {
+    display: block;
+    float: right;
+}
+
+.header .header__btns Button {
+    margin: 0 5px;
+}
+
+.settings-accounts {
+    margin: 0 auto;
+    margin-top: 60px;
+    width: 380px;
+    padding: 10px 25px 25px 25px;
+    border-radius: 10px;
+    background-color: #4b4b4b;
+}
+
+.settings-accounts .title {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.settings-accounts .interval {
+    display: flex;
+    align-items: center;
+}
+
+.interval Button {
+    background: rgb(50, 189, 147);
+    color: #dedede;
+    display: block;
+    margin-left: 10px;
+}

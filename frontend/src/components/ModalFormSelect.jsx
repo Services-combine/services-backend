@@ -3,7 +3,7 @@ import '../styles/Inviting.css';
 import Button from './UI/button/Button';
 import Select from './UI/select/Select';
 
-const ModalForm = ({create, foldersMove, defaultPath}) => {
+const ModalFormSelect = ({create, foldersMove, defaultPath}) => {
     const [path, setPath] = useState('');
 
     const addInputSelect = (e) => {
@@ -34,4 +34,4 @@ const ModalForm = ({create, foldersMove, defaultPath}) => {
 	);
 }
 
-export default ModalForm;
+export default ModalFormSelect;

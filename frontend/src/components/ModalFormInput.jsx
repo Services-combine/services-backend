@@ -3,7 +3,7 @@ import '../styles/Inviting.css';
 import Input from './UI/input/Input';
 import Button from './UI/button/Button';
 
-const ModalForm = ({create, mode, title, buttonText}) => {
+const ModalFormInput = ({create, mode, title, buttonText, defaultData}) => {
     const [text, setText] = useState('');
 
     const addInputText = (e) => {
@@ -30,4 +30,4 @@ const ModalForm = ({create, mode, title, buttonText}) => {
 	);
 }
 
-export default ModalForm;
+export default ModalFormInput;

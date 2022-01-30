@@ -52,9 +52,7 @@ func (h *Handler) OpenAccount(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"accountSettings": accountSettings,
-	})
+	c.JSON(http.StatusOK, accountSettings)
 }
 
 func (h *Handler) UpdateAccount(c *gin.Context) {

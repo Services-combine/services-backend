@@ -6,7 +6,7 @@ import Error from '../components/UI/error/Error';
 import Button from '../components/UI/button/Button';
 import Modal from '../components/UI/modal/Modal';
 import Loader from '../components/UI/loader/Loader';
-import ModalForm from '../components/ModalForm';
+import ModalFormInput from '../components/ModalFormInput';
 import FolderList from '../components/FolderList';
 //import CountAccounts from '../components/CountAccounts';
 
@@ -26,7 +26,8 @@ const Inviting = () => {
         try {
             setIsLoading(true);
             const response = await InvitingService.fetchFolders();
-            setFolders(response.data);
+            if (response.data !== null)
+                setFolders(response.data);
             setIsLoading(false);
         } catch (e) {
             setIsError('Ошибка при получении папок');
@@ -80,7 +81,7 @@ const Inviting = () => {
             }
 
             <Modal visible={modal} setVisible={setModal}>
-                <ModalForm create={getModalData} title="Создание папки" buttonText="Создать" mode="createFolder"/>
+                <ModalFormInput create={getModalData} title="Создание папки" buttonText="Создать" mode="createFolder"/>
             </Modal>
         </div>
 	);
