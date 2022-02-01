@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/korpgoodness/service.git/internal/domain"
@@ -65,6 +66,8 @@ func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.Obje
 	if err != nil {
 		return map[string]interface{}{}, err
 	}
+	folder.UsernameStr = strings.Join(folder.Usernames, "\n")
+	folder.GroupsStr = strings.Join(folder.Groups, "\n")
 	folderData["folder"] = folder
 
 	accounts, err := s.repo.GetAccountByFolderID(ctx, folderID)

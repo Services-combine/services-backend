@@ -22,7 +22,6 @@ const Folder = () => {
     const [folders, setFolders] = useState([]);
     const [countAccounts, setCountAccounts] = useState({});
     const [dataFolder, setDataFolder] = useState({});
-	const [messageText, setMessageText] = useState('');
     const [foldersMove, setFoldersMove] = useState({});
     const [foldersHash, setFoldersHash] = useState({});
     const [isError, setIsError] = useState(null);
@@ -40,7 +39,6 @@ const Folder = () => {
 
     useEffect(() => {
         fetchDataFolder();
-		setMessageText(dataFolder.message);
     }, [params.folderID])
 
 	async function fetchDataFolder() {
@@ -111,7 +109,6 @@ const Folder = () => {
 	async function changeMessage(message) {
 		try {
 			await InvitingService.addMessage(params.folderID, message);
-			setMessageText(message);
 			fetchDataFolder();
 		} catch (e) {
 			setIsError('Ошибка при изменении сообщения');
@@ -327,28 +324,63 @@ const Folder = () => {
                 <ModalFormInput create={getModalInput} title="Создание папки" buttonText="Создать" mode="createFolder"/>
             </Modal>
 
-			<Modal visible={modalRename} setVisible={setModalRename}>
-                <ModalFormInput create={getModalInput} title="Переименование папки" buttonText="Сохранить" mode="renameFolder" defaultData={dataFolder.name}/>
-            </Modal>
+			{dataFolder.name
+				?
+				<Modal visible={modalRename} setVisible={setModalRename}>
+					<ModalFormInput create={getModalInput} title="Переименование папки" buttonText="Сохранить" mode="renameFolder" defaultData={dataFolder.name}/>
+				</Modal>
+				:
+				<Modal visible={modalRename} setVisible={setModalRename}>
+					<ModalFormInput create={getModalInput} title="Переименование папки" buttonText="Сохранить" mode="renameFolder" defaultData=""/>
+				</Modal>
+			}
 
-			<Modal visible={modalChat} setVisible={setModalChat}>
-                <ModalFormInput create={getModalInput} title="Изменение чата" buttonText="Сохранить" mode="changeChat" defaultData={dataFolder.chat}/>
-            </Modal>
+			{dataFolder.chat
+				?
+				<Modal visible={modalChat} setVisible={setModalChat}>
+					<ModalFormInput create={getModalInput} title="Изменение чата" buttonText="Сохранить" mode="changeChat" defaultData={dataFolder.chat}/>
+				</Modal>
+				:
+				<Modal visible={modalChat} setVisible={setModalChat}>
+					<ModalFormInput create={getModalInput} title="Изменение чата" buttonText="Сохранить" mode="changeChat" defaultData=""/>
+				</Modal>
+			}
 
-			<Modal visible={modalMessage} setVisible={setModalMessage}>
-                <ModalFormTextarea create={getModalInput} title="Изменение сообщения" buttonText="Сохранить" mode="changeMessage" placeholderText="Введите сообщение" defaultData={messageText}/>
-            </Modal>
+			{dataFolder.message
+				?
+				<Modal visible={modalMessage} setVisible={setModalMessage}>
+					<ModalFormTextarea create={getModalInput} title="Изменение сообщения" buttonText="Сохранить" mode="changeMessage" placeholderText="Введите сообщение" defaultData={dataFolder.message}/>
+				</Modal>
+				:
+				<Modal visible={modalMessage} setVisible={setModalMessage}>
+					<ModalFormTextarea create={getModalInput} title="Изменение сообщения" buttonText="Сохранить" mode="changeMessage" placeholderText="Введите сообщение" defaultData=""/>
+				</Modal>
+			}
 
-			<Modal visible={modalUsernames} setVisible={setModalUsernames}>
-                <ModalFormTextarea create={getModalInput} title="Добавление usernames" buttonText="Сохранить" mode="changeUsernames" placeholderText="Введите пользователей"/>
-            </Modal>
+			{dataFolder.usernames
+				?
+				<Modal visible={modalUsernames} setVisible={setModalUsernames}>
+                	<ModalFormTextarea create={getModalInput} title="Добавление usernames" buttonText="Сохранить" mode="changeUsernames" placeholderText="Введите пользователей" defaultData={dataFolder.usernames_str}/>
+            	</Modal>
+				:
+				<Modal visible={modalUsernames} setVisible={setModalUsernames}>
+                	<ModalFormTextarea create={getModalInput} title="Добавление usernames" buttonText="Сохранить" mode="changeUsernames" placeholderText="Введите пользователей" defaultData=""/>
+            	</Modal>
+			}
 
-			<Modal visible={modalGroups} setVisible={setModalGroups}>
-                <ModalFormTextarea create={getModalInput} title="Добавление групп" buttonText="Сохранить" mode="changeGroups" placeholderText="Введите группы"/>
-            </Modal>
+			{dataFolder.groups
+				? 
+				<Modal visible={modalGroups} setVisible={setModalGroups}>
+					<ModalFormTextarea create={getModalInput} title="Добавление групп" buttonText="Сохранить" mode="changeGroups" placeholderText="Введите группы" defaultData={dataFolder.groups}/>
+				</Modal>
+				:
+				<Modal visible={modalGroups} setVisible={setModalGroups}>
+					<ModalFormTextarea create={getModalInput} title="Добавление групп" buttonText="Сохранить" mode="changeGroups" placeholderText="Введите группы" defaultData=""/>
+				</Modal>
+			}
 
 			<Modal visible={modalMove} setVisible={setModalMove}>
-                <ModalFormSelect create={getModalSelect} foldersMove={foldersMove} defaultValue={dataFolder.path} defaultName={dataFolder.name_path}/>
+                <ModalFormSelect create={getModalSelect} optionsData={foldersMove} defaultName={dataFolder.name_path}/>
             </Modal>
 
 			<Modal visible={modalCreateAccount} setVisible={setModaleCreateAccount}>

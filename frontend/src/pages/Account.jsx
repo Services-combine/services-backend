@@ -27,9 +27,9 @@ const Folder = () => {
 			setIsLoading(true);
 			const response = await InvitingService.fetchDataAccount(params.folderID, params.accountID);
             setAccount(response.data);
-            setName(account.name);
-            setInterval(account.interval);
-            setFolder(account.folder_id);
+            setName(response.data.name);
+            setInterval(response.data.interval);
+            setFolder(response.data.folder_id);
 
 			setIsLoading(false);
 		} catch (e) {
@@ -48,9 +48,11 @@ const Folder = () => {
         setInterval(rand);
     }
 
-    async function saveSettings() {
+    async function saveSettings(e) {
         try {
+            e.preventDefault();
 			await InvitingService.saveSettingsAccount(params.folderID, params.accountID, name, interval, folder);
+            fetchDataAccount();
 		} catch (e) {
 			setIsError('Ошибка при сохранении настроек');
 			setTimeout(() => {
@@ -73,15 +75,11 @@ const Folder = () => {
 				</div>
             </div>
 
-            {isError &&
-                <Error>{isError}</Error>
-            }
-
             {isLoading
                 ? <div style={{display: "flex", justifyContent: "center", marginTop: 50}}><Loader/></div>
                 :
                 <>
-					<form className='settings-accounts'>
+                    <form className='settings-accounts'>
                         <h6 className="title">Название аккаунта</h6>
                         <Input 
                             value={name}
@@ -113,6 +111,10 @@ const Folder = () => {
                         </Button>
                     </form>
                 </>
+            }
+
+            {isError &&
+                <Error>{isError}</Error>
             }
         </div>
 	);

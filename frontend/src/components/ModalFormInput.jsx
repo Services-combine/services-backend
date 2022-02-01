@@ -1,10 +1,16 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import '../styles/Inviting.css';
 import Input from './UI/input/Input';
 import Button from './UI/button/Button';
 
 const ModalFormInput = ({create, mode, title, buttonText, defaultData}) => {
     const [text, setText] = useState('');
+
+    useEffect(() => {
+        if (defaultData !== undefined) {
+            setText(defaultData);
+        }
+    }, [defaultData])
 
     const addInputText = (e) => {
 		e.preventDefault()

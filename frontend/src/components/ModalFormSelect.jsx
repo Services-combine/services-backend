@@ -3,7 +3,7 @@ import '../styles/Inviting.css';
 import Button from './UI/button/Button';
 import Select from './UI/select/Select';
 
-const ModalFormSelect = ({create, foldersMove, defaultName}) => {
+const ModalFormSelect = ({create, optionsData, defaultName}) => {
     const [path, setPath] = useState('');
     //console.log(foldersMove)
 

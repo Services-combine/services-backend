@@ -1,13 +1,16 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import '../styles/Inviting.css';
 import Button from './UI/button/Button';
 import Textarea from './UI/textarea/Textarea';
 
 const ModalFormTextarea = ({create, mode, title, buttonText, placeholderText, defaultData}) => {
     const [text, setText] = useState('');
-    if (defaultData !== undefined && text === '' && defaultData !== '' && defaultData !== text) {
-        setText(defaultData);
-    }
+
+    useEffect(() => {
+        if (defaultData !== undefined) {
+            setText(defaultData);
+        }
+    }, [defaultData])
 
     const addTextareaText = (e) => {
 		e.preventDefault()
