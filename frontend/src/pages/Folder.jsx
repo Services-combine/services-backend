@@ -97,7 +97,7 @@ const Folder = () => {
 	async function changeChat(chatName) {
 		try {
 			await InvitingService.changeChat(params.folderID, chatName);
-			fetchDataFolder();
+			dataFolder.chat = chatName;
 		} catch (e) {
 			setIsError('Ошибка при изменении чата');
 			setTimeout(() => {
@@ -109,7 +109,7 @@ const Folder = () => {
 	async function changeMessage(message) {
 		try {
 			await InvitingService.addMessage(params.folderID, message);
-			fetchDataFolder();
+			dataFolder.message = message;
 		} catch (e) {
 			setIsError('Ошибка при изменении сообщения');
 			setTimeout(() => {
@@ -120,8 +120,9 @@ const Folder = () => {
 
 	async function changeUsernames(usernames) {
 		try {
-			await InvitingService.changeUsernames(params.folderID, usernames.split('\n'));
-			fetchDataFolder();
+			const noDupUsernames = new Set(usernames.split("\n"));
+			await InvitingService.changeUsernames(params.folderID, [...noDupUsernames]);
+			dataFolder.usernames = [...noDupUsernames];
 		} catch (e) {
 			setIsError('Ошибка при добавлении usernames');
 			setTimeout(() => {
@@ -132,8 +133,9 @@ const Folder = () => {
 
 	async function changeGroups(groups) {
 		try {
-			await InvitingService.changeGroups(params.folderID, groups.split('\n'));
-			fetchDataFolder();
+			const noDupGroups = new Set(groups.split("\n"));
+			await InvitingService.changeGroups(params.folderID, [...noDupGroups]);
+			dataFolder.groups = [...noDupGroups];
 		} catch (e) {
 			setIsError('Ошибка при добавлении групп');
 			setTimeout(() => {
@@ -360,7 +362,7 @@ const Folder = () => {
 			{dataFolder.usernames
 				?
 				<Modal visible={modalUsernames} setVisible={setModalUsernames}>
-                	<ModalFormTextarea create={getModalInput} title="Добавление usernames" buttonText="Сохранить" mode="changeUsernames" placeholderText="Введите пользователей" defaultData={dataFolder.usernames_str}/>
+                	<ModalFormTextarea create={getModalInput} title="Добавление usernames" buttonText="Сохранить" mode="changeUsernames" placeholderText="Введите пользователей" defaultData={dataFolder.usernames}/>
             	</Modal>
 				:
 				<Modal visible={modalUsernames} setVisible={setModalUsernames}>

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/korpgoodness/service.git/internal/domain"
@@ -15,6 +16,9 @@ func (h *Handler) CreateAccount(c *gin.Context) {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
+	phoneNew := strings.Replace(accountCreate.Phone, "+", "", 1)
+	phoneNew = strings.Replace(phoneNew, "-", "", -1)
+	accountCreate.Phone = phoneNew
 
 	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
 	if err != nil {
