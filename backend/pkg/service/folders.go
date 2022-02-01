@@ -95,7 +95,6 @@ func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.Obje
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(pathHash)
 	folderData["pathHash"] = pathHash
 
 	return folderData, nil
@@ -171,6 +170,7 @@ func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path strin
 	if _, found := foldersMove["/"]; !found {
 		foldersMove["/"] = "/"
 	}
+	//buf, err := json.Marshal(foldersMove)
 
 	return foldersMove, nil
 }

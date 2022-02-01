@@ -3,12 +3,12 @@ import '../styles/Inviting.css';
 import Button from './UI/button/Button';
 import Select from './UI/select/Select';
 
-const ModalFormSelect = ({create, foldersMove, defaultPath}) => {
+const ModalFormSelect = ({create, foldersMove, defaultName}) => {
     const [path, setPath] = useState('');
+    //console.log(foldersMove)
 
     const addInputSelect = (e) => {
 		e.preventDefault()
-        console.log(defaultPath)
 
 		const newSelect = {
             path, id: Date.now()
@@ -18,12 +18,12 @@ const ModalFormSelect = ({create, foldersMove, defaultPath}) => {
 	}
 
     return (
-        <form>
+        <form>            
             <h5>Перемещение папки</h5>
             <Select
-                defaultValue="Name 0"
+                defaultName={defaultName}
                 options={[
-                    {value: "Value 1", name: "Name 1"},
+                    {value: "/", name: "/"},
                     {value: "Value 2", name: "Name 2"}
                 ]}
                 value={path} 

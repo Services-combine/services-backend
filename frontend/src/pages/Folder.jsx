@@ -13,6 +13,7 @@ import ModalFormInput from '../components/ModalFormInput';
 import ModalFormSelect from '../components/ModalFormSelect';
 import ModalFormTextarea from '../components/ModalFormTextarea';
 import ModalFormCreateAccount from '../components/ModalFormCreateAccount';
+import ModalLaunch from '../components/ModalLaunch';
 
 const Folder = () => {
     const params = useParams();
@@ -34,17 +35,19 @@ const Folder = () => {
 	const [modalGroups, setModalGroups] = useState(false);
 	const [modalMove, setModalMove] = useState(false);
 	const [modalCreateAccount, setModaleCreateAccount] = useState(false);
+	const [modalLaunch, setModalLaunch] = useState(false);
     const timeout = 3000;
 
     useEffect(() => {
         fetchDataFolder();
-    }, [params.folderID, dataFolder.message])
+		setMessageText(dataFolder.message);
+    }, [params.folderID])
 
 	async function fetchDataFolder() {
 		try {
 			setIsLoading(true);
 			const response = await InvitingService.fetchDataFolder(params.folderID);
-
+			
 			if (response.data.folders != null)
 				setFolders(response.data.folders);
 			else
@@ -54,14 +57,13 @@ const Folder = () => {
 				setAccounts(response.data.accounts);
 			else
 				setAccounts([]);
-
-			setIsLoading(false);
 			
 			setDataFolder(response.data.folder);
-			setMessageText(response.data.folder.mesage);
 			setCountAccounts(response.data.countAccounts);
 			setFoldersMove(response.data.foldersMove);
 			setFoldersHash(response.data.foldersHash);
+
+			setIsLoading(false);
 		} catch (e) {
 			setIsError('Ошибка при получении данных папки');
             setTimeout(() => {
@@ -97,6 +99,7 @@ const Folder = () => {
 	async function changeChat(chatName) {
 		try {
 			await InvitingService.changeChat(params.folderID, chatName);
+			fetchDataFolder();
 		} catch (e) {
 			setIsError('Ошибка при изменении чата');
 			setTimeout(() => {
@@ -121,6 +124,7 @@ const Folder = () => {
 	async function changeUsernames(usernames) {
 		try {
 			await InvitingService.changeUsernames(params.folderID, usernames.split('\n'));
+			fetchDataFolder();
 		} catch (e) {
 			setIsError('Ошибка при добавлении usernames');
 			setTimeout(() => {
@@ -132,6 +136,7 @@ const Folder = () => {
 	async function changeGroups(groups) {
 		try {
 			await InvitingService.changeGroups(params.folderID, groups.split('\n'));
+			fetchDataFolder();
 		} catch (e) {
 			setIsError('Ошибка при добавлении групп');
 			setTimeout(() => {
@@ -143,6 +148,7 @@ const Folder = () => {
 	async function moveFolder(path) {
 		try {
 			await InvitingService.moveFolder(params.folderID, path);
+			fetchDataFolder();
 		} catch (e) {
 			setIsError('Ошибка при перемещении папки');
 			setTimeout(() => {
@@ -236,8 +242,13 @@ const Folder = () => {
 
 	const getModalSelect = (getSelect) => {
 		setModalMove(false);
-		//moveFolder(getSelect.path);
-		console.log(getSelect);
+		if (getSelect.path !== "")
+			moveFolder(getSelect.path);
+	}
+
+	const getModalLaunch = () => {
+		setModalLaunch(false);
+		fetchDataFolder();
 	}
 
     return (
@@ -260,7 +271,7 @@ const Folder = () => {
 				}
 
 				{accounts.length !== 0 &&
-					<Button className="btn-action">
+					<Button className="btn-action" onClick={() => setModalLaunch(true)}>
 						<i className="fas fa-play"></i> Запустить
 					</Button>
 				}
@@ -337,11 +348,15 @@ const Folder = () => {
             </Modal>
 
 			<Modal visible={modalMove} setVisible={setModalMove}>
-                <ModalFormSelect create={getModalSelect} foldersMove={foldersMove} defaultPath={dataFolder.path}/>
+                <ModalFormSelect create={getModalSelect} foldersMove={foldersMove} defaultValue={dataFolder.path} defaultName={dataFolder.name_path}/>
             </Modal>
 
 			<Modal visible={modalCreateAccount} setVisible={setModaleCreateAccount}>
                 <ModalFormCreateAccount create={getModalInput} mode="createAccount"/>
+            </Modal>
+
+			<Modal visible={modalLaunch} setVisible={setModalLaunch}>
+                <ModalLaunch create={getModalLaunch}/>
             </Modal>
         </div>
 	);

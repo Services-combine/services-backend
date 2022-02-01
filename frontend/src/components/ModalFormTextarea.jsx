@@ -6,7 +6,6 @@ import Textarea from './UI/textarea/Textarea';
 const ModalFormTextarea = ({create, mode, title, buttonText, placeholderText, defaultData}) => {
     const [text, setText] = useState('');
     if (defaultData !== undefined && text === '' && defaultData !== '' && defaultData !== text) {
-        console.log(defaultData);
         setText(defaultData);
     }
 

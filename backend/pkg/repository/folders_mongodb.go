@@ -40,9 +40,30 @@ func (s *FoldersRepo) Create(ctx context.Context, folder domain.Folder) error {
 
 func (s *FoldersRepo) GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error) {
 	var folder domain.Folder
+	var folderPath domain.Folder
 
 	err := s.db.FindOne(ctx, bson.M{"_id": folderID}).Decode(&folder)
-	return folder, err
+	if err != nil {
+		return domain.Folder{}, err
+	}
+
+	if folder.Path != "/" {
+		folderPathObjectID, err := primitive.ObjectIDFromHex(folder.Path)
+		if err != nil {
+			return domain.Folder{}, err
+		}
+
+		err = s.db.FindOne(ctx, bson.M{"_id": folderPathObjectID}).Decode(&folderPath)
+		if err != nil {
+			return domain.Folder{}, err
+		}
+
+		folder.NamePath = folderPath.Name
+	} else {
+		folder.NamePath = "/"
+	}
+
+	return folder, nil
 }
 
 func (s *FoldersRepo) GetFolders(ctx context.Context) ([]domain.Folder, error) {

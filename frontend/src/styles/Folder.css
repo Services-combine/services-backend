@@ -68,3 +68,11 @@
     padding: 4px 11px;
     margin-right: 10px;
 }
+
+.launch__btns {
+    max-width: 310px;
+}
+
+.launch__btns Button {
+    margin: 5px;
+}

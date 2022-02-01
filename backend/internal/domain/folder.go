@@ -6,6 +6,7 @@ type Folder struct {
 	ID                primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Name              string             `json:"name" binding:"required"`
 	Path              string             `json:"path"`
+	NamePath          string             `json:"name_path"`
 	Chat              string             `json:"chat"`
 	Usernames         []string           `json:"usernames"`
 	Message           string             `json:"message"`

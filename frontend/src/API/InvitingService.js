@@ -38,7 +38,19 @@ export default class InvitingService {
     }
 
     static async moveFolder(folderID, path) {
-        return $api.get(`/user/inviting/${folderID}/move`, {path: path})
+        return $api.post(`/user/inviting/${folderID}/move`, {path: path})
+    }
+
+    static async launchInviting(folderID) {
+        return $api.get(`/user/inviting/${folderID}/launch-inviting`)
+    }
+
+    static async launchMailingUsernames(folderID) {
+        return $api.get(`/user/inviting/${folderID}/launch-mailing-usernames`)
+    }
+
+    static async launchMailingGroups(folderID) {
+        return $api.get(`/user/inviting/${folderID}/launch-mailing-groups`)
     }
 
     static async deleteFolder(folderID) {
