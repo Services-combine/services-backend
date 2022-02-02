@@ -69,6 +69,14 @@
     margin-right: 10px;
 }
 
+.alert .actions .status-launch {
+    color: rgb(81, 133, 211);
+    float: right;
+    padding-top: 5px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
 .launch__btns {
     max-width: 310px;
 }

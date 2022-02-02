@@ -1,11 +1,22 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import '../styles/Inviting.css';
 import Button from './UI/button/Button';
 import Select from './UI/select/Select';
 
 const ModalFormSelect = ({create, optionsData, defaultName}) => {
     const [path, setPath] = useState('');
-    //console.log(foldersMove)
+    const [listOptions, setListOptions] = useState([]);
+
+    useEffect(() => {
+        if (Object.keys(optionsData).length !== 0) {
+            //console.log(listOptions);
+            for (var option in optionsData) {
+                //console.log(option, optionsData[option]);
+                setListOptions([...listOptions, {"value": optionsData[option], "name": option}])
+            }
+            //console.log(listOptions, optionsData);
+        }
+    }, [optionsData])
 
     const addInputSelect = (e) => {
 		e.preventDefault()
@@ -21,11 +32,8 @@ const ModalFormSelect = ({create, optionsData, defaultName}) => {
         <form>            
             <h5>Перемещение папки</h5>
             <Select
-                defaultName={defaultName}
-                options={[
-                    {value: "/", name: "/"},
-                    {value: "Value 2", name: "Name 2"}
-                ]}
+                defaultName="Выберите папку"
+                options={listOptions}
                 value={path} 
                 onChange={folder => setPath(folder)}
             />

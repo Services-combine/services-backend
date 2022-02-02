@@ -6,6 +6,7 @@ import Error from '../components/UI/error/Error';
 import Button from '../components/UI/button/Button';
 import Loader from '../components/UI/loader/Loader';
 import Input from '../components/UI/input/Input';
+import Select from '../components/UI/select/Select';
 
 const Folder = () => {
     const params = useParams();
@@ -13,6 +14,7 @@ const Folder = () => {
     const [account, setAccount] = useState({});
     const [name, setName] = useState('');
     const [interval, setInterval] = useState(0);
+    const [foldersMove, setFoldersMove] = useState([]);
     const [folder, setFolder] = useState('');
     const [isError, setIsError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -27,9 +29,15 @@ const Folder = () => {
 			setIsLoading(true);
 			const response = await InvitingService.fetchDataAccount(params.folderID, params.accountID);
             setAccount(response.data);
+            console.log(response.data);
             setName(response.data.name);
             setInterval(response.data.interval);
             setFolder(response.data.folder_id);
+            
+            for (var folderM in response.data.folders_move) {
+                console.log(folderM, response.data.folders_move[folderM]);
+                setFoldersMove([...foldersMove, {"value": response.data.folders_move[folderM], "name": folderM}])
+            }
 
 			setIsLoading(false);
 		} catch (e) {
@@ -105,6 +113,13 @@ const Folder = () => {
                         </div>
 
                         <h6 className="title">Папка</h6>
+
+                        <Select
+                            defaultName="Выберите папку"
+                            options={foldersMove}
+                            value={folder} 
+                            onChange={folder => setFolder(folder)}
+                        />
 
                         <Button onClick={saveSettings}>
                             Сохранить

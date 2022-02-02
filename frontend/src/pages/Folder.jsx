@@ -241,6 +241,7 @@ const Folder = () => {
 
 	const getModalSelect = (getSelect) => {
 		setModalMove(false);
+		console.log(getSelect);
 		if (getSelect.path !== "")
 			moveFolder(getSelect.path);
 	}
@@ -381,9 +382,12 @@ const Folder = () => {
 				</Modal>
 			}
 
-			<Modal visible={modalMove} setVisible={setModalMove}>
-                <ModalFormSelect create={getModalSelect} optionsData={foldersMove} defaultName={dataFolder.name_path}/>
-            </Modal>
+			{dataFolder.name_path &&
+				Object.keys(foldersMove).length !== 0 &&
+					<Modal visible={modalMove} setVisible={setModalMove}>
+						<ModalFormSelect create={getModalSelect} optionsData={foldersMove} defaultName={dataFolder.name_path}/>
+					</Modal>
+			}
 
 			<Modal visible={modalCreateAccount} setVisible={setModaleCreateAccount}>
                 <ModalFormCreateAccount create={getModalInput} mode="createAccount"/>

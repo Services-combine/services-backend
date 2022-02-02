@@ -170,7 +170,6 @@ func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path strin
 	if _, found := foldersMove["/"]; !found {
 		foldersMove["/"] = "/"
 	}
-	//buf, err := json.Marshal(foldersMove)
 
 	return foldersMove, nil
 }
