@@ -16,6 +16,11 @@ type Folder struct {
 	Mailing_groups    bool               `json:"mailing_groups"`
 }
 
+type FolderMainPage struct {
+	ID                primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Name              string             `json:"name" binding:"required"`
+}
+
 type FolderMove struct {
 	Path string `json:"path" binding:"required"`
 }

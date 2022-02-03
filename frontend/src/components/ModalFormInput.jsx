@@ -31,6 +31,7 @@ const ModalFormInput = ({create, mode, title, buttonText, defaultData}) => {
                 type='text' 
                 placeholder='Введите название' 
             />
+            <br/>
             <Button onClick={addInputText}>{buttonText}</Button>
         </form>
 	);

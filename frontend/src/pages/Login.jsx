@@ -17,7 +17,7 @@ const Login = () => {
             <div className='login'>
                 <div className="form-login">
                     <h3>Аутентификация</h3>
-                    <div className="form-input">
+                    <div className="form-input-auth">
                         <Input onChange={e => setUsername(e.target.value)} type='text' placeholder='Введите логин' />
                         <Input onChange={e => setPassword(e.target.value)} type='password' placeholder='Введите пароль' />
                     </div>

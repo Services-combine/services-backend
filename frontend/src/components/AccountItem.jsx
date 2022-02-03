@@ -26,12 +26,22 @@ const AccountItem = (props) => {
                 </Link>
 
                 <div className="actions">
-                    <button className='btn btn-danger btn-delete' onClick={() => setModalDelete(true)}>
-                        <i className="fas fa-trash-alt"></i>
-                    </button>
-                    {props.account.launch &&
-                        <h6 className="status-launch">&bull;</h6>
-                    }
+                    <div className='actions__btns'>
+                        <button className='btn btn-danger btn-delete' onClick={() => setModalDelete(true)}>
+                            <i className="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+
+                    <div className='actions__status'>
+                        {props.account.status_block === "clean"
+                            ? <h6 className="status-block no-block"><i className="fas fa-check"></i></h6>
+                            : <h6 className="status-block info-block" unblocking={props.account.status_block}><i className="fas fa-info-circle"></i></h6>
+                        }
+
+                        {props.account.launch &&
+                            <h6 className="status-launch">&bull;</h6>
+                        }
+                    </div>
                 </div>
             </div>
 

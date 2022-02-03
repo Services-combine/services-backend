@@ -27,12 +27,14 @@ const ModalFormCreateAccount = ({create, mode}) => {
                 type='text' 
                 placeholder='Введите название' 
             />
+            <br/>
             <Input 
                 value={phone} 
                 onChange={e => setPhone(e.target.value)}
                 type='text' 
                 placeholder='Введите номер телефона' 
             />
+            <br/>
             <Button onClick={addInputText}>Создать</Button>
         </form>
 	);

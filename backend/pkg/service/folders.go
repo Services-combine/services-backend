@@ -39,6 +39,24 @@ func GenerateHash() string {
 	return string(random_hash)
 }
 
+func (s *FoldersService) GetDataMainPage(ctx context.Context) (map[string]interface{}, error) {
+	dataPage := map[string]interface{}{}
+
+	folders, err := s.repo.GetFoldersMainPage(ctx)
+	if err != nil {
+		return nil, err
+	}
+	dataPage["folders"] = folders
+
+	countAccounts, err := s.repo.GetCountAllAccount(ctx)
+	if err != nil {
+		return nil, err
+	}
+	dataPage["countAccounts"] = countAccounts
+
+	return dataPage, nil
+}
+
 func (s *FoldersService) Get(ctx context.Context, path string) ([]domain.Folder, error) {
 	folders, err := s.repo.Get(ctx, path)
 	return folders, err

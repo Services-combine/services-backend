@@ -26,9 +26,6 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	//c.SetCookie("refreshToken", res.RefreshToken, 30*24*60*60*1000, "/", "localhost", true, true)
-	//cookie, err := c.Cookie("refreshToken")
-
 	http.SetCookie(c.Writer, &http.Cookie{
 		Name:     "refreshToken",
 		Value:    res.RefreshToken,
@@ -39,7 +36,6 @@ func (h *Handler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"accessToken": res.AccessToken,
 		//"refreshToken": res.RefreshToken,
-		//"userID":       res.UserID,
 	})
 }
 
@@ -71,7 +67,6 @@ func (h *Handler) Refresh(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"accessToken": res.AccessToken,
 		//"refreshToken": res.RefreshToken,
-		//"userID":       res.UserID,
 	})
 }
 

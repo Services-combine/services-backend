@@ -66,7 +66,6 @@ func (s *AuthService) CreateSession(ctx context.Context, userId primitive.Object
 		err error
 	)
 
-	res.UserID = userId.Hex()
 	res.AccessToken, err = NewJWT(userId.Hex(), accessTokenTTL)
 	if err != nil {
 		return res, err

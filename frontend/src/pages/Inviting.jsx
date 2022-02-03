@@ -8,14 +8,16 @@ import Modal from '../components/UI/modal/Modal';
 import Loader from '../components/UI/loader/Loader';
 import ModalFormInput from '../components/ModalFormInput';
 import FolderList from '../components/FolderList';
-//import CountAccounts from '../components/CountAccounts';
+import ModalParams from '../components/ModalParams';
 
 const Inviting = () => {
     let navigate = useNavigate();
     const [folders, setFolders] = useState([]);
+    const [countAccounts, setCountAccounts] = useState({});
     const [isError, setIsError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [modal, setModal] = useState(false);
+    const [modalCreateFolder, setModalCreateFolder] = useState(false);
+    const [modalParams, setModalParams] = useState(false);
     const timeout = 3000;
 
     useEffect(() => {
@@ -26,8 +28,12 @@ const Inviting = () => {
         try {
             setIsLoading(true);
             const response = await InvitingService.fetchFolders();
-            if (response.data !== null)
-                setFolders(response.data);
+
+            if (response.data !== null) {
+                setFolders(response.data.folders);
+                setCountAccounts(response.data.countAccounts);
+            }
+            
             setIsLoading(false);
         } catch (e) {
             setIsError('Ошибка при получении папок');
@@ -51,10 +57,9 @@ const Inviting = () => {
 
     const getModalData = (getData) => {
 		if (getData.mode === "createFolder") {
-			setModal(false);
+			setModalCreateFolder(false);
 			createFolder(getData.text);
 		}
-		
 	}
 
     return (
@@ -63,8 +68,8 @@ const Inviting = () => {
                 <h3 className='logo'>Инвайтинг & Рассылка</h3>
                 <div className='header__btns'>
                     <Button onClick={() => navigate("/")}><i className="fas fa-home"></i> На главную</Button>
-                    <Button ><i className="fas fa-chart-pie"></i> Показатели</Button>
-                    <Button onClick={() => setModal(true)}><i className="fas fa-plus"></i> Создать папку</Button>
+                    <Button onClick={() => setModalParams(true)}><i className="fas fa-chart-pie"></i> Показатели</Button>
+                    <Button onClick={() => setModalCreateFolder(true)}><i className="fas fa-plus"></i> Создать папку</Button>
                 </div>
             </div>
 
@@ -80,8 +85,12 @@ const Inviting = () => {
                     : <h4 className='notification'>У вас пока нет папок</h4>
             }
 
-            <Modal visible={modal} setVisible={setModal}>
+            <Modal visible={modalCreateFolder} setVisible={setModalCreateFolder}>
                 <ModalFormInput create={getModalData} title="Создание папки" buttonText="Создать" mode="createFolder"/>
+            </Modal>
+
+            <Modal visible={modalParams} setVisible={setModalParams}>
+                <ModalParams params={countAccounts}/>
             </Modal>
         </div>
 	);

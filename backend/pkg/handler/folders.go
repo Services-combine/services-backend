@@ -9,12 +9,13 @@ import (
 )
 
 func (h *Handler) MainPage(c *gin.Context) {
-	folders, err := h.services.Folders.Get(c, "/")
+	dataPAge, err := h.services.Folders.GetDataMainPage(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, folders)
+
+	c.JSON(http.StatusOK, dataPAge)
 }
 
 func (h *Handler) CreateFolder(c *gin.Context) {

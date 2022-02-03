@@ -14,7 +14,7 @@ const Folder = () => {
     const [account, setAccount] = useState({});
     const [name, setName] = useState('');
     const [interval, setInterval] = useState(0);
-    const [foldersMove, setFoldersMove] = useState([]);
+    const [listOptions, setListOptions] = useState([]);
     const [folder, setFolder] = useState('');
     const [isError, setIsError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -22,22 +22,33 @@ const Folder = () => {
 
     useEffect(() => {
         fetchDataAccount();
+        console.log(listOptions);
     }, [])
 
 	async function fetchDataAccount() {
 		try {
 			setIsLoading(true);
 			const response = await InvitingService.fetchDataAccount(params.folderID, params.accountID);
+
             setAccount(response.data);
-            console.log(response.data);
             setName(response.data.name);
             setInterval(response.data.interval);
             setFolder(response.data.folder_id);
             
-            for (var folderM in response.data.folders_move) {
-                console.log(folderM, response.data.folders_move[folderM]);
-                setFoldersMove([...foldersMove, {"value": response.data.folders_move[folderM], "name": folderM}])
+            console.log(account.folders_move);
+
+            for (var option in response.data.folders_move) {
+                console.log(option, response.data.folders_move[option]);
+                //console.log(listOptions);
+                setListOptions([...listOptions, {"value": response.data.folders_move[option], "name": option}])
             }
+
+            console.log(listOptions);
+
+            //var foldersMoveList = account.folders_move.map(option => {
+            //    return {"value": response.data.folders_move[option], "name": option}
+            //})
+            //console.log(foldersMoveList);
 
 			setIsLoading(false);
 		} catch (e) {
@@ -116,7 +127,7 @@ const Folder = () => {
 
                         <Select
                             defaultName="Выберите папку"
-                            options={foldersMove}
+                            options={listOptions}
                             value={folder} 
                             onChange={folder => setFolder(folder)}
                         />

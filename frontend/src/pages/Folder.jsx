@@ -208,6 +208,10 @@ const Folder = () => {
 		}
 	}
 
+	const reload = () => {
+		fetchDataFolder();
+	}
+
 	const getModalInput = (getInput) => {
 		if (getInput.mode === "createFolder") {
 			setModalCreateFolder(false);
@@ -304,6 +308,9 @@ const Folder = () => {
 				</Button>
                 <Button className='btn-action' onClick={geterateInterval}>
 					<i className="fas fa-random"></i> Сгенерировать
+				</Button>
+				<Button className='btn-action' onClick={reload}>
+					<i className="fas fa-redo-alt"></i>
 				</Button>
             </div>
 

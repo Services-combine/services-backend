@@ -17,6 +17,8 @@ type Authorization interface {
 }
 
 type Folders interface {
+	GetFoldersMainPage(ctx context.Context) ([]domain.FolderMainPage, error)
+	GetCountAllAccount(ctx context.Context) (domain.AccountsCount, error)
 	Get(ctx context.Context, path string) ([]domain.Folder, error)
 	Create(ctx context.Context, folder domain.Folder) error
 	GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)

@@ -63,18 +63,49 @@
     margin-top: -4px;
 }
 
-.alert .btn-delete {
+.alert .actions__btns {
+    float: left;
+}
+
+.alert .actions__status {
+    float: right;
+}
+
+.actions__btns .btn-delete {
     border-radius: 10px;
     padding: 4px 11px;
     margin-right: 10px;
 }
 
-.alert .actions .status-launch {
+.actions__status .status-launch {
     color: rgb(81, 133, 211);
     float: right;
     padding-top: 5px;
     font-weight: bold;
     font-size: 20px;
+    margin-left: 10px;
+}
+
+.actions__status .status-block {
+    float: left;
+    padding-top: 5px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.actions__status .no-block {
+    color: rgb(62, 207, 118);
+}
+
+.actions__status .info-block {
+    color: rgb(81, 133, 211);
+}
+
+.actions__status .info-block:hover::before {
+    content: attr(unblocking);
+    font-size: 18px;
+    color: #000;
+    padding-right: 5px;
 }
 
 .launch__btns {

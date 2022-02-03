@@ -9,6 +9,7 @@ const ModalFormSelect = ({create, optionsData, defaultName}) => {
 
     useEffect(() => {
         if (Object.keys(optionsData).length !== 0) {
+            //console.log(optionsData);
             //console.log(listOptions);
             for (var option in optionsData) {
                 //console.log(option, optionsData[option]);
