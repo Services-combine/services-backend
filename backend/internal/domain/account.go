@@ -26,7 +26,7 @@ type AccountSettings struct {
 	Status_block string             `json:"status_block"`
 	FolderName   string             `json:"folder_name"`
 	FolderID     string             `json:"folder_id"`
-	FoldersMove  map[string]string  `json:"folders_move"`
+	FoldersMove  []DataMove         `json:"folders_move"`
 	Chat         string             `json:"chat"`
 }
 
@@ -53,4 +53,9 @@ type AccountApi struct {
 	ID      primitive.ObjectID `json:"id" bson:"_id"`
 	ApiId   int                `json:"api_id"`
 	ApiHash string             `json:"api_hash"`
+}
+
+type DataMove struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }

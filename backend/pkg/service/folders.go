@@ -127,7 +127,7 @@ func ConvertPath(path string) (primitive.ObjectID, error) {
 	return ObjectID, nil
 }
 
-func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path string, db repository.Folders) (map[string]string, error) {
+func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path string, db repository.Folders) ([]domain.DataMove, error) {
 	foldersMove := map[string]string{}
 	status := 0
 
@@ -189,7 +189,14 @@ func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path strin
 		foldersMove["/"] = "/"
 	}
 
-	return foldersMove, nil
+	MapFoldersMove := []domain.DataMove{}
+	for Name, ObjectID := range foldersMove {
+		if path != ObjectID {
+			MapFoldersMove = append(MapFoldersMove, domain.DataMove{Name, ObjectID})
+		}
+	}
+
+	return MapFoldersMove, nil
 }
 
 func GetPathHash(ctx context.Context, folderID primitive.ObjectID, path string, db repository.Folders) (map[string]string, error) {

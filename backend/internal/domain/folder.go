@@ -17,8 +17,8 @@ type Folder struct {
 }
 
 type FolderMainPage struct {
-	ID                primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Name              string             `json:"name" binding:"required"`
+	ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Name string             `json:"name" binding:"required"`
 }
 
 type FolderMove struct {

@@ -22,7 +22,6 @@ const Folder = () => {
 
     useEffect(() => {
         fetchDataAccount();
-        console.log(listOptions);
     }, [])
 
 	async function fetchDataAccount() {
@@ -34,21 +33,7 @@ const Folder = () => {
             setName(response.data.name);
             setInterval(response.data.interval);
             setFolder(response.data.folder_id);
-            
-            console.log(account.folders_move);
-
-            for (var option in response.data.folders_move) {
-                console.log(option, response.data.folders_move[option]);
-                //console.log(listOptions);
-                setListOptions([...listOptions, {"value": response.data.folders_move[option], "name": option}])
-            }
-
-            console.log(listOptions);
-
-            //var foldersMoveList = account.folders_move.map(option => {
-            //    return {"value": response.data.folders_move[option], "name": option}
-            //})
-            //console.log(foldersMoveList);
+            setListOptions(response.data.folders_move);
 
 			setIsLoading(false);
 		} catch (e) {
@@ -71,7 +56,7 @@ const Folder = () => {
         try {
             e.preventDefault();
 			await InvitingService.saveSettingsAccount(params.folderID, params.accountID, name, interval, folder);
-            fetchDataAccount();
+            navigate(`/inviting/${params.folderID}`);
 		} catch (e) {
 			setIsError('Ошибка при сохранении настроек');
 			setTimeout(() => {
@@ -126,7 +111,7 @@ const Folder = () => {
                         <h6 className="title">Папка</h6>
 
                         <Select
-                            defaultName="Выберите папку"
+                            defaultName={account.folder_name}
                             options={listOptions}
                             value={folder} 
                             onChange={folder => setFolder(folder)}

@@ -19,7 +19,7 @@ const ModalFormCreateAccount = ({create, mode}) => {
 	}
 
     return (
-        <form>
+        <form className='form-create-account'>
             <h5>Создание аккаунта</h5>
             <Input 
                 value={name} 

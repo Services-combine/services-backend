@@ -12,5 +12,9 @@
 }
 
 .form-input-auth {
-    margin: 5px 0;
+    margin: 7px 0;
+}
+
+.form-input-auth Input {
+    margin: 6px 0;
 }

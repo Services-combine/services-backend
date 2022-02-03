@@ -39,6 +39,7 @@ type Folders interface {
 
 type Accounts interface {
 	Create(ctx context.Context, accountCreate domain.Account) error
+	GetSettings(ctx context.Context, accountID primitive.ObjectID) (domain.AccountSettings, error)
 	GetData(ctx context.Context, accountID primitive.ObjectID) (domain.Account, error)
 	GetAccountsFolder(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error)
 	GetFolders(ctx context.Context) (map[string]string, error)

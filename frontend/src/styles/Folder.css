@@ -115,3 +115,11 @@
 .launch__btns Button {
     margin: 5px;
 }
+
+.form-create-account Input {
+    margin: 6px 0;
+}
+
+.form-create-account Button {
+    margin-top: 5px;
+}

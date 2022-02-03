@@ -55,7 +55,7 @@ const Folder = () => {
 				setAccounts(response.data.accounts);
 			else
 				setAccounts([]);
-			
+
 			setDataFolder(response.data.folder);
 			setCountAccounts(response.data.countAccounts);
 			setFoldersMove(response.data.foldersMove);
@@ -245,7 +245,6 @@ const Folder = () => {
 
 	const getModalSelect = (getSelect) => {
 		setModalMove(false);
-		console.log(getSelect);
 		if (getSelect.path !== "")
 			moveFolder(getSelect.path);
 	}
@@ -390,9 +389,14 @@ const Folder = () => {
 			}
 
 			{dataFolder.name_path &&
-				Object.keys(foldersMove).length !== 0 &&
+				Object.keys(foldersMove).length !== 0
+					?
 					<Modal visible={modalMove} setVisible={setModalMove}>
 						<ModalFormSelect create={getModalSelect} optionsData={foldersMove} defaultName={dataFolder.name_path}/>
+					</Modal>
+					:
+					<Modal visible={modalMove} setVisible={setModalMove}>
+						<ModalFormSelect create={getModalSelect} optionsData={[]} defaultName={dataFolder.name_path}/>
 					</Modal>
 			}
 

@@ -40,41 +40,33 @@ func (s *AccountsService) Create(ctx context.Context, accountCreate domain.Accou
 }
 
 func (s *AccountsService) GetSettings(ctx context.Context, folderID, accountID primitive.ObjectID) (domain.AccountSettings, error) {
-	var accountSettings domain.AccountSettings
-
-	account, err := s.repo.GetData(ctx, accountID)
+	account, err := s.repo.GetSettings(ctx, accountID)
 	if err != nil {
 		return domain.AccountSettings{}, err
 	}
-	accountSettings.ID = account.ID
-	accountSettings.Name = account.Name
-	accountSettings.Phone = account.Phone
-	accountSettings.Launch = account.Launch
-	accountSettings.Interval = account.Interval
-	accountSettings.Status_block = account.Status_block
 
 	folder, err := s.repo.GetFolderByID(ctx, folderID)
 	if err != nil {
 		return domain.AccountSettings{}, err
 	}
-	accountSettings.FolderName = folder.Name
-	accountSettings.FolderID = folderID.Hex()
-	accountSettings.Chat = folder.Chat
+	account.FolderName = folder.Name
+	account.FolderID = folderID.Hex()
+	account.Chat = folder.Chat
 
-	foldersMove := map[string]string{}
-	foldersMove_, err := s.repo.GetFolders(ctx)
+	foldersMove := []domain.DataMove{}
+	folders, err := s.repo.GetFolders(ctx)
 	if err != nil {
 		return domain.AccountSettings{}, err
 	}
 
-	for Name, ObjectID := range foldersMove_ {
+	for Name, ObjectID := range folders {
 		if ObjectID != folderID.Hex() {
-			foldersMove[Name] = ObjectID
+			foldersMove = append(foldersMove, domain.DataMove{Name, ObjectID})
 		}
 	}
-	accountSettings.FoldersMove = foldersMove
+	account.FoldersMove = foldersMove
 
-	return accountSettings, nil
+	return account, nil
 }
 
 func (s *AccountsService) UpdateAccount(ctx context.Context, account domain.AccountUpdate) error {

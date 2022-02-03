@@ -33,6 +33,13 @@ func (s *AccountsRepo) Create(ctx context.Context, accountCreate domain.Account)
 	return err
 }
 
+func (s *AccountsRepo) GetSettings(ctx context.Context, accountID primitive.ObjectID) (domain.AccountSettings, error) {
+	var account domain.AccountSettings
+
+	err := s.db.FindOne(ctx, bson.M{"_id": accountID}).Decode(&account)
+	return account, err
+}
+
 func (s *AccountsRepo) GetData(ctx context.Context, accountID primitive.ObjectID) (domain.Account, error) {
 	var account domain.Account
 
