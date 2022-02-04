@@ -2,7 +2,11 @@
     display: inline-block;
 }
 
-.header .path .path__item {
+.header .path__item {
+    display: inline;
+}
+
+.header .path .path__item-link {
     text-decoration: none;
     color: #dedede;
     font-weight: bold;

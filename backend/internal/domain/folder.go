@@ -16,7 +16,7 @@ type Folder struct {
 	Mailing_groups    bool               `json:"mailing_groups"`
 }
 
-type FolderMainPage struct {
+type FolderItem struct {
 	ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Name string             `json:"name" binding:"required"`
 }

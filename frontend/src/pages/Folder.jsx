@@ -59,7 +59,7 @@ const Folder = () => {
 			setDataFolder(response.data.folder);
 			setCountAccounts(response.data.countAccounts);
 			setFoldersMove(response.data.foldersMove);
-			setFoldersHash(response.data.foldersHash);
+			setFoldersHash(response.data.pathHash);
 
 			setIsLoading(false);
 		} catch (e) {
@@ -258,7 +258,18 @@ const Folder = () => {
         <div>
             <div className='header'>
                 <div className='path'>
-                    <Link to='/inviting' className='path__item'>Главная</Link>
+                    <Link to='/inviting' className='path__item-link'>Главная</Link>
+
+					{Object.keys(foldersHash).length !== 0 &&
+						Object.entries(foldersHash).map(([key, item]) => (
+							<div className='path__item' key={item.value}>
+								<b>/</b>
+								<Link to={`/inviting/${item.value}`} className='path__item-link'>
+									{item.name}
+								</Link>
+							</div>
+						))
+					}
                 </div>
 				<div className='header__btns'>
 					<CountAccounts all={countAccounts.all} clean={countAccounts.clean} block={countAccounts.block} />

@@ -53,7 +53,7 @@ func (s *AccountsService) GetSettings(ctx context.Context, folderID, accountID p
 	account.FolderID = folderID.Hex()
 	account.Chat = folder.Chat
 
-	foldersMove := []domain.DataMove{}
+	foldersMove := []domain.DataFolderHash{}
 	folders, err := s.repo.GetFolders(ctx)
 	if err != nil {
 		return domain.AccountSettings{}, err
@@ -61,7 +61,7 @@ func (s *AccountsService) GetSettings(ctx context.Context, folderID, accountID p
 
 	for Name, ObjectID := range folders {
 		if ObjectID != folderID.Hex() {
-			foldersMove = append(foldersMove, domain.DataMove{Name, ObjectID})
+			foldersMove = append(foldersMove, domain.DataFolderHash{Name, ObjectID})
 		}
 	}
 	account.FoldersMove = foldersMove

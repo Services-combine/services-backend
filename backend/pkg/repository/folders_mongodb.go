@@ -18,10 +18,10 @@ func NewFoldersRepo(db *mongo.Database) *FoldersRepo {
 	return &FoldersRepo{db: db.Collection(foldersCollection)}
 }
 
-func (s *FoldersRepo) GetFoldersMainPage(ctx context.Context) ([]domain.FolderMainPage, error) {
-	var folders []domain.FolderMainPage
+func (s *FoldersRepo) GetListFolders(ctx context.Context, path string) ([]domain.FolderItem, error) {
+	var folders []domain.FolderItem
 
-	cur, err := s.db.Find(ctx, bson.M{"path": "/"})
+	cur, err := s.db.Find(ctx, bson.M{"path": path})
 	if err != nil {
 		return nil, err
 	}

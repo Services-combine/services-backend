@@ -11,6 +11,7 @@ import (
 type userData struct {
 	AccessToken  string
 	RefreshToken string
+	UserID 		 string
 }
 
 type Authorization interface {
@@ -22,6 +23,7 @@ type Authorization interface {
 
 type Folders interface {
 	GetDataMainPage(ctx context.Context) (map[string]interface{}, error)
+	GetListFolders(ctx context.Context, path string) ([]domain.FolderItem, error)
 	Get(ctx context.Context, path string) ([]domain.Folder, error)
 	Create(ctx context.Context, folder domain.Folder) error
 	GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)

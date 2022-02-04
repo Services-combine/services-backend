@@ -42,7 +42,7 @@ func GenerateHash() string {
 func (s *FoldersService) GetDataMainPage(ctx context.Context) (map[string]interface{}, error) {
 	dataPage := map[string]interface{}{}
 
-	folders, err := s.repo.GetFoldersMainPage(ctx)
+	folders, err := s.GetListFolders(ctx, "/")
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +55,11 @@ func (s *FoldersService) GetDataMainPage(ctx context.Context) (map[string]interf
 	dataPage["countAccounts"] = countAccounts
 
 	return dataPage, nil
+}
+
+func (s *FoldersService) GetListFolders(ctx context.Context, path string) ([]domain.FolderItem, error) {
+	folders, err := s.repo.GetListFolders(ctx, path)
+	return folders, err
 }
 
 func (s *FoldersService) Get(ctx context.Context, path string) ([]domain.Folder, error) {
@@ -91,7 +96,7 @@ func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.Obje
 	}
 	folderData["accounts"] = accounts
 
-	folders, err := s.repo.Get(ctx, folderID.Hex())
+	folders, err := s.GetListFolders(ctx, folderID.Hex())
 	if err != nil {
 		return map[string]interface{}{}, err
 	}
@@ -127,7 +132,7 @@ func ConvertPath(path string) (primitive.ObjectID, error) {
 	return ObjectID, nil
 }
 
-func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path string, db repository.Folders) ([]domain.DataMove, error) {
+func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path string, db repository.Folders) ([]domain.DataFolderHash, error) {
 	foldersMove := map[string]string{}
 	status := 0
 
@@ -189,19 +194,19 @@ func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path strin
 		foldersMove["/"] = "/"
 	}
 
-	MapFoldersMove := []domain.DataMove{}
+	MapFoldersMove := []domain.DataFolderHash{}
 	for Name, ObjectID := range foldersMove {
 		if path != ObjectID {
-			MapFoldersMove = append(MapFoldersMove, domain.DataMove{Name, ObjectID})
+			MapFoldersMove = append(MapFoldersMove, domain.DataFolderHash{Name, ObjectID})
 		}
 	}
 
 	return MapFoldersMove, nil
 }
 
-func GetPathHash(ctx context.Context, folderID primitive.ObjectID, path string, db repository.Folders) (map[string]string, error) {
+func GetPathHash(ctx context.Context, folderID primitive.ObjectID, path string, db repository.Folders) ([]domain.DataFolderHash, error) {
 	foldersHash := map[string]string{}
-	pathHash := map[string]string{}
+	MapFoldersHash := []domain.DataFolderHash{}
 
 	folders, err := db.GetFolders(ctx)
 	if err != nil {
@@ -218,18 +223,31 @@ func GetPathHash(ctx context.Context, folderID primitive.ObjectID, path string, 
 			return nil, err
 		}
 
+		MapFoldersHash = append(MapFoldersHash, domain.DataFolderHash{nextFolder.Name, nextFolder.ID.Hex()})
 		if nextFolder.Path == "/" {
-			pathHash[nextFolder.Name] = nextFolder.ID.Hex()
 			break
 		}
-		pathHash[nextFolder.Name] = nextFolder.ID.Hex()
+
 		folderID, err = ConvertPath(nextFolder.Path)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return pathHash, nil
+	ReverceFoldersHash := ReverseSlice(MapFoldersHash)
+	return ReverceFoldersHash, nil
+}
+
+func ReverseSlice(s []domain.DataFolderHash) []domain.DataFolderHash {
+	a := make([]domain.DataFolderHash, len(s))
+    copy(a, s)
+
+    for i := len(a)/2 - 1; i >= 0; i-- {
+        opp := len(a) - 1 - i
+        a[i], a[opp] = a[opp], a[i]
+    }
+
+    return a
 }
 
 func (s *FoldersService) Move(ctx context.Context, folderID primitive.ObjectID, path string) error {

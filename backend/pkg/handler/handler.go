@@ -32,6 +32,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 		services := api.Group("/user", h.userIdentity)
 		{
+			services.POST("/", h.ServicesPage)
+			services.POST("/save-settings", h.SaveSettings)
 			services.GET("/logout", h.Logout)
 
 			inviting := services.Group("/inviting")

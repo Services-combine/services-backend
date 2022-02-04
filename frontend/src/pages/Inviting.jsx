@@ -90,7 +90,7 @@ const Inviting = () => {
             </Modal>
 
             <Modal visible={modalParams} setVisible={setModalParams}>
-                <ModalParams params={countAccounts}/>
+                <ModalParams props={countAccounts}/>
             </Modal>
         </div>
 	);
