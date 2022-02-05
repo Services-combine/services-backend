@@ -11,6 +11,8 @@ import Services from '../API/Services';
 
 const ListServices = () => {
     const {store} = useContext(Context)
+    const [countInviting, setCountInviting] = useState(0);
+    const [countMailing, setCountMailing] = useState(0);
     const [modalSettings, setModalSettings] = useState(false);
     const [isError, setIsError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -23,8 +25,9 @@ const ListServices = () => {
     async function fetchData() {
         try {
 			setIsLoading(true);
-			//const response = await Services.fetchData(localStorage.getItem('userID'));
-            //console.log(response);
+			const response = await Services.fetchData(localStorage.getItem('userID'));
+            setCountInviting(response.data.countInviting);
+            setCountMailing(response.data.countMailing);
 
 			setIsLoading(false);
 		} catch (e) {
@@ -84,7 +87,7 @@ const ListServices = () => {
             }
 
             <Modal visible={modalSettings} setVisible={setModalSettings}>
-                <ModalSettings save={getModalSettings} defaultCountInviting="5" defaultCountMailing="3"/>
+                <ModalSettings save={getModalSettings} defaultCountInviting={countInviting} defaultCountMailing={countMailing}/>
             </Modal>
         </div>
 	);

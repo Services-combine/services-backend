@@ -11,7 +11,7 @@ import (
 type userData struct {
 	AccessToken  string
 	RefreshToken string
-	UserID 		 string
+	UserID       string
 }
 
 type Authorization interface {
@@ -27,7 +27,7 @@ type Folders interface {
 	Get(ctx context.Context, path string) ([]domain.Folder, error)
 	Create(ctx context.Context, folder domain.Folder) error
 	GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)
-	OpenFolder(ctx context.Context, folderID primitive.ObjectID) (map[string]interface{}, error)
+	OpenFolder(ctx context.Context, folderID primitive.ObjectID, limitFolder domain.LimitFolder) (map[string]interface{}, error)
 	Move(ctx context.Context, folderID primitive.ObjectID, path string) error
 	Rename(ctx context.Context, folderID primitive.ObjectID, name string) error
 	ChangeChat(ctx context.Context, folderID primitive.ObjectID, chat string) error
@@ -56,11 +56,17 @@ type AccountVerify interface {
 	CreateSession(ctx context.Context, accountLogin domain.AccountLogin) error
 }
 
+type UserData interface {
+	GetSettings(ctx context.Context, userID primitive.ObjectID) (domain.Settings, error)
+	SaveSettings(ctx context.Context, userID primitive.ObjectID, dataSettings domain.Settings) error
+}
+
 type Service struct {
 	Authorization
 	Folders
 	Accounts
 	AccountVerify
+	UserData
 }
 
 func NewService(repos *repository.Repository) *Service {
@@ -69,5 +75,6 @@ func NewService(repos *repository.Repository) *Service {
 		Folders:       NewFoldersService(repos.Folders),
 		Accounts:      NewAccountsService(repos.Accounts),
 		AccountVerify: NewAccountVerifyService(repos.Accounts),
+		UserData:      NewUserDataService(repos.UserData),
 	}
 }

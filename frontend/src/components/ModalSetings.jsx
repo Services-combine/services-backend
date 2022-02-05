@@ -29,7 +29,7 @@ const ModalSettings = ({save, defaultCountInviting, defaultCountMailing}) => {
             <Input 
                 value={countInviting} 
                 onChange={e => setCountInviting(e.target.value)}
-                type='text' 
+                type='number' 
                 placeholder='Введите значение' 
             />
             <br/>
@@ -37,7 +37,7 @@ const ModalSettings = ({save, defaultCountInviting, defaultCountMailing}) => {
             <Input 
                 value={countMailing} 
                 onChange={e => setCountMailing(e.target.value)}
-                type='text' 
+                type='number' 
                 placeholder='Введите значение' 
             />
             <br/>

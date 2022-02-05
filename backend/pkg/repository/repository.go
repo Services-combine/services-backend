@@ -23,7 +23,7 @@ type Folders interface {
 	Create(ctx context.Context, folder domain.Folder) error
 	GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)
 	GetFolders(ctx context.Context) ([]domain.Folder, error)
-	GetAccountByFolderID(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error)
+	GetAccountByFolderID(ctx context.Context, folderID primitive.ObjectID, limitFolder domain.LimitFolder) ([]domain.Account, error)
 	GetCountAccounts(ctx context.Context, folderID primitive.ObjectID) (domain.AccountsCount, error)
 	Move(ctx context.Context, folderID primitive.ObjectID, path string) error
 	Rename(ctx context.Context, folderID primitive.ObjectID, name string) error
@@ -53,10 +53,16 @@ type Accounts interface {
 	ChangeStatusBlock(ctx context.Context, accountID primitive.ObjectID, status string) error
 }
 
+type UserData interface {
+	GetSettings(ctx context.Context, userID primitive.ObjectID) (domain.Settings, error)
+	SaveSettings(ctx context.Context, userID primitive.ObjectID, dataSettings domain.Settings) error
+}
+
 type Repository struct {
 	Authorization
 	Folders
 	Accounts
+	UserData
 }
 
 func NewRepository(db *mongo.Client) *Repository {
@@ -64,5 +70,6 @@ func NewRepository(db *mongo.Client) *Repository {
 		Authorization: NewAuthRepo(db.Database(viper.GetString("mongo.databaseName"))),
 		Folders:       NewFoldersRepo(db.Database(viper.GetString("mongo.databaseName"))),
 		Accounts:      NewAccountsRepo(db.Database(viper.GetString("mongo.databaseName"))),
+		UserData:      NewUserDataRepo(db.Database(viper.GetString("mongo.databaseName"))),
 	}
 }

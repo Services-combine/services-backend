@@ -9,8 +9,8 @@ export default class InvitingService {
         return $api.post('/user/inviting/create-folder', {name: folderName})
     }
 
-    static async fetchDataFolder(folderID) {
-        return $api.get(`/user/inviting/${folderID}`)
+    static async fetchDataFolder(folderID, limit = 20, skip = 0) {
+        return $api.post(`/user/inviting/${folderID}`, {limit: limit, skip: skip})
     }
 
     static async createFolderInFolder(folderID, folderName) {

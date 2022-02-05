@@ -40,7 +40,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			{
 				inviting.GET("/", h.MainPage)
 				inviting.POST("/create-folder", h.CreateFolder)
-				inviting.GET("/:folderID", h.OpenFolder)
+				inviting.POST("/:folderID", h.OpenFolder)
 				inviting.POST("/:folderID/create-folder", h.CreateFolder)
 
 				inviting.POST("/:folderID/move", h.MoveFolder)

@@ -24,6 +24,9 @@ const Folder = () => {
     const [dataFolder, setDataFolder] = useState({});
     const [foldersMove, setFoldersMove] = useState({});
     const [foldersHash, setFoldersHash] = useState({});
+	const [totalPages, setTotalPages] = useState(0);
+	const [limit, setLimit] = useState(20);
+	const [page, setPage] = useState(0);
     const [isError, setIsError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
     const [modalCreateFolder, setModalCreateFolder] = useState(false);
@@ -37,14 +40,19 @@ const Folder = () => {
 	const [modalLaunch, setModalLaunch] = useState(false);
     const timeout = 3000;
 
+	let pagesArray = [];
+	for (let i = 0; i < totalPages; i++) {
+		pagesArray.push(i + 1);
+	}
+
     useEffect(() => {
         fetchDataFolder();
-    }, [params.folderID])
+    }, [params.folderID, page])
 
 	async function fetchDataFolder() {
 		try {
 			setIsLoading(true);
-			const response = await InvitingService.fetchDataFolder(params.folderID);
+			const response = await InvitingService.fetchDataFolder(params.folderID, limit, page);
 			
 			if (response.data.folders != null)
 				setFolders(response.data.folders);
@@ -58,6 +66,8 @@ const Folder = () => {
 
 			setDataFolder(response.data.folder);
 			setCountAccounts(response.data.countAccounts);
+			const totalCount = response.data.countAccounts.all;
+			setTotalPages(getPageCount(totalCount, limit));
 			setFoldersMove(response.data.foldersMove);
 			setFoldersHash(response.data.pathHash);
 
@@ -68,6 +78,14 @@ const Folder = () => {
                 setIsError(null)
             }, timeout)
 		}
+	}
+
+	const getPageCount = (totalCount, limit) => {
+		return Math.ceil(totalCount / limit)
+	}
+
+	const changePage = (page) => {
+		setPage((page - 1) * 20);
 	}
 
     async function createFolder(folderName) {
@@ -328,17 +346,21 @@ const Folder = () => {
                 <Error>{isError}</Error>
             }
 
-            {isLoading
-                ? <div style={{display: "flex", justifyContent: "center", marginTop: 50}}><Loader/></div>
-                :
-                <>
-					<FolderList folders={folders} />
-					{accounts.length
-						? <AccountList remove={deleteAccount} accounts={accounts} />
-						: <h4 className='notification'>У вас пока нет аккаунтов</h4>
-					}
-                </>
+			<FolderList folders={folders} />
+			{accounts.length
+				? <AccountList remove={deleteAccount} accounts={accounts} />
+				: <h4 className='notification'>У вас пока нет аккаунтов</h4>
+			}
+
+            {isLoading &&
+                <div style={{display: "flex", justifyContent: "center", marginTop: 50}}><Loader/></div>
             }
+
+			{pagesArray.map(p => 
+				<Button key={p} onClick={() => changePage(p)}>
+					{p}
+				</Button>	
+			)}
 
 			<Modal visible={modalCreateFolder} setVisible={setModalCreateFolder}>
                 <ModalFormInput create={getModalInput} title="Создание папки" buttonText="Создать" mode="createFolder"/>

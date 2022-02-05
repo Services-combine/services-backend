@@ -16,6 +16,11 @@ type Folder struct {
 	Mailing_groups    bool               `json:"mailing_groups"`
 }
 
+type LimitFolder struct {
+	Limit int `json:"limit"`
+	Skip  int `json:"skip"`
+}
+
 type FolderItem struct {
 	ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Name string             `json:"name" binding:"required"`

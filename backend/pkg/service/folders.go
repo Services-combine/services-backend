@@ -81,7 +81,7 @@ func (s *FoldersService) GetData(ctx context.Context, folderID primitive.ObjectI
 	return folder, nil
 }
 
-func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.ObjectID) (map[string]interface{}, error) {
+func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.ObjectID, limitFolder domain.LimitFolder) (map[string]interface{}, error) {
 	folderData := map[string]interface{}{}
 
 	folder, err := s.GetData(ctx, folderID)
@@ -90,7 +90,7 @@ func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.Obje
 	}
 	folderData["folder"] = folder
 
-	accounts, err := s.repo.GetAccountByFolderID(ctx, folderID)
+	accounts, err := s.repo.GetAccountByFolderID(ctx, folderID, limitFolder)
 	if err != nil {
 		return map[string]interface{}{}, err
 	}
@@ -240,14 +240,14 @@ func GetPathHash(ctx context.Context, folderID primitive.ObjectID, path string, 
 
 func ReverseSlice(s []domain.DataFolderHash) []domain.DataFolderHash {
 	a := make([]domain.DataFolderHash, len(s))
-    copy(a, s)
+	copy(a, s)
 
-    for i := len(a)/2 - 1; i >= 0; i-- {
-        opp := len(a) - 1 - i
-        a[i], a[opp] = a[opp], a[i]
-    }
+	for i := len(a)/2 - 1; i >= 0; i-- {
+		opp := len(a) - 1 - i
+		a[i], a[opp] = a[opp], a[i]
+	}
 
-    return a
+	return a
 }
 
 func (s *FoldersService) Move(ctx context.Context, folderID primitive.ObjectID, path string) error {
@@ -291,7 +291,8 @@ func CheckingEnteredData(ctx context.Context, folderID primitive.ObjectID, db re
 		return err
 	}
 
-	accounts, err := db.GetAccountByFolderID(ctx, folderID)
+	var limitFolder domain.LimitFolder
+	accounts, err := db.GetAccountByFolderID(ctx, folderID, limitFolder)
 	if err != nil {
 		return err
 	}
