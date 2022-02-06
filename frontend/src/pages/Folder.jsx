@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import '../styles/Folder.css';
 import {Link, useParams, useNavigate} from "react-router-dom"
 import InvitingService from '../API/InvitingService';
@@ -24,9 +24,9 @@ const Folder = () => {
     const [dataFolder, setDataFolder] = useState({});
     const [foldersMove, setFoldersMove] = useState({});
     const [foldersHash, setFoldersHash] = useState({});
-	const [totalPages, setTotalPages] = useState(0);
+	const [totalCount, setTotalCount] = useState(0);
 	const [limit, setLimit] = useState(20);
-	const [page, setPage] = useState(0);
+	const [skip, setSkip] = useState(0);
     const [isError, setIsError] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
     const [modalCreateFolder, setModalCreateFolder] = useState(false);
@@ -39,35 +39,80 @@ const Folder = () => {
 	const [modalCreateAccount, setModaleCreateAccount] = useState(false);
 	const [modalLaunch, setModalLaunch] = useState(false);
     const timeout = 3000;
+	const lastElement = useRef();
+	const observer = useRef();
+	const [reload, setReload] = useState(false);
 
-	let pagesArray = [];
-	for (let i = 0; i < totalPages; i++) {
-		pagesArray.push(i + 1);
-	}
+	useEffect(() => {
+		if (isLoading) return;
+		if (observer.current) observer.current.disconnect();
+		var cb = function(entries, observer) {
+			if (entries[0].isIntersecting && skip + limit < totalCount) {
+				setSkip(skip + limit);
+			}
+		};
+		observer.current = new IntersectionObserver(cb);
+		observer.current.observe(lastElement.current)
+	}, [isLoading])
 
     useEffect(() => {
-        fetchDataFolder();
-    }, [params.folderID, page])
+		if (!reload)
+	        fetchDataFolder();
+    }, [params.folderID, skip])
 
-	async function fetchDataFolder() {
+
+	async function reloadData() {
 		try {
+			setReload(true);
+			setSkip(0);
+			setAccounts([]);
 			setIsLoading(true);
-			const response = await InvitingService.fetchDataFolder(params.folderID, limit, page);
-			
-			if (response.data.folders != null)
-				setFolders(response.data.folders);
-			else
-				setFolders([]);
+			const response = await InvitingService.fetchDataFolder(params.folderID, limit, 0);
 
 			if (response.data.accounts != null)
 				setAccounts(response.data.accounts);
 			else
 				setAccounts([]);
 
+			distributionData(response);
+			setReload(false);
+		} catch (e) {
+			setIsError('Ошибка при получении данных папки');
+            setTimeout(() => {
+                setIsError(null)
+            }, timeout)
+		}
+	}
+
+	async function fetchDataFolder() {
+		try {
+			setIsLoading(true);
+			const response = await InvitingService.fetchDataFolder(params.folderID, limit, skip);
+
+			if (response.data.accounts != null)
+				setAccounts([...accounts, ...response.data.accounts]);
+			else
+				setAccounts([]);
+			
+			distributionData(response);
+		} catch (e) {
+			setIsError('Ошибка при получении данных папки');
+            setTimeout(() => {
+                setIsError(null)
+            }, timeout)
+		}
+	}
+
+	const distributionData = (response) => {
+		try {
+			if (response.data.folders != null)
+				setFolders(response.data.folders);
+			else
+				setFolders([]);
+
 			setDataFolder(response.data.folder);
 			setCountAccounts(response.data.countAccounts);
-			const totalCount = response.data.countAccounts.all;
-			setTotalPages(getPageCount(totalCount, limit));
+			setTotalCount(response.data.countAccounts.all);
 			setFoldersMove(response.data.foldersMove);
 			setFoldersHash(response.data.pathHash);
 
@@ -80,18 +125,10 @@ const Folder = () => {
 		}
 	}
 
-	const getPageCount = (totalCount, limit) => {
-		return Math.ceil(totalCount / limit)
-	}
-
-	const changePage = (page) => {
-		setPage((page - 1) * 20);
-	}
-
     async function createFolder(folderName) {
         try {
             await InvitingService.createFolderInFolder(params.folderID, folderName);
-            fetchDataFolder();
+            reloadData();
         } catch (e) {
             setIsError('Ошибка при создании папки');
             setTimeout(() => {
@@ -103,7 +140,7 @@ const Folder = () => {
     async function renameFolder(folderName) {
         try {
             await InvitingService.renameFolder(params.folderID, folderName);
-            fetchDataFolder();
+            reloadData();
         } catch (e) {
             setIsError('Ошибка при переименовывании папки');
             setTimeout(() => {
@@ -165,7 +202,7 @@ const Folder = () => {
 	async function moveFolder(path) {
 		try {
 			await InvitingService.moveFolder(params.folderID, path);
-			fetchDataFolder();
+			reloadData();
 		} catch (e) {
 			setIsError('Ошибка при перемещении папки');
 			setTimeout(() => {
@@ -193,7 +230,7 @@ const Folder = () => {
 	async function createAccount(name, phone) {
 		try {
 			await InvitingService.createAccount(params.folderID, name, phone);
-			fetchDataFolder();
+			reloadData();
 		} catch (e) {
 			setIsError('Ошибка при создании аккаунта');
 			setTimeout(() => {
@@ -205,7 +242,7 @@ const Folder = () => {
 	async function deleteAccount(account) {
         try {
 			await InvitingService.deleteAccount(params.folderID, account.id);
-			fetchDataFolder();
+			reloadData();
 		} catch (e) {
 			setIsError('Ошибка при удалении аккаунта');
 			setTimeout(() => {
@@ -217,17 +254,13 @@ const Folder = () => {
 	async function geterateInterval() {
 		try {
 			await InvitingService.geterateInterval(params.folderID);
-			fetchDataFolder();
+			reloadData();
 		} catch (e) {
 			setIsError('Ошибка при генерации интервалов');
 			setTimeout(() => {
 				setIsError(null)
 			}, timeout)
 		}
-	}
-
-	const reload = () => {
-		fetchDataFolder();
 	}
 
 	const getModalInput = (getInput) => {
@@ -337,7 +370,7 @@ const Folder = () => {
                 <Button className='btn-action' onClick={geterateInterval}>
 					<i className="fas fa-random"></i> Сгенерировать
 				</Button>
-				<Button className='btn-action' onClick={reload}>
+				<Button className='btn-action' onClick={reloadData}>
 					<i className="fas fa-redo-alt"></i>
 				</Button>
             </div>
@@ -351,16 +384,11 @@ const Folder = () => {
 				? <AccountList remove={deleteAccount} accounts={accounts} />
 				: <h4 className='notification'>У вас пока нет аккаунтов</h4>
 			}
+			<div ref={lastElement} style={{height: 20}}></div>
 
             {isLoading &&
                 <div style={{display: "flex", justifyContent: "center", marginTop: 50}}><Loader/></div>
             }
-
-			{pagesArray.map(p => 
-				<Button key={p} onClick={() => changePage(p)}>
-					{p}
-				</Button>	
-			)}
 
 			<Modal visible={modalCreateFolder} setVisible={setModalCreateFolder}>
                 <ModalFormInput create={getModalInput} title="Создание папки" buttonText="Создать" mode="createFolder"/>

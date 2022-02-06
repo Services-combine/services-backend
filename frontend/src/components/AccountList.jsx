@@ -5,7 +5,7 @@ const AccountList = ({accounts, remove}) => {
     return (
         <div className='accounts'>
             {accounts.map((account, index) => 
-                <AccountItem remove={remove} account={account} index={index} key={account.id} />
+                <AccountItem remove={remove} account={account} index={index} key={index} />
             )}
         </div>
     );
