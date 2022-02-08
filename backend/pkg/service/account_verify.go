@@ -1,7 +1,6 @@
 package service
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -9,29 +8,28 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
-	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gotd/td/telegram"
-	"github.com/gotd/td/telegram/auth"
-	"github.com/gotd/td/tg"
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
-	link_get_password  = "https://my.telegram.org/auth/send_password"
-	link_authorized    = "https://my.telegram.org/auth/login"
-	link_apps          = "https://my.telegram.org/apps"
-	link_create_app    = "https://my.telegram.org/apps/create"
-	error_many_request = "Sorry, too many tries. Please try again later."
-	error_invalid_code = "Invalid confirmation code!"
-	symbols            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	numbers            = "1234567890"
+	link_get_password   = "https://my.telegram.org/auth/send_password"
+	link_authorized     = "https://my.telegram.org/auth/login"
+	link_apps           = "https://my.telegram.org/apps"
+	link_create_app     = "https://my.telegram.org/apps/create"
+	error_many_request  = "Sorry, too many tries. Please try again later."
+	error_invalid_code  = "Invalid confirmation code!"
+	symbols             = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	numbers             = "1234567890"
+	path_python_scripts = "/home/q/p/projects/services/backend/python/"
+	path_python         = "/usr/bin/python3"
 )
 
 type AccountVerifyService struct {
@@ -218,7 +216,6 @@ func CreateApp(cookies []*http.Cookie, client *http.Client, hash string) error {
 
 	app_title += fmt.Sprint(rand.Intn(100))
 	app_shortname += fmt.Sprint(rand.Intn(10))
-	fmt.Println(app_title, app_shortname)
 
 	data := url.Values{
 		"hash":          {hash},
@@ -300,37 +297,17 @@ func (s *AccountVerifyService) GetCodeSession(ctx context.Context, accountID pri
 		return err
 	}
 
-	client := telegram.NewClient(account.Api_id, account.Api_hash, telegram.Options{})
+	script := path_python_scripts + "send_code.py"
+	args_phone := fmt.Sprintf("-P %s", account.Phone)
+	args_hash := fmt.Sprintf("-H %s", account.Api_hash)
+	args_id := fmt.Sprintf("-I %d", account.Api_id)
 
-	if err := client.Run(ctx, func(ctx context.Context) error {
-		api := client.API()
-		fmt.Println(api)
-
-		//api.AccountSendConfirmPhoneCode(ctx)
-		pass, err := api.AccountGetPassword(ctx)
-		if err != nil {
-			return err
-		}
-		fmt.Println(pass.HasPassword)
-
-		return nil
-	}); err != nil {
+	phone_code_hash, err := exec.Command(path_python, script, args_phone, args_hash, args_id).Output()
+	if err != nil {
 		return err
 	}
 
-	codePrompt := func(ctx context.Context, sentCode *tg.AuthSentCode) (string, error) {
-		fmt.Print("Enter code: ")
-		code, err := bufio.NewReader(os.Stdin).ReadString('\n')
-		if err != nil {
-			return "", err
-		}
-		return strings.TrimSpace(code), nil
-	}
-
-	if err := auth.NewFlow(
-		auth.Constant(account.Phone, "24891488", auth.CodeAuthenticatorFunc(codePrompt)),
-		auth.SendCodeOptions{},
-	).Run(ctx, client.Auth()); err != nil {
+	if err := s.repo.AddPhoneHash(ctx, accountID, string(phone_code_hash)); err != nil {
 		return err
 	}
 
@@ -342,7 +319,19 @@ func (s *AccountVerifyService) CreateSession(ctx context.Context, accountLogin d
 	if err != nil {
 		return err
 	}
-	fmt.Println(account)
+
+	script := path_python_scripts + "verify_account.py"
+	args_phone := fmt.Sprintf("-P %s", account.Phone)
+	args_hash := fmt.Sprintf("-H %s", account.Api_hash)
+	args_id := fmt.Sprintf("-I %d", account.Api_id)
+	args_code := fmt.Sprintf("-C %s", accountLogin.Password)
+	args_codeHash := fmt.Sprintf("-G %s", account.Phone_code_hash)
+
+	exec.Command(path_python, script, args_phone, args_hash, args_id, args_code, args_codeHash).Run()
+
+	if err := s.repo.ChangeVerify(ctx, accountLogin.ID); err != nil {
+		return err
+	}
 
 	return nil
 }

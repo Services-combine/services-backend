@@ -76,4 +76,20 @@ export default class InvitingService {
     static async geterateInterval(folderID) {
         return $api.get(`/user/inviting/${folderID}/generate-interval`)
     }
+
+    static async sendCodeParsing(folderID, accountID) {
+        return $api.get(`/user/inviting/${folderID}/${accountID}/login-api`)
+    }
+
+    static async parsingApi(folderID, accountID, code) {
+        return $api.post(`/user/inviting/${folderID}/${accountID}/parsing-api`, {password: code})
+    }
+
+    static async sendCodeSession(folderID, accountID) {
+        return $api.get(`/user/inviting/${folderID}/${accountID}/get-code-session`)
+    }
+
+    static async createSession(folderID, accountID, code) {
+        return $api.post(`/user/inviting/${folderID}/${accountID}/create-session`, {password: code})
+    }
 }

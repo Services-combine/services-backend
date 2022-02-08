@@ -64,7 +64,7 @@
 
 .alert .actions {
     float: right;
-    margin-top: -4px;
+    margin-top: -5px;
 }
 
 .actions .btn-delete {
@@ -109,11 +109,22 @@
 }
 
 .actions__parsing {
-    float: right;
+    float: left;
+    margin-top: -2px;
+    margin-right: 10px;
 }
 
 .actions__create {
-    float: right;
+    float: left;
+    margin-top: -2px;
+    margin-right: 10px;
+}
+
+.actions__create Input, .actions__parsing Input {
+    width: 150px;
+    border: 1px solid rgb(165, 165, 165);
+    border-radius: 10px;
+    margin: 0 5px;
 }
 
 .launch__btns {

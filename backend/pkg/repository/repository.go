@@ -51,6 +51,7 @@ type Accounts interface {
 	AddPhoneHash(ctx context.Context, accountID primitive.ObjectID, phoneCodeHash string) error
 	AddApi(ctx context.Context, accountSettings domain.AccountApi) error
 	ChangeStatusBlock(ctx context.Context, accountID primitive.ObjectID, status string) error
+	ChangeVerify(ctx context.Context, accountID primitive.ObjectID) error
 }
 
 type UserData interface {

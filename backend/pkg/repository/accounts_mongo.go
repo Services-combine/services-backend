@@ -145,3 +145,8 @@ func (s *AccountsRepo) ChangeStatusBlock(ctx context.Context, accountID primitiv
 	_, err := s.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"status_block": status}})
 	return err
 }
+
+func (s *AccountsRepo) ChangeVerify(ctx context.Context, accountID primitive.ObjectID) error {
+	_, err := s.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"verify": true}})
+	return err
+}

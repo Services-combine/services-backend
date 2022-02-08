@@ -14,6 +14,24 @@ const AccountItem = (props) => {
         props.remove(props.account);
     }
 
+    const sendCodeParsing = () => {
+        props.sendCodeParsing(props.account.id);
+    }
+
+    const parsingApi = () => {
+        props.parsingApi(props.account.id, code);
+        setCode('');
+    }
+
+    const sendCodeSession = () => {
+        props.sendCodeSession(props.account.id);
+    }
+
+    const createSession = () => {
+        props.createSession(props.account.id, code);
+        setCode('');
+    }
+
     const getModalAction = (getAction) => {
         setModalDelete(false);
         if (getAction.action) {
@@ -32,34 +50,33 @@ const AccountItem = (props) => {
                     {props.account.api_id === 0
                         ?
                         <div className='actions__parsing'>
-                            <Button style={{backgroundColor: "rgb(165, 165, 165)"}}>
+                            <Button style={{backgroundColor: "rgb(165, 165, 165)"}} onClick={sendCodeParsing}>
                                 <i className="fas fa-paper-plane"></i> Отпправить код
                             </Button>
                             <Input 
-                                value=""
+                                value={code}
                                 onChange={e => setCode(e.target.value)}
                                 type='text' 
                                 placeholder='Код'
-                                style={{width: 150}}
                             />
-                            <Button style={{backgroundColor: "rgb(81, 211, 113)"}}>
+                            <Button style={{backgroundColor: "rgb(81, 211, 113)"}} onClick={parsingApi}>
                                 <i className="fas fa-user-check"></i> Спарсить api
                             </Button>
                         </div>
                         :
-                        props.account.verify
+                        props.account.verify !== true
                             ?
                             <div className='actions__create'>
-                                <Button>
+                                <Button style={{backgroundColor: "rgb(165, 165, 165)"}} onClick={sendCodeSession}>
                                     <i className="fas fa-paper-plane"></i> Отпправить код
                                 </Button>
                                 <Input 
-                                    value=""
+                                    value={code}
                                     onChange={e => setCode(e.target.value)}
                                     type='text' 
-                                    placeholder='Код' 
+                                    placeholder='Код'
                                 />
-                                <Button>
+                                <Button style={{backgroundColor: "rgb(81, 211, 113)"}} onClick={createSession}>
                                     <i className="fas fa-user-check"></i> Создать файл
                                 </Button>
                             </div>

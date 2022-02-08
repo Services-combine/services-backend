@@ -263,6 +263,53 @@ const Folder = () => {
 		}
 	}
 
+	async function sendCodeParsing(accountID) {
+		try {
+			await InvitingService.sendCodeParsing(params.folderID, accountID);
+		} catch (e) {
+			setIsError('Ошибка при отправке кода');
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
+		}
+	}
+
+	async function parsingApi(accountID, code) {
+		try {
+			await InvitingService.parsingApi(params.folderID, accountID, code);
+			reloadData();
+		} catch (e) {
+			setIsError('Ошибка при парсинге API');
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
+		}
+	}
+
+	async function sendCodeSession(accountID) {
+		try {
+			await InvitingService.sendCodeSession(params.folderID, accountID);
+			reloadData();
+		} catch (e) {
+			setIsError('Ошибка при отправке кода');
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
+		}
+	}
+
+	async function createSession(accountID, code) {
+		try {
+			await InvitingService.createSession(params.folderID, accountID, code);
+			reloadData();
+		} catch (e) {
+			setIsError('Ошибка при создании .session файла');
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
+		}
+	}
+
 	const getModalInput = (getInput) => {
 		if (getInput.mode === "createFolder") {
 			setModalCreateFolder(false);
@@ -381,7 +428,7 @@ const Folder = () => {
 
 			<FolderList folders={folders} />
 			{accounts.length
-				? <AccountList remove={deleteAccount} accounts={accounts} />
+				? <AccountList remove={deleteAccount} accounts={accounts} sendCodeParsing={sendCodeParsing} parsingApi={parsingApi} sendCodeSession={sendCodeSession} createSession={createSession} />
 				: <h4 className='notification'>У вас пока нет аккаунтов</h4>
 			}
 			<div ref={lastElement} style={{height: 20}}></div>

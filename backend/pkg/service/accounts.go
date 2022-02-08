@@ -4,12 +4,17 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"os"
 	"time"
 
 	"github.com/gotd/td/telegram"
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+const (
+	path_accounts = "/home/q/p/projects/services/backend/accounts/"
 )
 
 type AccountsService struct {
@@ -75,8 +80,17 @@ func (s *AccountsService) UpdateAccount(ctx context.Context, account domain.Acco
 }
 
 func (s *AccountsService) Delete(ctx context.Context, accountID primitive.ObjectID) error {
-	err := s.repo.Delete(ctx, accountID)
-	return err
+	account, err := s.repo.GetData(ctx, accountID)
+	if err != nil {
+		return err
+	}
+
+	if err = s.repo.Delete(ctx, accountID); err != nil {
+		return err
+	}
+
+	os.Remove(path_accounts + account.Phone + ".session")
+	return nil
 }
 
 func (s *AccountsService) GenerateInterval(ctx context.Context, folderID primitive.ObjectID) error {
