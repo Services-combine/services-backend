@@ -1,7 +1,8 @@
+import os
 import argparse
 import asyncio
 from telethon.sync import TelegramClient
-from config import logger
+from config import *
 
 
 def get_arguments():
@@ -17,13 +18,16 @@ def send_code_account(phone, hash, id):
     try:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        client = TelegramClient(f"accounts/{phone}", id, hash)
+
+        path_to_file = FOLDER_ACCOUNTS + f"{phone}.session"
+        client = TelegramClient(path_to_file, id, hash)
         client.connect()
         client.send_code_request(phone)
 
         phone_code_hash = client.send_code_request(phone).phone_code_hash
-        print(phone_code_hash, end="")
         client.disconnect()
+
+        print(phone_code_hash, end="")
     except Exception as error:
         logger.error(f"[{phone}] {error}")
         print("ERROR")

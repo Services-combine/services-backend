@@ -8,28 +8,30 @@ import (
 	"math/rand"
 	"net/http"
 	"net/url"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/joho/godotenv"
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
-	link_get_password   = "https://my.telegram.org/auth/send_password"
-	link_authorized     = "https://my.telegram.org/auth/login"
-	link_apps           = "https://my.telegram.org/apps"
-	link_create_app     = "https://my.telegram.org/apps/create"
-	error_many_request  = "Sorry, too many tries. Please try again later."
-	error_invalid_code  = "Invalid confirmation code!"
-	symbols             = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	numbers             = "1234567890"
-	path_python_scripts = "/home/q/p/projects/services/backend/python/"
-	path_python         = "/usr/bin/python3"
+	link_get_password  = "https://my.telegram.org/auth/send_password"
+	link_authorized    = "https://my.telegram.org/auth/login"
+	link_apps          = "https://my.telegram.org/apps"
+	link_create_app    = "https://my.telegram.org/apps/create"
+	error_many_request = "Sorry, too many tries. Please try again later."
+	error_invalid_code = "Invalid confirmation code!"
+	symbols            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	numbers            = "1234567890"
+	path_python        = "/usr/bin/python3"
 )
 
 type AccountVerifyService struct {
@@ -37,6 +39,10 @@ type AccountVerifyService struct {
 }
 
 func NewAccountVerifyService(repo repository.Accounts) *AccountVerifyService {
+	if err := godotenv.Load(); err != nil {
+		logrus.Fatalf("error loading env variables: %s", err.Error())
+	}
+
 	return &AccountVerifyService{repo: repo}
 }
 
@@ -297,7 +303,7 @@ func (s *AccountVerifyService) GetCodeSession(ctx context.Context, accountID pri
 		return err
 	}
 
-	script := path_python_scripts + "send_code.py"
+	script := os.Getenv("FOLDER_PYTHON_SCRIPTS_VERIFY") + "send_code.py"
 	args_phone := fmt.Sprintf("-P %s", account.Phone)
 	args_hash := fmt.Sprintf("-H %s", account.Api_hash)
 	args_id := fmt.Sprintf("-I %d", account.Api_id)
@@ -324,7 +330,7 @@ func (s *AccountVerifyService) CreateSession(ctx context.Context, accountLogin d
 		return err
 	}
 
-	script := path_python_scripts + "verify_account.py"
+	script := os.Getenv("FOLDER_PYTHON_SCRIPTS_VERIFY") + "verify_account.py"
 	args_phone := fmt.Sprintf("-P %s", account.Phone)
 	args_hash := fmt.Sprintf("-H %s", account.Api_hash)
 	args_id := fmt.Sprintf("-I %d", account.Api_id)

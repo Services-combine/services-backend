@@ -8,8 +8,10 @@ import (
 	"os/exec"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -22,6 +24,10 @@ type AccountsService struct {
 }
 
 func NewAccountsService(repo repository.Accounts) *AccountsService {
+	if err := godotenv.Load(); err != nil {
+		logrus.Fatalf("error loading env variables: %s", err.Error())
+	}
+
 	return &AccountsService{repo: repo}
 }
 
@@ -106,7 +112,7 @@ func (s *AccountsService) CheckBlock(ctx context.Context, folderID primitive.Obj
 
 	for _, account := range accounts {
 		if account.Api_id != 0 && account.Api_hash != "" && account.Verify {
-			script := path_python_scripts + "check_block.py"
+			script := os.Getenv("FOLDER_PYTHON_SCRIPTS_VERIFY") + "check_block.py"
 			args_phone := fmt.Sprintf("-P %s", account.Phone)
 			args_hash := fmt.Sprintf("-H %s", account.Api_hash)
 			args_id := fmt.Sprintf("-I %d", account.Api_id)

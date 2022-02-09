@@ -34,11 +34,7 @@ func (s *Server) Run() error {
 		logrus.Fatalf("error loading env variables: %s", err.Error())
 	}
 
-	db, err := repository.NewMongoDB(repository.Config{
-		Username: viper.GetString("mongo.username"),
-		Password: os.Getenv("PASSWORD_DB"),
-		DBName:   viper.GetString("mongo.databaseName"),
-	})
+	db, err := repository.NewMongoDB(os.Getenv("MONDO_DB_URL"))
 	if err != nil {
 		logrus.Fatalf("error connect mongodb %s", err.Error())
 	}

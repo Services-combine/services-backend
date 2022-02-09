@@ -1,7 +1,8 @@
+import os
 import argparse
 import asyncio
 from telethon.sync import TelegramClient
-from config import logger
+from config import *
 
 
 def get_arguments():
@@ -20,11 +21,11 @@ def verify_account(phone, hash, id, code, phone_code_hash):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         
-        client = TelegramClient(f"accounts/{phone}", id, hash)
+        path_to_file = FOLDER_ACCOUNTS + f"{phone}.session"
+        client = TelegramClient(path_to_file, id, hash)
         client.connect()
         client.sign_in(phone, code, phone_code_hash=phone_code_hash)
         client.disconnect()
-        print("SUCCESS")
     except Exception as error:
         logger.error(f"[{phone}] {error}")
         print("ERROR")

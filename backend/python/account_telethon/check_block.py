@@ -1,8 +1,9 @@
 import re
+import os
 import argparse
 import asyncio
 from telethon.sync import TelegramClient
-from config import logger
+from config import *
 
 
 def get_arguments():
@@ -39,7 +40,8 @@ async def get_status_block(phone, hash, id):
     try:
         BOT = "@SpamBot"
 
-        client = TelegramClient(f"/home/q/p/projects/services/backend/accounts/{phone}.session", id, hash)
+        path_to_file = FOLDER_ACCOUNTS + f"{phone}.session"
+        client = TelegramClient(path_to_file, id, hash)
         await client.connect()
         await client.send_message(entity=BOT, message="/start")
 

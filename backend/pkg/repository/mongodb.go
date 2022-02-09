@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,10 +18,8 @@ type Config struct {
 	DBName   string
 }
 
-func NewMongoDB(cfg Config) (*mongo.Client, error) {
-	uri := fmt.Sprintf("mongodb+srv://%s:%s@cluster0.ykyjv.mongodb.net/%s?retryWrites=true&w=majority", cfg.Username, cfg.Password, cfg.DBName)
-
-	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+func NewMongoDB(URL_DB string) (*mongo.Client, error) {
+	client, err := mongo.NewClient(options.Client().ApplyURI(URL_DB))
 	if err != nil {
 		return nil, err
 	}

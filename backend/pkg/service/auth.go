@@ -5,17 +5,18 @@ import (
 	"crypto/sha1"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/joho/godotenv"
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
-	salt            = "yrty56y6ytuuiui6778l;afjslGH"
-	secretKey       = "qrkjk#4gdsglytryjk#4353KSFjH"
 	accessTokenTTL  = 30 * time.Minute
 	refreshTokenTTL = 30 * 24 * time.Hour
 )
@@ -25,6 +26,10 @@ type AuthService struct {
 }
 
 func NewAuthService(repo repository.Authorization) *AuthService {
+	if err := godotenv.Load(); err != nil {
+		logrus.Fatalf("error loading env variables: %s", err.Error())
+	}
+
 	return &AuthService{repo: repo}
 }
 
@@ -92,7 +97,7 @@ func NewJWT(userId string, tokenTTL time.Duration) (string, error) {
 		Subject:   userId,
 	})
 
-	return token.SignedString([]byte(secretKey))
+	return token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 }
 
 func (s *AuthService) ParseToken(accessToken string) (string, error) {
@@ -101,7 +106,7 @@ func (s *AuthService) ParseToken(accessToken string) (string, error) {
 			return nil, errors.New("unexpected signing method")
 		}
 
-		return []byte(secretKey), nil
+		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if err != nil {
 		return "", err
@@ -119,5 +124,5 @@ func generatePasswordHash(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
 
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+	return fmt.Sprintf("%x", hash.Sum([]byte(os.Getenv("SALT"))))
 }
