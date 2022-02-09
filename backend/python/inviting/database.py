@@ -69,7 +69,7 @@ class Database:
 
     def suspend_folder(self, id, mode):
         try:
-            self.accounts.update_one({"_id": id}, {"$set": {mode: False}})
+            self.folders.update_one({"_id": id}, {"$set": {mode: False}})
             return 1
         except Exception as error:
             logger.error(error)
@@ -78,7 +78,7 @@ class Database:
 
     def add_remaining_usernames(self, id, usernames):
         try:
-            self.accounts.update_one({"_id": id}, {"$set": {"usernames": usernames}})
+            self.folders.update_one({"_id": id}, {"$set": {"usernames": usernames}})
             return 1
         except Exception as error:
             logger.error(error)

@@ -5,7 +5,6 @@ import (
 
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UserDataService struct {
@@ -16,12 +15,12 @@ func NewUserDataService(repo repository.UserData) *UserDataService {
 	return &UserDataService{repo: repo}
 }
 
-func (s *UserDataService) GetSettings(ctx context.Context, userID primitive.ObjectID) (domain.Settings, error) {
-	settings, err := s.repo.GetSettings(ctx, userID)
+func (s *UserDataService) GetSettings(ctx context.Context) (domain.Settings, error) {
+	settings, err := s.repo.GetSettings(ctx)
 	return settings, err
 }
 
-func (s *UserDataService) SaveSettings(ctx context.Context, userID primitive.ObjectID, dataSettings domain.Settings) error {
-	err := s.repo.SaveSettings(ctx, userID, dataSettings)
+func (s *UserDataService) SaveSettings(ctx context.Context, dataSettings domain.Settings) error {
+	err := s.repo.SaveSettings(ctx, dataSettings)
 	return err
 }

@@ -25,7 +25,7 @@ const ListServices = () => {
     async function fetchData() {
         try {
 			setIsLoading(true);
-			const response = await Services.fetchData(localStorage.getItem('userID'));
+			const response = await Services.fetchData();
             setCountInviting(response.data.countInviting);
             setCountMailing(response.data.countMailing);
 
@@ -40,7 +40,7 @@ const ListServices = () => {
 
     async function saveSettings(settings) {
         try {
-            await Services.saveSettings(localStorage.getItem('userID'), settings.countInviting, settings.countMailing);
+            await Services.saveSettings(settings.countInviting, settings.countMailing);
         } catch (e) {
             setIsError('Ошибка при сохранении настроек');
             setTimeout(() => {

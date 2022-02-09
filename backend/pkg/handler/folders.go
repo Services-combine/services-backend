@@ -71,6 +71,22 @@ func (h *Handler) OpenFolder(c *gin.Context) {
 	c.JSON(http.StatusOK, folderData)
 }
 
+func (h *Handler) GetFoldersMove(c *gin.Context) {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	folderData, err := h.services.Folders.GetFoldersMove(c, folderID)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, folderData)
+}
+
 func (h *Handler) MoveFolder(c *gin.Context) {
 	var folderMove domain.FolderMove
 

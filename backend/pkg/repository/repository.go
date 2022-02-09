@@ -35,6 +35,7 @@ type Folders interface {
 	LaunchInviting(ctx context.Context, folderID primitive.ObjectID) error
 	LaunchMailingUsernames(ctx context.Context, folderID primitive.ObjectID) error
 	LaunchMailingGroups(ctx context.Context, folderID primitive.ObjectID) error
+	GetSettings(ctx context.Context) (domain.Settings, error)
 }
 
 type Accounts interface {
@@ -55,8 +56,8 @@ type Accounts interface {
 }
 
 type UserData interface {
-	GetSettings(ctx context.Context, userID primitive.ObjectID) (domain.Settings, error)
-	SaveSettings(ctx context.Context, userID primitive.ObjectID, dataSettings domain.Settings) error
+	GetSettings(ctx context.Context) (domain.Settings, error)
+	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
 }
 
 type Repository struct {

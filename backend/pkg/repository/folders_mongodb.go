@@ -247,3 +247,10 @@ func (s *FoldersRepo) LaunchMailingGroups(ctx context.Context, folderID primitiv
 	_, err = s.db.Database().Collection(accountsCollection).UpdateMany(ctx, bson.M{"folder": folderID}, bson.M{"$set": bson.M{"launch": true}})
 	return err
 }
+
+func (s *FoldersRepo) GetSettings(ctx context.Context) (domain.Settings, error) {
+	var settings domain.Settings
+
+	err := s.db.Database().Collection(userDataCollection).FindOne(ctx, bson.M{"_id": "admin"}).Decode(&settings)
+	return settings, err
+}

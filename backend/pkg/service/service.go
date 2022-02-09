@@ -28,6 +28,7 @@ type Folders interface {
 	Create(ctx context.Context, folder domain.Folder) error
 	GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)
 	OpenFolder(ctx context.Context, folderID primitive.ObjectID, limitFolder domain.LimitFolder) (map[string]interface{}, error)
+	GetFoldersMove(ctx context.Context, folderID primitive.ObjectID) ([]domain.DataFolderHash, error)
 	Move(ctx context.Context, folderID primitive.ObjectID, path string) error
 	Rename(ctx context.Context, folderID primitive.ObjectID, name string) error
 	ChangeChat(ctx context.Context, folderID primitive.ObjectID, chat string) error
@@ -57,8 +58,8 @@ type AccountVerify interface {
 }
 
 type UserData interface {
-	GetSettings(ctx context.Context, userID primitive.ObjectID) (domain.Settings, error)
-	SaveSettings(ctx context.Context, userID primitive.ObjectID, dataSettings domain.Settings) error
+	GetSettings(ctx context.Context) (domain.Settings, error)
+	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
 }
 
 type Service struct {

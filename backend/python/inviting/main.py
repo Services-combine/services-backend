@@ -1,7 +1,6 @@
 import time
 from telethon.sync import TelegramClient
 from telethon.tl.functions.channels import InviteToChannelRequest
-from random import choice
 from database import Database
 from config import *
 
@@ -57,7 +56,7 @@ class Inviting:
             logger.error(error)
 
 
-    def mailing_users(self, account, usernames, messages):
+    def mailing_users(self, account, usernames, message):
         try:
             client = TelegramClient(f"{FOLDER_ACCOUNTS}/{account['phone']}.session", account['api_id'], account['api_hash'])
             client.connect()
@@ -65,7 +64,7 @@ class Inviting:
             for user in usernames:
                 try:
                     logger.info(f"Start send message @{user}")
-                    client.send_message(f'@{user}', choice(messages))
+                    client.send_message(f'@{user}', message)
                     logger.info(f"Success send message @{user}")
                     
                 except Exception as error:
@@ -88,7 +87,7 @@ class Inviting:
             logger.error(error)
 
 
-    def mailing_group(self, account, groups, messages):
+    def mailing_group(self, account, groups, message):
         try:
             client = TelegramClient(f"{FOLDER_ACCOUNTS}/{account['phone']}.session", account['api_id'], account['api_hash'])
             client.connect()
@@ -96,7 +95,7 @@ class Inviting:
             for group in groups:
                 try:
                     logger.info(f"Start send message {group}")
-                    client.send_message(entity=group, message=choice(messages))
+                    client.send_message(entity=group, message=message)
                     logger.info(f"Success send message {group}")
                     
                 except Exception as error:

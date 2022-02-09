@@ -5,24 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/korpgoodness/service.git/internal/domain"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (h *Handler) ServicesPage(c *gin.Context) {
-	var user domain.Settings
-
-	if err := c.BindJSON(&user); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	userID, err := primitive.ObjectIDFromHex(user.ID)
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	settings, err := h.services.UserData.GetSettings(c, userID)
+	settings, err := h.services.UserData.GetSettings(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -38,13 +24,7 @@ func (h *Handler) SaveSettings(c *gin.Context) {
 		return
 	}
 
-	userID, err := primitive.ObjectIDFromHex(dataSettings.ID)
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	if err := h.services.UserData.SaveSettings(c, userID, dataSettings); err != nil {
+	if err := h.services.UserData.SaveSettings(c, dataSettings); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}

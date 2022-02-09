@@ -1,9 +1,13 @@
 package handler
 
 import (
+	"os"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/korpgoodness/service.git/pkg/service"
+	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
@@ -11,6 +15,10 @@ type Handler struct {
 }
 
 func NewHandler(services *service.Service) *Handler {
+	if err := godotenv.Load(); err != nil {
+		logrus.Fatalf("error loading env variables: %s", err.Error())
+	}
+
 	return &Handler{services: services}
 }
 
@@ -18,7 +26,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.Default()
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     []string{os.Getenv("FRONTEND_URL")},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
 		AllowHeaders:     []string{"Content-Type,access-control-allow-origin, access-control-allow-headers,authorization,my-custom-header"},
 		AllowCredentials: true,
@@ -32,7 +40,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 		services := api.Group("/user", h.userIdentity)
 		{
-			services.POST("/", h.ServicesPage)
+			services.GET("/", h.ServicesPage)
 			services.POST("/save-settings", h.SaveSettings)
 			services.GET("/logout", h.Logout)
 
@@ -41,6 +49,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				inviting.GET("/", h.MainPage)
 				inviting.POST("/create-folder", h.CreateFolder)
 				inviting.POST("/:folderID", h.OpenFolder)
+				inviting.GET("/:folderID/folders-move", h.GetFoldersMove)
 				inviting.POST("/:folderID/create-folder", h.CreateFolder)
 
 				inviting.POST("/:folderID/move", h.MoveFolder)

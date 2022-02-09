@@ -5,7 +5,7 @@ import Button from './UI/button/Button';
 import InvitingService from '../API/InvitingService';
 import Error from './UI/error/Error';
 
-const ModalLaunch = ({create}) => {
+const ModalLaunch = ({launch, folder}) => {
     const params = useParams();
     const [isError, setIsError] = useState(null);
     const timeout = 3000;
@@ -14,7 +14,7 @@ const ModalLaunch = ({create}) => {
         e.preventDefault()
         try {
 			const response = await InvitingService.checkBlock(params.folderID);
-            create();
+            launch();
 		} catch (e) {
 			setIsError(e.response?.data?.message);
 			setTimeout(() => {
@@ -27,7 +27,7 @@ const ModalLaunch = ({create}) => {
         e.preventDefault()
         try {
 			const response = await InvitingService.launchInviting(params.folderID);
-            create();
+            launch();
 		} catch (e) {
 			setIsError(e.response?.data?.message);
 			setTimeout(() => {
@@ -40,7 +40,7 @@ const ModalLaunch = ({create}) => {
         e.preventDefault()
         try {
 			const response = await InvitingService.launchMailingUsernames(params.folderID);
-            create();
+            launch();
 		} catch (e) {
 			setIsError(e.response?.data?.message);
 			setTimeout(() => {
@@ -53,7 +53,7 @@ const ModalLaunch = ({create}) => {
         e.preventDefault()
         try {
 			const response = await InvitingService.launchMailingGroups(params.folderID);
-            create();
+            launch();
 		} catch (e) {
 			setIsError(e.response?.data?.message);
 			setTimeout(() => {
@@ -62,9 +62,25 @@ const ModalLaunch = ({create}) => {
 		}
     }
 
+    if (folder.inviting || folder.mailing_usernames || folder.mailing_groups) {
+        return (
+            <div style={{textAlign: "center"}}>
+                {folder.inviting
+                    ? <h5>У вас уже запущен инвайтинг</h5>
+                    : <h5>У вас уже запущена рассылка</h5>
+                }
+    
+                {isError &&
+                    <Error style={{width: '100%'}}>{isError}</Error>
+                }
+            </div>
+        );
+    }
+
     return (
         <form className="launch__btns btn-toolbar" role="toolbar">
             <h5>Выберите действие</h5>
+            
             <Button onClick={checkBlock}><i className="fas fa-user-lock"></i> Блокировка</Button>
             <Button onClick={launchInviting}><i className="fas fa-play"></i> Инвайтинг</Button>
             <Button onClick={launchMailingUsernames}><i className="fas fa-play"></i> Рассылка пользователям</Button>

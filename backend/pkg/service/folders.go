@@ -12,8 +12,6 @@ import (
 )
 
 const (
-	COUNT_INVITING_USERS   = 5
-	COUNT_MAINING_USERS    = 5
 	MODE_INVITING          = "inviting"
 	MODE_MAILING_USERNAMES = "mailing-usernames"
 	MODE_MAILING_GROUPS    = "mailing-groups"
@@ -108,11 +106,11 @@ func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.Obje
 	}
 	folderData["countAccounts"] = countAccounts
 
-	foldersMove, err := GetFoldersMove(ctx, folderID, folder.Path, s.repo)
-	if err != nil {
-		return map[string]interface{}{}, err
-	}
-	folderData["foldersMove"] = foldersMove
+	//foldersMove, err := GetFoldersMove(ctx, folderID, folder.Path, s.repo)
+	//if err != nil {
+	//	return map[string]interface{}{}, err
+	//}
+	//folderData["foldersMove"] = foldersMove
 
 	pathHash, err := GetPathHash(ctx, folderID, folder.Path, s.repo)
 	if err != nil {
@@ -132,7 +130,13 @@ func ConvertPath(path string) (primitive.ObjectID, error) {
 	return ObjectID, nil
 }
 
-func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path string, db repository.Folders) ([]domain.DataFolderHash, error) {
+func (s *FoldersService) GetFoldersMove(ctx context.Context, folderID primitive.ObjectID) ([]domain.DataFolderHash, error) {
+	folder, err := s.GetData(ctx, folderID)
+	if err != nil {
+		return nil, err
+	}
+	path := folder.Path
+
 	foldersMove := map[string]string{}
 	status := 0
 
@@ -141,7 +145,7 @@ func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path strin
 		if err != nil {
 			return nil, err
 		}
-		mainFolder, err := db.GetData(ctx, ObjectID)
+		mainFolder, err := s.repo.GetData(ctx, ObjectID)
 		if err != nil {
 			return nil, err
 		}
@@ -150,7 +154,7 @@ func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path strin
 		foldersMove["/"] = "/"
 	}
 
-	folders, err := db.GetFolders(ctx)
+	folders, err := s.repo.GetFolders(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -171,13 +175,13 @@ func GetFoldersMove(ctx context.Context, folderID primitive.ObjectID, path strin
 				if err != nil {
 					return nil, err
 				}
-				nextFolder, err := db.GetData(ctx, nextPathObject)
+				nextFolder, err := s.repo.GetData(ctx, nextPathObject)
 				if err != nil {
 					return nil, err
 				}
 				nextFolderID = nextFolder.ID
 
-				nextFolder, err = db.GetData(ctx, nextFolderID)
+				nextFolder, err = s.repo.GetData(ctx, nextFolderID)
 				if err != nil {
 					return nil, err
 				}
@@ -285,14 +289,19 @@ func (s *FoldersService) Delete(ctx context.Context, folderID primitive.ObjectID
 	return err
 }
 
-func CheckingEnteredData(ctx context.Context, folderID primitive.ObjectID, db repository.Folders, mode string) error {
-	folderData, err := db.GetData(ctx, folderID)
+func (s *FoldersService) CheckingEnteredData(ctx context.Context, folderID primitive.ObjectID, mode string) error {
+	folderData, err := s.repo.GetData(ctx, folderID)
+	if err != nil {
+		return err
+	}
+
+	settings, err := s.repo.GetSettings(ctx)
 	if err != nil {
 		return err
 	}
 
 	var limitFolder domain.LimitFolder
-	accounts, err := db.GetAccountByFolderID(ctx, folderID, limitFolder)
+	accounts, err := s.repo.GetAccountByFolderID(ctx, folderID, limitFolder)
 	if err != nil {
 		return err
 	}
@@ -312,11 +321,11 @@ func CheckingEnteredData(ctx context.Context, folderID primitive.ObjectID, db re
 		if mode == MODE_INVITING {
 			return fmt.Errorf("First specify the chat")
 		}
-	} else if len(folderData.Usernames) < (len(accounts) * COUNT_INVITING_USERS) {
+	} else if len(folderData.Usernames) < (len(accounts) * settings.CountInviting) {
 		if mode == MODE_INVITING {
 			return fmt.Errorf("The number of usernames is not enough for all accounts")
 		}
-	} else if len(folderData.Usernames) < (len(accounts) * COUNT_MAINING_USERS) {
+	} else if len(folderData.Usernames) < (len(accounts) * settings.CountMailing) {
 		if mode == MODE_MAILING_USERNAMES {
 			return fmt.Errorf("The number of usernames is not enough for all accounts")
 		}
@@ -336,7 +345,7 @@ func CheckingEnteredData(ctx context.Context, folderID primitive.ObjectID, db re
 }
 
 func (s *FoldersService) LaunchInviting(ctx context.Context, folderID primitive.ObjectID) error {
-	err := CheckingEnteredData(ctx, folderID, s.repo, MODE_INVITING)
+	err := s.CheckingEnteredData(ctx, folderID, MODE_INVITING)
 	if err != nil {
 		return err
 	}
@@ -346,7 +355,7 @@ func (s *FoldersService) LaunchInviting(ctx context.Context, folderID primitive.
 }
 
 func (s *FoldersService) LaunchMailingUsernames(ctx context.Context, folderID primitive.ObjectID) error {
-	err := CheckingEnteredData(ctx, folderID, s.repo, MODE_MAILING_USERNAMES)
+	err := s.CheckingEnteredData(ctx, folderID, MODE_MAILING_USERNAMES)
 	if err != nil {
 		return err
 	}
@@ -356,7 +365,7 @@ func (s *FoldersService) LaunchMailingUsernames(ctx context.Context, folderID pr
 }
 
 func (s *FoldersService) LaunchMailingGroups(ctx context.Context, folderID primitive.ObjectID) error {
-	err := CheckingEnteredData(ctx, folderID, s.repo, MODE_MAILING_GROUPS)
+	err := s.CheckingEnteredData(ctx, folderID, MODE_MAILING_GROUPS)
 	if err != nil {
 		return err
 	}
