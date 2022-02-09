@@ -30,7 +30,8 @@ const Inviting = () => {
             const response = await InvitingService.fetchFolders();
 
             if (response.data !== null) {
-                setFolders(response.data.folders);
+                if (response.data.folders !== null)
+                    setFolders(response.data.folders);
                 setCountAccounts(response.data.countAccounts);
             }
             

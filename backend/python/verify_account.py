@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 from telethon.sync import TelegramClient
+from config import logger
 
 
 def get_arguments():
@@ -23,8 +24,10 @@ def verify_account(phone, hash, id, code, phone_code_hash):
         client.connect()
         client.sign_in(phone, code, phone_code_hash=phone_code_hash)
         client.disconnect()
+        print("SUCCESS")
     except Exception as error:
-        print(f"[ERROR] {error}")
+        logger.error(f"[{phone}] {error}")
+        print("ERROR")
 
 def main():
     options = get_arguments()

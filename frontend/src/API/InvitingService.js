@@ -41,6 +41,10 @@ export default class InvitingService {
         return $api.post(`/user/inviting/${folderID}/move`, {path: path})
     }
 
+    static async checkBlock(folderID) {
+        return $api.get(`/user/inviting/${folderID}/check-block`)
+    }
+
     static async launchInviting(folderID) {
         return $api.get(`/user/inviting/${folderID}/launch-inviting`)
     }

@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 from telethon.sync import TelegramClient
+from config import logger
 
 
 def get_arguments():
@@ -24,7 +25,8 @@ def send_code_account(phone, hash, id):
         print(phone_code_hash, end="")
         client.disconnect()
     except Exception as error:
-        print(f"[ERROR] {error}")
+        logger.error(f"[{phone}] {error}")
+        print("ERROR")
 
 def main():
     options = get_arguments()

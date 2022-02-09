@@ -84,6 +84,25 @@ const Folder = () => {
 		}
 	}
 
+	async function reloadAccountsFolders() {
+		try {
+			setIsLoading(true);
+			const response = await InvitingService.fetchDataFolder(params.folderID, limit, 0);
+
+			if (response.data.accounts != null)
+				setAccounts(response.data.accounts);
+			else
+				setAccounts([]);
+
+			setIsLoading(false);
+		} catch (e) {
+			setIsError('Ошибка при получении аккаунтов');
+            setTimeout(() => {
+                setIsError(null)
+            }, timeout)
+		}
+	}
+
 	async function fetchDataFolder() {
 		try {
 			setIsLoading(true);
@@ -242,7 +261,7 @@ const Folder = () => {
 	async function deleteAccount(account) {
         try {
 			await InvitingService.deleteAccount(params.folderID, account.id);
-			reloadData();
+			reloadAccountsFolders();
 		} catch (e) {
 			setIsError('Ошибка при удалении аккаунта');
 			setTimeout(() => {
@@ -349,7 +368,7 @@ const Folder = () => {
 
 	const getModalLaunch = () => {
 		setModalLaunch(false);
-		fetchDataFolder();
+		reloadData();
 	}
 
     return (

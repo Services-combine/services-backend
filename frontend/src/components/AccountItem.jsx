@@ -88,7 +88,8 @@ const AccountItem = (props) => {
                                 }
 
                                 {props.account.launch &&
-                                    <h6 className="status-launch">&bull;</h6>
+                                    props.account.status_block === 'clean' &&
+                                        <h6 className="status-launch">&bull;</h6>
                                 }
                             </div>
                     }

@@ -307,6 +307,10 @@ func (s *AccountVerifyService) GetCodeSession(ctx context.Context, accountID pri
 		return err
 	}
 
+	if string(phone_code_hash) == "ERROR" {
+		return fmt.Errorf("Ошибка при получении кода")
+	}
+
 	if err := s.repo.AddPhoneHash(ctx, accountID, string(phone_code_hash)); err != nil {
 		return err
 	}
@@ -327,7 +331,14 @@ func (s *AccountVerifyService) CreateSession(ctx context.Context, accountLogin d
 	args_code := fmt.Sprintf("-C %s", accountLogin.Password)
 	args_codeHash := fmt.Sprintf("-G %s", account.Phone_code_hash)
 
-	exec.Command(path_python, script, args_phone, args_hash, args_id, args_code, args_codeHash).Run()
+	result, err := exec.Command(path_python, script, args_phone, args_hash, args_id, args_code, args_codeHash).Output()
+	if err != nil {
+		return err
+	}
+
+	if string(result) == "ERROR" {
+		return fmt.Errorf("Ошибка при создании .session файла")
+	}
 
 	if err := s.repo.ChangeVerify(ctx, accountLogin.ID); err != nil {
 		return err

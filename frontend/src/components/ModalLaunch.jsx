@@ -10,15 +10,24 @@ const ModalLaunch = ({create}) => {
     const [isError, setIsError] = useState(null);
     const timeout = 3000;
 
-    const addLaunchAction = () => {
-        create()
-	}
+    async function checkBlock(e) {
+        e.preventDefault()
+        try {
+			const response = await InvitingService.checkBlock(params.folderID);
+            create();
+		} catch (e) {
+			setIsError(e.response?.data?.message);
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
+		}
+    }
 
     async function launchInviting(e) {
         e.preventDefault()
         try {
 			const response = await InvitingService.launchInviting(params.folderID);
-            addLaunchAction();
+            create();
 		} catch (e) {
 			setIsError(e.response?.data?.message);
 			setTimeout(() => {
@@ -31,7 +40,7 @@ const ModalLaunch = ({create}) => {
         e.preventDefault()
         try {
 			const response = await InvitingService.launchMailingUsernames(params.folderID);
-            addLaunchAction();
+            create();
 		} catch (e) {
 			setIsError(e.response?.data?.message);
 			setTimeout(() => {
@@ -44,7 +53,7 @@ const ModalLaunch = ({create}) => {
         e.preventDefault()
         try {
 			const response = await InvitingService.launchMailingGroups(params.folderID);
-            addLaunchAction();
+            create();
 		} catch (e) {
 			setIsError(e.response?.data?.message);
 			setTimeout(() => {
@@ -56,7 +65,7 @@ const ModalLaunch = ({create}) => {
     return (
         <form className="launch__btns btn-toolbar" role="toolbar">
             <h5>Выберите действие</h5>
-            <Button><i className="fas fa-user-lock"></i> Блокировка</Button>
+            <Button onClick={checkBlock}><i className="fas fa-user-lock"></i> Блокировка</Button>
             <Button onClick={launchInviting}><i className="fas fa-play"></i> Инвайтинг</Button>
             <Button onClick={launchMailingUsernames}><i className="fas fa-play"></i> Рассылка пользователям</Button>
             <Button onClick={launchMailingGroups}><i className="fas fa-play"></i> Рассылка в группы</Button>

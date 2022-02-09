@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"os/exec"
 	"time"
 
-	"github.com/gotd/td/telegram"
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -106,24 +106,24 @@ func (s *AccountsService) CheckBlock(ctx context.Context, folderID primitive.Obj
 
 	for _, account := range accounts {
 		if account.Api_id != 0 && account.Api_hash != "" && account.Verify {
-			fmt.Println(account)
+			script := path_python_scripts + "check_block.py"
+			args_phone := fmt.Sprintf("-P %s", account.Phone)
+			args_hash := fmt.Sprintf("-H %s", account.Api_hash)
+			args_id := fmt.Sprintf("-I %d", account.Api_id)
+
+			status, err := exec.Command(path_python, script, args_phone, args_hash, args_id).Output()
+			if err != nil {
+				return err
+			}
+
+			if string(status) != "ERROR" {
+				err = s.repo.ChangeStatusBlock(ctx, account.ID, string(status))
+				if err != nil {
+					return err
+				}
+			}
 		}
 	}
 
 	return nil
-}
-
-func GetStatusBlock(ctx context.Context, account domain.Account) (string, error) {
-	client := telegram.NewClient(account.Api_id, account.Api_hash, telegram.Options{})
-
-	if err := client.Run(ctx, func(ctx context.Context) error {
-		api := client.API()
-		fmt.Println(api)
-
-		return nil
-	}); err != nil {
-		return "", err
-	}
-
-	return "", nil
 }

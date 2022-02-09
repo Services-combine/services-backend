@@ -18,6 +18,7 @@ func (h *Handler) CreateAccount(c *gin.Context) {
 	}
 	phoneNew := strings.Replace(accountCreate.Phone, "+", "", 1)
 	phoneNew = strings.Replace(phoneNew, "-", "", -1)
+	phoneNew = strings.Replace(phoneNew, " ", "", -1)
 	accountCreate.Phone = phoneNew
 
 	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
@@ -132,10 +133,12 @@ func (h *Handler) CheckBlock(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Accounts.CheckBlock(c, folderID); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
+	go func() {
+		if err := h.services.Accounts.CheckBlock(c, folderID); err != nil {
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
+			return
+		}
+	}()
 
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
