@@ -17,8 +17,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/joho/godotenv"
 	"github.com/korpgoodness/service.git/internal/domain"
+	"github.com/korpgoodness/service.git/pkg/logging"
 	"github.com/korpgoodness/service.git/pkg/repository"
-	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -39,8 +39,9 @@ type AccountVerifyService struct {
 }
 
 func NewAccountVerifyService(repo repository.Accounts) *AccountVerifyService {
+	logger := logging.GetLogger()
 	if err := godotenv.Load(); err != nil {
-		logrus.Fatalf("error loading env variables: %s", err.Error())
+		logger.Fatalf("Error loading env variables: %s", err.Error())
 	}
 
 	return &AccountVerifyService{repo: repo}

@@ -1,15 +1,14 @@
 package app
 
 import (
-	"context"
 	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/korpgoodness/service.git/pkg/handler"
+	"github.com/korpgoodness/service.git/pkg/logging"
 	"github.com/korpgoodness/service.git/pkg/repository"
 	"github.com/korpgoodness/service.git/pkg/service"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -24,19 +23,25 @@ func initConfig() error {
 }
 
 func (s *Server) Run() error {
-	logrus.SetFormatter(new(logrus.JSONFormatter))
+	logger := logging.GetLogger()
 
 	if err := initConfig(); err != nil {
-		logrus.Fatalf("error initializing configs: %s", err.Error())
+		logger.Fatalf("Error initializing configs: %s", err.Error())
+	} else {
+		logger.Info("Success initializing configs")
 	}
 
 	if err := godotenv.Load(); err != nil {
-		logrus.Fatalf("error loading env variables: %s", err.Error())
+		logger.Fatalf("Error loading env variables: %s", err.Error())
+	} else {
+		logger.Info("Success loading env variables")
 	}
 
 	db, err := repository.NewMongoDB(os.Getenv("MONDO_DB_URL"))
 	if err != nil {
-		logrus.Fatalf("error connect mongodb %s", err.Error())
+		logger.Fatalf("Error connect mongodb: %s", err.Error())
+	} else {
+		logger.Info("Success connect mongodb")
 	}
 
 	repos := repository.NewRepository(db)
@@ -52,9 +57,6 @@ func (s *Server) Run() error {
 		WriteTimeout:   viper.GetDuration("http.writeTimeout"),
 	}
 
+	logger.Info("Listen server...")
 	return s.httpServer.ListenAndServe()
-}
-
-func (s *Server) Shutdown(ctx context.Context) error {
-	return s.httpServer.Shutdown(ctx)
 }

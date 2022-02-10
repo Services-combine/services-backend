@@ -27,7 +27,7 @@ const ModalLaunch = ({launch, folder}) => {
         e.preventDefault()
         try {
 			const response = await InvitingService.launchInviting(params.folderID);
-            launch();
+            launch('inviting');
 		} catch (e) {
 			setIsError(e.response?.data?.message);
 			setTimeout(() => {
@@ -40,7 +40,7 @@ const ModalLaunch = ({launch, folder}) => {
         e.preventDefault()
         try {
 			const response = await InvitingService.launchMailingUsernames(params.folderID);
-            launch();
+            launch('mailing_usernames');
 		} catch (e) {
 			setIsError(e.response?.data?.message);
 			setTimeout(() => {
@@ -53,7 +53,7 @@ const ModalLaunch = ({launch, folder}) => {
         e.preventDefault()
         try {
 			const response = await InvitingService.launchMailingGroups(params.folderID);
-            launch();
+            launch('mailing_groups');
 		} catch (e) {
 			setIsError(e.response?.data?.message);
 			setTimeout(() => {
@@ -62,35 +62,36 @@ const ModalLaunch = ({launch, folder}) => {
 		}
     }
 
-    if (folder.inviting || folder.mailing_usernames || folder.mailing_groups) {
+    if (!folder.inviting && !folder.mailing_usernames && !folder.mailing_groups) {
+        return (
+            <form className="launch__btns btn-toolbar" role="toolbar">   
+                <h5>Выберите действие</h5>
+
+                <Button onClick={checkBlock}><i className="fas fa-user-lock"></i> Блокировка</Button>
+                <Button onClick={launchInviting}><i className="fas fa-play"></i> Инвайтинг</Button>
+                <Button onClick={launchMailingUsernames}><i className="fas fa-play"></i> Рассылка пользователям</Button>
+                <Button onClick={launchMailingGroups}><i className="fas fa-play"></i> Рассылка в группы</Button>
+
+                {isError &&
+                    <Error style={{width: '100%'}}>{isError}</Error>
+                }
+            </form>
+        );
+    }
+    else {
         return (
             <div style={{textAlign: "center"}}>
                 {folder.inviting
                     ? <h5>У вас уже запущен инвайтинг</h5>
                     : <h5>У вас уже запущена рассылка</h5>
                 }
-    
+
                 {isError &&
                     <Error style={{width: '100%'}}>{isError}</Error>
                 }
             </div>
         );
     }
-
-    return (
-        <form className="launch__btns btn-toolbar" role="toolbar">
-            <h5>Выберите действие</h5>
-            
-            <Button onClick={checkBlock}><i className="fas fa-user-lock"></i> Блокировка</Button>
-            <Button onClick={launchInviting}><i className="fas fa-play"></i> Инвайтинг</Button>
-            <Button onClick={launchMailingUsernames}><i className="fas fa-play"></i> Рассылка пользователям</Button>
-            <Button onClick={launchMailingGroups}><i className="fas fa-play"></i> Рассылка в группы</Button>
-
-            {isError &&
-                <Error style={{width: '100%'}}>{isError}</Error>
-            }
-        </form>
-	);
 }
 
 export default ModalLaunch;

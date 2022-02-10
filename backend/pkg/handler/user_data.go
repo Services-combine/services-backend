@@ -29,6 +29,8 @@ func (h *Handler) SaveSettings(c *gin.Context) {
 		return
 	}
 
+	h.logger.Info("Save new settings")
+
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})

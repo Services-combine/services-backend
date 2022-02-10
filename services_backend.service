@@ -1,0 +1,12 @@
+[Unit]
+Description=Services backend
+
+[Service]
+User=q
+Type=simple
+WorkingDirectory=/home/q/services/backend
+ExecStart=/home/q/services/backend/services_backend
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

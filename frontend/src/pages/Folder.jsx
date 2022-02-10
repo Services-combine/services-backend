@@ -361,9 +361,16 @@ const Folder = () => {
 			moveFolder(getSelect.path);
 	}
 
-	const getModalLaunch = () => {
+	const getModalLaunch = (mode=null) => {
 		setModalLaunch(false);
 		fetchDataFolder('reload_accounts');
+		
+		if (mode === 'inviting')
+			dataFolder.inviting = true
+		else if (mode === 'mailing_usernames')
+			dataFolder.mailing_usernames = true
+		else if (mode === 'mailing_groups')
+			dataFolder.mailing_groups = true
 	}
 
     return (

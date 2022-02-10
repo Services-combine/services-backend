@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/korpgoodness/service.git/internal/domain"
 	"go.mongodb.org/mongo-driver/bson"
@@ -183,7 +182,6 @@ func (s *FoldersRepo) GetCountAccounts(ctx context.Context, folderID primitive.O
 }
 
 func (s *FoldersRepo) Move(ctx context.Context, folderID primitive.ObjectID, path string) error {
-	fmt.Println(folderID, path)
 	_, err := s.db.UpdateOne(ctx, bson.M{"_id": folderID}, bson.M{"$set": bson.M{"path": path}})
 	return err
 }

@@ -6,17 +6,19 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/korpgoodness/service.git/pkg/logging"
 	"github.com/korpgoodness/service.git/pkg/service"
-	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
 	services *service.Service
+	logger   logging.Logger
 }
 
 func NewHandler(services *service.Service) *Handler {
+	logger := logging.GetLogger()
 	if err := godotenv.Load(); err != nil {
-		logrus.Fatalf("error loading env variables: %s", err.Error())
+		logger.Fatalf("Error loading env variables: %s", err.Error())
 	}
 
 	return &Handler{services: services}

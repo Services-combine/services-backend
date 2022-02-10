@@ -1,0 +1,12 @@
+[Unit]
+Description=Services frontend
+
+[Service]
+User=q
+Type=simple
+WorkingDirectory=/home/q/services/frontend
+ExecStart=npm start
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
