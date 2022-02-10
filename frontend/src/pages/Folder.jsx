@@ -38,6 +38,7 @@ const Folder = () => {
 	const [modalMove, setModalMove] = useState(false);
 	const [modalCreateAccount, setModaleCreateAccount] = useState(false);
 	const [modalLaunch, setModalLaunch] = useState(false);
+	const [isReload, setIsReload] = useState(false);
     const timeout = 3000;
 	const lastElement = useRef();
 	const observer = useRef();
@@ -61,19 +62,26 @@ const Folder = () => {
     }, [params.folderID])
 
 	useEffect(() => {
-	    fetchDataFolder('scroll');
+		if (!isReload)
+		    fetchDataFolder('scroll');
     }, [skip])
 
 
-	async function fetchDataFolder(mode = 'reload_accounts') {
+	async function fetchDataFolder(mode='reload_accounts') {
 		try {
 			if (mode === 'reload_all' || mode === 'reload_accounts') {
 				setSkip(0);
+				setIsReload(true);
 				setAccounts([]);
 			}
 
 			setIsLoading(true);
-			const response = await InvitingService.fetchDataFolder(params.folderID, limit, skip);
+			var response;
+			if (mode === 'reload_all' || mode === 'reload_accounts') {
+				response = await InvitingService.fetchDataFolder(params.folderID, limit, 0);
+			} else {
+				response = await InvitingService.fetchDataFolder(params.folderID, limit, skip);
+			}
 			
 			if (mode === 'scroll') {
 				if (response.data.accounts != null)
@@ -94,16 +102,18 @@ const Folder = () => {
 					setFolders([]);
 			}
 			
-			if (mode !== 'reload_accounts') {
+			if (mode !== 'reload_accounts' && mode !== 'scroll') {
 				if (mode !== 'reload_datas') {
+					setTotalCount(response.data.countAccounts.all);
 					setDataFolder(response.data.folder);
 					setCountAccounts(response.data.countAccounts);
-					setTotalCount(response.data.countAccounts.all);
 				}
 				setFoldersHash(response.data.pathHash);
 			}
 
 			setIsLoading(false);
+			if (mode === 'reload_all' || mode === 'reload_accounts')
+				setIsReload(false);
 		} catch (e) {
 			setIsError('Ошибка при получении данных папки');
             setTimeout(() => {
@@ -438,7 +448,7 @@ const Folder = () => {
                 <Button className='btn-action' onClick={geterateInterval}>
 					<i className="fas fa-random"></i> Сгенерировать
 				</Button>
-				<Button className='btn-action' onClick={fetchDataFolder}>
+				<Button className='btn-action' onClick={() => fetchDataFolder('reload_all')}>
 					<i className="fas fa-redo-alt"></i>
 				</Button>
             </div>
@@ -452,10 +462,10 @@ const Folder = () => {
 				? <AccountList remove={deleteAccount} accounts={accounts} sendCodeParsing={sendCodeParsing} parsingApi={parsingApi} sendCodeSession={sendCodeSession} createSession={createSession} />
 				: <h4 className='notification'>У вас пока нет аккаунтов</h4>
 			}
-			<div ref={lastElement} style={{height: 20}}></div>
 
-            {isLoading &&
-                <div style={{display: "flex", justifyContent: "center", marginTop: 50}}><Loader/></div>
+            {isLoading
+                ? <div style={{display: "flex", justifyContent: "center", marginTop: 50}}><Loader/></div>
+				: <div ref={lastElement} style={{height: 20}}></div>
             }
 
 			<Modal visible={modalCreateFolder} setVisible={setModalCreateFolder}>

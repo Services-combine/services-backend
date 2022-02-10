@@ -21,7 +21,10 @@ func NewHandler(services *service.Service) *Handler {
 		logger.Fatalf("Error loading env variables: %s", err.Error())
 	}
 
-	return &Handler{services: services}
+	return &Handler{
+		services: services,
+		logger:   logger,
+	}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
