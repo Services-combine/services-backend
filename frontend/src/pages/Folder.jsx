@@ -41,7 +41,6 @@ const Folder = () => {
     const timeout = 3000;
 	const lastElement = useRef();
 	const observer = useRef();
-	const [reload, setReload] = useState(false);
 
 
 	useEffect(() => {
@@ -57,15 +56,18 @@ const Folder = () => {
 	}, [isLoading])
 
     useEffect(() => {
-		if (!reload)
-	        fetchDataFolder('scroll');
-    }, [params.folderID, skip])
+	    fetchDataFolder('reload_all');
+		fetchFoldersMove();
+    }, [params.folderID])
+
+	useEffect(() => {
+	    fetchDataFolder('scroll');
+    }, [skip])
 
 
 	async function fetchDataFolder(mode = 'reload_accounts') {
 		try {
 			if (mode === 'reload_all' || mode === 'reload_accounts') {
-				setReload(true);
 				setSkip(0);
 				setAccounts([]);
 			}
@@ -77,23 +79,30 @@ const Folder = () => {
 				if (response.data.accounts != null)
 					setAccounts([...accounts, ...response.data.accounts]);
 			} else {
-				if (response.data.accounts != null)
-					setAccounts(response.data.accounts);
-				else
-					setAccounts([]);
-
-				if (mode === 'reload_accounts') {
-					if (response.data.folders != null)
-						setFolders(response.data.folders);
+				if (mode !== 'reload_datas') {
+					if (response.data.accounts != null)
+						setAccounts(response.data.accounts);
 					else
-						setFolders([]);
+						setAccounts([]);
 				}
 			}
-			
-			if (mode !== 'reload_accounts')
-				distributionData(response);
 
-			setReload(false);
+			if (mode !== 'scroll') {
+				if (response.data.folders != null)
+					setFolders(response.data.folders);
+				else
+					setFolders([]);
+			}
+			
+			if (mode !== 'reload_accounts') {
+				if (mode !== 'reload_datas') {
+					setDataFolder(response.data.folder);
+					setCountAccounts(response.data.countAccounts);
+					setTotalCount(response.data.countAccounts.all);
+				}
+				setFoldersHash(response.data.pathHash);
+			}
+
 			setIsLoading(false);
 		} catch (e) {
 			setIsError('Ошибка при получении данных папки');
@@ -103,23 +112,15 @@ const Folder = () => {
 		}
 	}
 
-	const distributionData = (response) => {
+	async function fetchFoldersMove() {
 		try {
-			if (response.data.folders != null)
-				setFolders(response.data.folders);
-			else
-				setFolders([]);
-
-			setDataFolder(response.data.folder);
-			setCountAccounts(response.data.countAccounts);
-			setTotalCount(response.data.countAccounts.all);
-			//setFoldersMove(response.data.foldersMove);
-			setFoldersHash(response.data.pathHash);
+			const response = await InvitingService.fetchFoldersMove(params.folderID);
+			setFoldersMove(response.data);
 		} catch (e) {
-			setIsError('Ошибка при получении данных папки');
-            setTimeout(() => {
-                setIsError(null)
-            }, timeout)
+			setIsError('Ошибка при получении данных о перемещении папки');
+			setTimeout(() => {
+				setIsError(null)
+			}, timeout)
 		}
 	}
 
@@ -138,7 +139,7 @@ const Folder = () => {
     async function renameFolder(folderName) {
         try {
             await InvitingService.renameFolder(params.folderID, folderName);
-            fetchDataFolder('reload_all');
+            fetchDataFolder('reload_datas');
         } catch (e) {
             setIsError('Ошибка при переименовывании папки');
             setTimeout(() => {
@@ -200,7 +201,7 @@ const Folder = () => {
 	async function moveFolder(path) {
 		try {
 			await InvitingService.moveFolder(params.folderID, path);
-			fetchDataFolder('reload_all');
+			fetchDataFolder('reload_datas');
 		} catch (e) {
 			setIsError('Ошибка при перемещении папки');
 			setTimeout(() => {
@@ -274,8 +275,16 @@ const Folder = () => {
 
 	async function parsingApi(accountID, code) {
 		try {
-			await InvitingService.parsingApi(params.folderID, accountID, code);
-			fetchDataFolder('reload_accounts');
+			if (code === '') {
+				setIsError('Вы не ввели код');
+				setTimeout(() => {
+					setIsError(null)
+				}, timeout)
+			}
+			else {
+				await InvitingService.parsingApi(params.folderID, accountID, code);
+				fetchDataFolder('reload_accounts');
+			}
 		} catch (e) {
 			setIsError('Ошибка при парсинге API');
 			setTimeout(() => {
@@ -297,8 +306,16 @@ const Folder = () => {
 
 	async function createSession(accountID, code) {
 		try {
-			await InvitingService.createSession(params.folderID, accountID, code);
-			fetchDataFolder('reload_accounts');
+			if (code === '') {
+				setIsError('Вы не ввели код');
+				setTimeout(() => {
+					setIsError(null)
+				}, timeout)
+			}
+			else {
+				await InvitingService.createSession(params.folderID, accountID, code);
+				fetchDataFolder('reload_accounts');
+			}
 		} catch (e) {
 			setIsError('Ошибка при создании .session файла');
 			setTimeout(() => {

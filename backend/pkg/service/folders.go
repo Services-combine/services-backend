@@ -106,12 +106,6 @@ func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.Obje
 	}
 	folderData["countAccounts"] = countAccounts
 
-	//foldersMove, err := GetFoldersMove(ctx, folderID, folder.Path, s.repo)
-	//if err != nil {
-	//	return map[string]interface{}{}, err
-	//}
-	//folderData["foldersMove"] = foldersMove
-
 	pathHash, err := GetPathHash(ctx, folderID, folder.Path, s.repo)
 	if err != nil {
 		return nil, err

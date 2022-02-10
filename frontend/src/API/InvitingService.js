@@ -13,6 +13,10 @@ export default class InvitingService {
         return $api.post(`/user/inviting/${folderID}`, {limit: limit, skip: skip})
     }
 
+    static async fetchFoldersMove(folderID) {
+        return $api.get(`/user/inviting/${folderID}/folders-move`)
+    }
+
     static async createFolderInFolder(folderID, folderName) {
         return $api.post(`/user/inviting/${folderID}/create-folder`, {name: folderName})
     }
