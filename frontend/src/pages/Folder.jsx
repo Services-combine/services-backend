@@ -6,7 +6,6 @@ import Error from '../components/UI/error/Error';
 import Button from '../components/UI/button/Button';
 import Loader from '../components/UI/loader/Loader';
 import Modal from '../components/UI/modal/Modal';
-import CountAccounts from '../components/CountAccounts';
 import FolderList from '../components/FolderList';
 import AccountList from '../components/AccountList';
 import ModalFormInput from '../components/ModalFormInput';
@@ -385,27 +384,31 @@ const Folder = () => {
 
     return (
         <div>
-            <div className='header'>
-                <div className='path'>
-                    <Link to='/inviting' className='path__item-link'>Главная</Link>
+			<div className="header__folder">
+				<div className="header__folder__body container">
+					<div className='path'>
+						<Link to='/inviting' className='path__item-link'>Главная</Link>
 
-					{Object.keys(foldersHash).length !== 0 &&
-						Object.entries(foldersHash).map(([key, item]) => (
-							<div className='path__item' key={item.value}>
-								<b>/</b>
-								<Link to={`/inviting/${item.value}`} className='path__item-link'>
-									{item.name}
-								</Link>
-							</div>
-						))
-					}
-                </div>
-				<div className='header__btns'>
-					<CountAccounts all={countAccounts.all} clean={countAccounts.clean} block={countAccounts.block} />
+						{Object.keys(foldersHash).length !== 0 &&
+							Object.entries(foldersHash).map(([key, item]) => (
+								<div className='path__item' key={item.value}>
+									<b>/</b>
+									<Link to={`/inviting/${item.value}`} className='path__item-link'>
+										{item.name}
+									</Link>
+								</div>
+							))
+						}
+					</div>
+					<div className="count__accounts">
+						<h6><i className="fas fa-user-alt"></i> - {countAccounts.all}</h6>
+						<h6><i className="fas fa-check"></i> - {countAccounts.clean}</h6>
+						<h6><i className="fas fa-info-circle"></i> - {countAccounts.block}</h6>
+					</div>
 				</div>
-            </div>
+			</div>
 
-            <div className='menu btn-toolbar' role="toolbar">
+            <div className='menu btn-toolbar container' role="toolbar">
 				{accounts.length === 0 &&
 					folders.length === 0 && 
 						<Button style={{background: "rgb(233, 62, 62)", color: "#dedede"}} className="delete" onClick={deleteFolder}>

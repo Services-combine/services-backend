@@ -9,6 +9,7 @@ import Loader from '../components/UI/loader/Loader';
 import ModalFormInput from '../components/ModalFormInput';
 import FolderList from '../components/FolderList';
 import ModalParams from '../components/ModalParams';
+import Header from '../components/Header';
 
 const Inviting = () => {
     let navigate = useNavigate();
@@ -65,14 +66,23 @@ const Inviting = () => {
 
     return (
         <div>
-            <div className='header'>
-                <h3 className='logo'>Инвайтинг & Рассылка</h3>
-                <div className='header__btns'>
-                    <Button onClick={() => navigate("/")}><i className="fas fa-home"></i> На главную</Button>
-                    <Button onClick={() => setModalParams(true)}><i className="fas fa-chart-pie"></i> Показатели</Button>
-                    <Button onClick={() => setModalCreateFolder(true)}><i className="fas fa-plus"></i> Создать папку</Button>
-                </div>
-            </div>
+            <Header logo="Инвайтинг & Рассылка">
+                <li>
+                    <Button onClick={() => navigate("/")}>
+                        <i className="fas fa-home"></i> На главную
+                    </Button>
+                </li>
+                <li>
+                    <Button onClick={() => setModalParams(true)}>
+                        <i className="fas fa-chart-pie"></i> Показатели
+                    </Button>
+                </li>
+                <li>
+                    <Button onClick={() => setModalCreateFolder(true)}>
+                        <i className="fas fa-plus"></i> Создать папку
+                    </Button>
+                </li>
+            </Header>
 
             {isError &&
                 <Error>{isError}</Error>

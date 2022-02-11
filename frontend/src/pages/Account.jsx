@@ -67,16 +67,13 @@ const Folder = () => {
 
     return (
         <div>
-            <div className='header'>
-                <div className='header__left'>
+            <div className='header__account'>
+                <div className="header__account__body container">
                     <Link to={`/inviting/${params.folderID}`} className='again'>
                         <i className="fas fa-arrow-left"></i>
                     </Link>
                     <h3 className='title'>Настройки аккаунта</h3>
                 </div>
-				<div className='header__btns'>
-					
-				</div>
             </div>
 
             {isLoading

@@ -7,6 +7,7 @@ import Button from '../components/UI/button/Button';
 import Loader from '../components/UI/loader/Loader';
 import Modal from '../components/UI/modal/Modal';
 import ModalSettings from '../components/ModalSetings';
+import Header from '../components/Header';
 import Services from '../API/Services';
 
 const ListServices = () => {
@@ -56,19 +57,21 @@ const ListServices = () => {
 
 	return (
         <div className='services'>
-            <div className='header'>
-                <h3 className='logo'>Сервисы</h3>
-                <div className='header__btns'>
+            <Header logo="Сервисы">
+                <li className='header__item'>
                     <Button onClick={() => setModalSettings(true)}>
                         <i className="fas fa-cog"></i> Настройки
                     </Button>
+                </li>
+                <li className='header__item'>
                     <Button onClick={() => store.logout()}>
                         <i className="fas fa-sign-out-alt"></i> Выйти
                     </Button>
-                </div>
-            </div>
+                </li>
+            </Header>
 
-            <div className="services__list btn-toolbar" role="toolbar">
+            
+            <div className="services__list btn-toolbar container" role="toolbar">
                 <Link to="/inviting" className="services__list-item">
                     <h6 className="services__list-item__title">Инвайтинг & Рассылка</h6>
                 </Link>

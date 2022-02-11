@@ -2,25 +2,8 @@
     width: 100%;
 }
 
-.header .logo {
-    color: #fff;
-    font-size: 25px;
-    font-weight: bold;
-    display: inline-block;
-    margin-top: 2px;
-}
-
-.header .header__btns {
-    display: block;
-    float: right;
-}
-
-.header .header__btns Button {
-    margin: 0 5px;
-}
-
 .services__list {
-    margin-top: 30px;
+    padding: 20px 0px 0px 0px;
 }
 
 .services__list-item {
@@ -42,4 +25,10 @@
 .services__list-item__title {
     color: #fff;
     font-size: 17px;
+}
+
+@media (max-width: 991px) {
+    .services__list {
+        padding: 20px 0px 0px 15px;
+    }
 }

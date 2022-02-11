@@ -1,29 +1,32 @@
-.header .header__left {
-    display: inline-block;
-    margin-top: 2px;
+.header__account {
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgb(48, 48, 48);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
 }
 
-.header .again {
+.header__account__body {
+    position: relative;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    height: 60px;
+}
+
+.header__account__body .again {
     color: #dedede;
     font-size: 25px;
     font-weight: bold;
+    margin-top: 4px;
 }
 
-.header .title {
+.header__account__body .title {
     color: #dedede;
     font-size: 25px;
     font-weight: bold;
     display: inline-block;
-    margin-left: 20px;
-}
-
-.header .header__btns {
-    display: block;
-    float: right;
-}
-
-.header .header__btns Button {
-    margin: 0 5px;
+    margin: 0px 0px 0px 20px;
 }
 
 .settings-accounts {
@@ -36,8 +39,12 @@
 }
 
 .settings-accounts .title {
-    margin-top: 15px;
+    margin: 15px 0px -3px 0px;
     font-weight: bold;
+}
+
+.settings-accounts Input {
+    width: 100%;
 }
 
 .settings-accounts .interval {
@@ -50,4 +57,10 @@
     color: #dedede;
     display: block;
     margin-left: 10px;
+}
+
+@media (max-width: 479px) {
+    .settings-accounts {
+        width: 330px;
+    }
 }

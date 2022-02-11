@@ -38,7 +38,7 @@ func (h *Handler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"accessToken": res.AccessToken,
 		//"refreshToken": res.RefreshToken,
-		"userID": res.UserID,
+		//"userID": res.UserID,
 	})
 }
 
@@ -72,7 +72,7 @@ func (h *Handler) Refresh(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"accessToken": res.AccessToken,
 		//"refreshToken": res.RefreshToken,
-		"userID": res.UserID,
+		//"userID": res.UserID,
 	})
 }
 

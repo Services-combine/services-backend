@@ -1,35 +1,52 @@
-.header .path {
-    display: inline-block;
+.header__folder {
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgb(48, 48, 48);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
 }
 
-.header .path__item {
+.header__folder__body {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+}
+
+.path__item {
     display: inline;
 }
 
-.header .path .path__item-link {
+.path__item-link {
     text-decoration: none;
     color: #dedede;
     font-weight: bold;
     font-size: 22px;
 }
 
-.header .path b {
+.path__item-link:hover {
+    color: #dedede;
+    opacity: 0.8;
+}
+
+.path__item b {
     font-size: 22px;
     padding: 0px 10px;
 }
 
-.header .count-accounts {
-    margin-top: 8px;
+.count__accounts {
+    padding-top: 5px;
 }
 
-.header .count-accounts h6 {
+.count__accounts h6 {
     display: inline;
     margin-right: 10px;
     font-size: 18px;
 }
 
 .menu {
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 .menu .delete {
@@ -50,6 +67,7 @@
     border-radius: 10px;
     padding: 12px 15px;
     margin-bottom: 12px;
+    width: 100%;
 }
 
 .alert .account__link {
@@ -141,4 +159,15 @@
 
 .form-create-account Button {
     margin-top: 5px;
+}
+
+@media (max-width: 479px) {
+    .header__folder__body {
+        text-align: center;
+        display:inline-block
+    }
+
+    .alert {
+        display: inline-block;
+    }
 }

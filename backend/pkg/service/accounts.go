@@ -15,10 +15,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-const (
-	path_accounts = "/home/q/p/projects/services/backend/accounts/"
-)
-
 type AccountsService struct {
 	repo repository.Accounts
 }
@@ -96,7 +92,7 @@ func (s *AccountsService) Delete(ctx context.Context, accountID primitive.Object
 		return err
 	}
 
-	os.Remove(path_accounts + account.Phone + ".session")
+	os.Remove(os.Getenv("FOLDER_ACCOUNTS") + account.Phone + ".session")
 	return nil
 }
 
