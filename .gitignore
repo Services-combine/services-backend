@@ -1,6 +1,5 @@
-backend/.env
-backend/accounts/
-backend/python/inviting/logs/
-backend/python/inviting/__pycache__/
-backend/python/account_telethon/logs/
-backend/python/account_telethon/__pycache__/
+.env
+accounts/
+logs/
+python/account_telethon/logs/
+python/account_telethon/__pycache__/
