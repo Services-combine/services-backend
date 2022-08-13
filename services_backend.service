@@ -5,7 +5,7 @@ Description=Services backend
 User=q
 Type=simple
 WorkingDirectory=/home/q/services/backend
-ExecStart=/home/q/services/backend/services_backend
+ExecStart=/home/q/services/services-backend/services_backend
 Restart=always
 
 [Install]

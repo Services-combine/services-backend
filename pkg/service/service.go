@@ -16,9 +16,8 @@ type userData struct {
 
 type Authorization interface {
 	Login(ctx context.Context, username, password string) (userData, error)
-	Refresh(ctx context.Context, refreshToken string) (userData, error)
-	Logout(ctx context.Context, refreshToken string) error
 	ParseToken(token string) (string, error)
+	CheckUser(ctx context.Context, userID primitive.ObjectID) (domain.UserReduxData, error)
 }
 
 type Folders interface {

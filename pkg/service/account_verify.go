@@ -76,7 +76,7 @@ func (s *AccountVerifyService) LoginApi(ctx context.Context, accountID primitive
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(response))
+
 	switch string(response) {
 	case error_many_request:
 		return fmt.Errorf("Many request")
@@ -89,7 +89,6 @@ func (s *AccountVerifyService) LoginApi(ctx context.Context, accountID primitive
 	var getData map[string]interface{}
 	json.Unmarshal(response, &getData)
 	randomHash := getData["random_hash"].(string)
-	fmt.Println(randomHash)
 	if err := s.repo.AddRandomHash(ctx, accountID, randomHash); err != nil {
 		return err
 	}
@@ -246,11 +245,10 @@ func CreateApp(cookies []*http.Cookie, client *http.Client, hash string) error {
 		return err
 	}
 
-	response, err := ioutil.ReadAll(resp.Body)
+	_, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	fmt.Println(response)
 
 	return nil
 }

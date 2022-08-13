@@ -7,3 +7,8 @@ type User struct {
 	Username string             `json:"username" binding:"required"`
 	Password string             `json:"password" binding:"required"`
 }
+
+type UserReduxData struct {
+	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Username       string             `json:"username" binding:"required"`
+}

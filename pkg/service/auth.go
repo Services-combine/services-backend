@@ -42,29 +42,6 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (use
 	return s.CreateSession(ctx, user.ID)
 }
 
-func (s *AuthService) Refresh(ctx context.Context, refreshToken string) (userData, error) {
-	_, err := s.ParseToken(refreshToken)
-	if err != nil {
-		return userData{}, err
-	}
-
-	user, err := s.repo.GetByRefreshToken(ctx, refreshToken)
-	if err != nil {
-		return userData{}, err
-	}
-
-	return s.CreateSession(ctx, user.ID)
-}
-
-func (s *AuthService) Logout(ctx context.Context, refreshToken string) error {
-	err := s.repo.RemoveRefreshToken(ctx, refreshToken)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (s *AuthService) CreateSession(ctx context.Context, userId primitive.ObjectID) (userData, error) {
 	var (
 		res userData
@@ -77,18 +54,12 @@ func (s *AuthService) CreateSession(ctx context.Context, userId primitive.Object
 		return res, err
 	}
 
-	res.RefreshToken, err = NewJWT(userId.Hex(), refreshTokenTTL)
-	if err != nil {
-		return res, err
-	}
+	//res.RefreshToken, err = NewJWT(userId.Hex(), refreshTokenTTL)
+	//if err != nil {
+	//	return res, err
+	//}
 
-	session := domain.Session{
-		RefreshToken: res.RefreshToken,
-		ExpiresAt:    time.Now().Add(refreshTokenTTL),
-	}
-
-	err = s.repo.SetSession(ctx, userId, session)
-	return res, err
+	return res, nil
 }
 
 func NewJWT(userId string, tokenTTL time.Duration) (string, error) {
@@ -100,8 +71,8 @@ func NewJWT(userId string, tokenTTL time.Duration) (string, error) {
 	return token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 }
 
-func (s *AuthService) ParseToken(accessToken string) (string, error) {
-	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
+func (s *AuthService) ParseToken(Token string) (string, error) {
+	token, err := jwt.Parse(Token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
@@ -109,15 +80,20 @@ func (s *AuthService) ParseToken(accessToken string) (string, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if err != nil {
-		return "", err
+		return "", errors.New("Не авторизован")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return "", errors.New("error get user claims from token")
+		return "", errors.New("Ошибка при парсинге токена")
 	}
 
 	return claims["sub"].(string), nil
+}
+
+func (s *AuthService) CheckUser(ctx context.Context, userID primitive.ObjectID) (domain.UserReduxData, error) {
+	user, err := s.repo.CheckUser(ctx, userID)
+	return user, err
 }
 
 func generatePasswordHash(password string) string {
