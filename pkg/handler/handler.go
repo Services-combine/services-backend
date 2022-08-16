@@ -47,14 +47,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 			user := auth.Group("/user")
 			{
-				user.GET("/", h.ServicesPage)
-				user.POST("/save-settings", h.SaveSettings)
-
 				inviting := user.Group("/inviting")
 				{
-					inviting.GET("/", h.MainPage)
+					inviting.GET("/get-folders", h.GetFolders)
+					inviting.GET("/get-settings", h.GetSettings)
+					inviting.POST("/save-settings", h.SaveSettings)
 					inviting.POST("/create-folder", h.CreateFolder)
-					inviting.POST("/:folderID", h.OpenFolder)
+					inviting.GET("/:folderID", h.OpenFolder)
 					inviting.GET("/:folderID/folders-move", h.GetFoldersMove)
 					inviting.POST("/:folderID/create-folder", h.CreateFolder)
 
@@ -73,7 +72,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 					inviting.GET("/:folderID/launch-mailing-groups", h.LaunchMailingGroups)
 
 					inviting.POST("/:folderID/:accountID", h.UpdateAccount)
-					inviting.GET("/:folderID/:accountID", h.OpenAccount)
 					inviting.GET("/:folderID/:accountID/delete", h.DeleteAccount)
 					inviting.GET("/:folderID/:accountID/login-api", h.LoginApi)
 					inviting.POST("/:folderID/:accountID/parsing-api", h.ParsingApi)

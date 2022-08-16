@@ -47,36 +47,6 @@ func (s *AccountsService) Create(ctx context.Context, accountCreate domain.Accou
 	return err
 }
 
-func (s *AccountsService) GetSettings(ctx context.Context, folderID, accountID primitive.ObjectID) (domain.AccountSettings, error) {
-	account, err := s.repo.GetSettings(ctx, accountID)
-	if err != nil {
-		return domain.AccountSettings{}, err
-	}
-
-	folder, err := s.repo.GetFolderByID(ctx, folderID)
-	if err != nil {
-		return domain.AccountSettings{}, err
-	}
-	account.FolderName = folder.Name
-	account.FolderID = folderID.Hex()
-	account.Chat = folder.Chat
-
-	foldersMove := []domain.DataFolderHash{}
-	folders, err := s.repo.GetFolders(ctx)
-	if err != nil {
-		return domain.AccountSettings{}, err
-	}
-
-	for Name, ObjectID := range folders {
-		if ObjectID != folderID.Hex() {
-			foldersMove = append(foldersMove, domain.DataFolderHash{Name, ObjectID})
-		}
-	}
-	account.FoldersMove = foldersMove
-
-	return account, nil
-}
-
 func (s *AccountsService) UpdateAccount(ctx context.Context, account domain.AccountUpdate) error {
 	err := s.repo.UpdateAccount(ctx, account)
 	return err

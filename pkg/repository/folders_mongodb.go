@@ -7,7 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type FoldersRepo struct {
@@ -121,36 +120,16 @@ func (s *FoldersRepo) GetFolders(ctx context.Context) ([]domain.Folder, error) {
 	return folders, err
 }
 
-func (s *FoldersRepo) GetAccountByFolderID(ctx context.Context, folderID primitive.ObjectID, limitFolder domain.LimitFolder) ([]domain.Account, error) {
+func (s *FoldersRepo) GetAccountsByFolderID(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error) {
 	var accounts []domain.Account
 
-	if limitFolder.Limit == 0 && limitFolder.Skip == 0 {
-		cur, err := s.db.Database().Collection(accountsCollection).Find(ctx, bson.M{"folder": folderID})
-		if err != nil {
-			return nil, err
-		}
+	cur, err := s.db.Database().Collection(accountsCollection).Find(ctx, bson.M{"folder": folderID})
+	if err != nil {
+		return nil, err
+	}
 
-		if err := cur.All(ctx, &accounts); err != nil {
-			return nil, err
-		}
-	} else {
-		filter := bson.M{"folder": folderID}
-		skip := int64(limitFolder.Skip)
-		limit := int64(limitFolder.Limit)
-
-		opts := options.FindOptions{
-			Skip:  &skip,
-			Limit: &limit,
-		}
-
-		cur, err := s.db.Database().Collection(accountsCollection).Find(ctx, filter, &opts)
-		if err != nil {
-			return nil, err
-		}
-
-		if err := cur.All(ctx, &accounts); err != nil {
-			return nil, err
-		}
+	if err := cur.All(ctx, &accounts); err != nil {
+		return nil, err
 	}
 
 	return accounts, nil

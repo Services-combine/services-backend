@@ -7,7 +7,7 @@ import (
 	"github.com/korpgoodness/service.git/internal/domain"
 )
 
-func (h *Handler) ServicesPage(c *gin.Context) {
+func (h *Handler) GetSettings(c *gin.Context) {
 	settings, err := h.services.UserData.GetSettings(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())

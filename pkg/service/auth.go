@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	accessTokenTTL  = 30 * time.Minute
+	accessTokenTTL  = 30 * 24 * time.Hour
 	refreshTokenTTL = 30 * 24 * time.Hour
 )
 

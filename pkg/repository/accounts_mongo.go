@@ -33,13 +33,6 @@ func (s *AccountsRepo) Create(ctx context.Context, accountCreate domain.Account)
 	return err
 }
 
-func (s *AccountsRepo) GetSettings(ctx context.Context, accountID primitive.ObjectID) (domain.AccountSettings, error) {
-	var account domain.AccountSettings
-
-	err := s.db.FindOne(ctx, bson.M{"_id": accountID}).Decode(&account)
-	return account, err
-}
-
 func (s *AccountsRepo) GetData(ctx context.Context, accountID primitive.ObjectID) (domain.Account, error) {
 	var account domain.Account
 
@@ -60,33 +53,6 @@ func (s *AccountsRepo) GetAccountsFolder(ctx context.Context, folderID primitive
 	}
 
 	return accounts, nil
-}
-
-func (s *AccountsRepo) GetFolders(ctx context.Context) (map[string]string, error) {
-	var folders []domain.Folder
-	foldersMove := map[string]string{}
-
-	cur, err := s.db.Database().Collection(foldersCollection).Find(ctx, bson.M{})
-	if err != nil {
-		return nil, err
-	}
-
-	if err := cur.All(ctx, &folders); err != nil {
-		return nil, err
-	}
-
-	for _, folder := range folders {
-		foldersMove[folder.Name] = folder.ID.Hex()
-	}
-
-	return foldersMove, err
-}
-
-func (s *AccountsRepo) GetFolderByID(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error) {
-	var folder domain.Folder
-
-	err := s.db.Database().Collection(foldersCollection).FindOne(ctx, bson.M{"_id": folderID}).Decode(&folder)
-	return folder, err
 }
 
 func (s *AccountsRepo) UpdateAccount(ctx context.Context, account domain.AccountUpdate) error {

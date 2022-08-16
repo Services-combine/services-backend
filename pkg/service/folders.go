@@ -79,7 +79,7 @@ func (s *FoldersService) GetData(ctx context.Context, folderID primitive.ObjectI
 	return folder, nil
 }
 
-func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.ObjectID, limitFolder domain.LimitFolder) (map[string]interface{}, error) {
+func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.ObjectID) (map[string]interface{}, error) {
 	folderData := map[string]interface{}{}
 
 	folder, err := s.GetData(ctx, folderID)
@@ -88,11 +88,23 @@ func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.Obje
 	}
 	folderData["folder"] = folder
 
-	accounts, err := s.repo.GetAccountByFolderID(ctx, folderID, limitFolder)
+	accounts, err := s.repo.GetAccountsByFolderID(ctx, folderID)
 	if err != nil {
 		return map[string]interface{}{}, err
 	}
 	folderData["accounts"] = accounts
+
+	accountsMove := []domain.DataFolderHash{}
+	foldersAll, err := s.repo.GetFolders(ctx)
+	if err != nil {
+		return map[string]interface{}{}, err
+	}
+	for _, folder := range foldersAll {
+		if folder.ID.Hex() != folderID.Hex() {
+			accountsMove = append(accountsMove, domain.DataFolderHash{folder.Name, folder.ID.Hex()})
+		}
+	}
+	folderData["accountsMove"] = accountsMove
 
 	folders, err := s.GetListFolders(ctx, folderID.Hex())
 	if err != nil {
@@ -294,8 +306,7 @@ func (s *FoldersService) CheckingEnteredData(ctx context.Context, folderID primi
 		return err
 	}
 
-	var limitFolder domain.LimitFolder
-	accounts, err := s.repo.GetAccountByFolderID(ctx, folderID, limitFolder)
+	accounts, err := s.repo.GetAccountsByFolderID(ctx, folderID)
 	if err != nil {
 		return err
 	}

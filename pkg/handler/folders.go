@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (h *Handler) MainPage(c *gin.Context) {
+func (h *Handler) GetFolders(c *gin.Context) {
 	dataPAge, err := h.services.Folders.GetDataMainPage(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -49,20 +49,13 @@ func (h *Handler) CreateFolder(c *gin.Context) {
 }
 
 func (h *Handler) OpenFolder(c *gin.Context) {
-	var limitFolder domain.LimitFolder
-
-	if err := c.BindJSON(&limitFolder); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
 	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	folderData, err := h.services.Folders.OpenFolder(c, folderID, limitFolder)
+	folderData, err := h.services.Folders.OpenFolder(c, folderID)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return

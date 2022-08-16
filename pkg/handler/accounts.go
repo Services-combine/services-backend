@@ -38,28 +38,6 @@ func (h *Handler) CreateAccount(c *gin.Context) {
 	})
 }
 
-func (h *Handler) OpenAccount(c *gin.Context) {
-	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	accountID, err := primitive.ObjectIDFromHex(c.Param("accountID"))
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	accountSettings, err := h.services.Accounts.GetSettings(c, folderID, accountID)
-	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusOK, accountSettings)
-}
-
 func (h *Handler) UpdateAccount(c *gin.Context) {
 	var accountUpdate domain.AccountUpdate
 

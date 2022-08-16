@@ -27,7 +27,6 @@ type AccountSettings struct {
 	FolderName   string             `json:"folder_name"`
 	FolderID     string             `json:"folder_id"`
 	FoldersMove  []DataFolderHash   `json:"folders_move"`
-	Chat         string             `json:"chat"`
 }
 
 type AccountUpdate struct {

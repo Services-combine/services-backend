@@ -44,7 +44,7 @@ func (h *Handler) parseAuthHeader(c *gin.Context) (string, error) {
 
 	headerParts := strings.Split(header, " ")
 	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-		return "", errors.New("НЕ валидный заголовок Authorized")
+		return "", errors.New("Н валидный заголовок Authorized")
 	}
 
 	if len(headerParts[1]) == 0 {

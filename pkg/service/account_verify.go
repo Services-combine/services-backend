@@ -328,7 +328,7 @@ func (s *AccountVerifyService) CreateSession(ctx context.Context, accountLogin d
 	if err != nil {
 		return err
 	}
-
+	
 	script := os.Getenv("FOLDER_PYTHON_SCRIPTS_VERIFY") + "verify_account.py"
 	args_phone := fmt.Sprintf("-P %s", account.Phone)
 	args_hash := fmt.Sprintf("-H %s", account.Api_hash)
