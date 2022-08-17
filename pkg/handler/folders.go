@@ -9,13 +9,13 @@ import (
 )
 
 func (h *Handler) GetFolders(c *gin.Context) {
-	dataPAge, err := h.services.Folders.GetDataMainPage(c)
+	dataPage, err := h.inviting.Folders.GetDataMainPage(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, dataPAge)
+	c.JSON(http.StatusOK, dataPage)
 }
 
 func (h *Handler) CreateFolder(c *gin.Context) {
@@ -38,7 +38,7 @@ func (h *Handler) CreateFolder(c *gin.Context) {
 	folder.Mailing_usernames = false
 	folder.Mailing_groups = false
 
-	if err := h.services.Folders.Create(c, folder); err != nil {
+	if err := h.inviting.Folders.Create(c, folder); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -48,14 +48,14 @@ func (h *Handler) CreateFolder(c *gin.Context) {
 	})
 }
 
-func (h *Handler) OpenFolder(c *gin.Context) {
+func (h *Handler) GetFolderById(c *gin.Context) {
 	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	folderData, err := h.services.Folders.OpenFolder(c, folderID)
+	folderData, err := h.inviting.Folders.GetFolderById(c, folderID)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -71,7 +71,7 @@ func (h *Handler) GetFoldersMove(c *gin.Context) {
 		return
 	}
 
-	folderData, err := h.services.Folders.GetFoldersMove(c, folderID)
+	folderData, err := h.inviting.Folders.GetFoldersMove(c, folderID)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -94,7 +94,7 @@ func (h *Handler) MoveFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.Move(c, folderID, folderMove.Path); err != nil {
+	if err := h.inviting.Folders.Move(c, folderID, folderMove.Path); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -118,7 +118,7 @@ func (h *Handler) RenameFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.Rename(c, folderID, folderName.Name); err != nil {
+	if err := h.inviting.Folders.Rename(c, folderID, folderName.Name); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -128,7 +128,7 @@ func (h *Handler) RenameFolder(c *gin.Context) {
 	})
 }
 
-func (h *Handler) ChangeChatFolder(c *gin.Context) {
+func (h *Handler) ChangeChat(c *gin.Context) {
 	var folderChat domain.FolderChat
 
 	if err := c.BindJSON(&folderChat); err != nil {
@@ -142,7 +142,7 @@ func (h *Handler) ChangeChatFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.ChangeChat(c, folderID, folderChat.Chat); err != nil {
+	if err := h.inviting.Folders.ChangeChat(c, folderID, folderChat.Chat); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -152,7 +152,7 @@ func (h *Handler) ChangeChatFolder(c *gin.Context) {
 	})
 }
 
-func (h *Handler) ChangeUsernamesFolder(c *gin.Context) {
+func (h *Handler) ChangeUsernames(c *gin.Context) {
 	var folderUsernames domain.FolderUsernames
 
 	if err := c.BindJSON(&folderUsernames); err != nil {
@@ -166,7 +166,7 @@ func (h *Handler) ChangeUsernamesFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.ChangeUsernames(c, folderID, folderUsernames.Usernames); err != nil {
+	if err := h.inviting.Folders.ChangeUsernames(c, folderID, folderUsernames.Usernames); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -176,7 +176,7 @@ func (h *Handler) ChangeUsernamesFolder(c *gin.Context) {
 	})
 }
 
-func (h *Handler) ChangeMessageFolder(c *gin.Context) {
+func (h *Handler) ChangeMessage(c *gin.Context) {
 	var folderMessage domain.FolderMessage
 
 	if err := c.BindJSON(&folderMessage); err != nil {
@@ -190,7 +190,7 @@ func (h *Handler) ChangeMessageFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.ChangeMessage(c, folderID, folderMessage.Message); err != nil {
+	if err := h.inviting.Folders.ChangeMessage(c, folderID, folderMessage.Message); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -200,7 +200,7 @@ func (h *Handler) ChangeMessageFolder(c *gin.Context) {
 	})
 }
 
-func (h *Handler) ChangeGroupsFolder(c *gin.Context) {
+func (h *Handler) ChangeGroups(c *gin.Context) {
 	var folderGroups domain.FolderGroups
 
 	if err := c.BindJSON(&folderGroups); err != nil {
@@ -214,7 +214,7 @@ func (h *Handler) ChangeGroupsFolder(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.ChangeGroups(c, folderID, folderGroups.Groups); err != nil {
+	if err := h.inviting.Folders.ChangeGroups(c, folderID, folderGroups.Groups); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -231,13 +231,13 @@ func (h *Handler) DeleteFolder(c *gin.Context) {
 		return
 	}
 
-	folder, err := h.services.Folders.GetData(c, folderID)
+	folder, err := h.inviting.Folders.GetData(c, folderID)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := h.services.Folders.Delete(c, folderID); err != nil {
+	if err := h.inviting.Folders.Delete(c, folderID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -252,7 +252,7 @@ func (h *Handler) LaunchInviting(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.LaunchInviting(c, folderID); err != nil {
+	if err := h.inviting.Folders.LaunchInviting(c, folderID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -269,7 +269,7 @@ func (h *Handler) LaunchMailingUsernames(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.LaunchMailingUsernames(c, folderID); err != nil {
+	if err := h.inviting.Folders.LaunchMailingUsernames(c, folderID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -286,7 +286,7 @@ func (h *Handler) LaunchMailingGroups(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Folders.LaunchMailingGroups(c, folderID); err != nil {
+	if err := h.inviting.Folders.LaunchMailingGroups(c, folderID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}

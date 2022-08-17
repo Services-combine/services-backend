@@ -15,7 +15,7 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	res, err := h.services.Authorization.Login(c, inp.Username, inp.Password)
+	res, err := h.authorization.Authorization.Login(c, inp.Username, inp.Password)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserNotFound) {
 			newErrorResponse(c, http.StatusBadRequest, err.Error())

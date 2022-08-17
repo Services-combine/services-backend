@@ -62,11 +62,42 @@ type Repository struct {
 	UserData
 }
 
+type AuthRepository struct {
+
+}
+
+type InvitingRepository struct {
+
+}
+
+type ChannelsRepository struct {
+
+}
+
+
 func NewRepository(db *mongo.Client) *Repository {
 	return &Repository{
 		Authorization: NewAuthRepo(db.Database(viper.GetString("mongo.databaseName"))),
 		Folders:       NewFoldersRepo(db.Database(viper.GetString("mongo.databaseName"))),
 		Accounts:      NewAccountsRepo(db.Database(viper.GetString("mongo.databaseName"))),
 		UserData:      NewUserDataRepo(db.Database(viper.GetString("mongo.databaseName"))),
+	}
+}
+
+func NewAuthRepository(db *mongo.Client) *AuthRepository {
+	return &AuthRepository{
+
+	}
+}
+
+func NewInvitingRepository(db *mongo.Client) *InvitingRepository {
+	return &InvitingRepository{
+		
+	}
+}
+
+func NewChannelsRepository(db *mongo.Client) *ChannelsRepository {
+	return &ChannelsRepository{
+		
 	}
 }

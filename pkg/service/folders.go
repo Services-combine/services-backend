@@ -79,7 +79,7 @@ func (s *FoldersService) GetData(ctx context.Context, folderID primitive.ObjectI
 	return folder, nil
 }
 
-func (s *FoldersService) OpenFolder(ctx context.Context, folderID primitive.ObjectID) (map[string]interface{}, error) {
+func (s *FoldersService) GetFolderById(ctx context.Context, folderID primitive.ObjectID) (map[string]interface{}, error) {
 	folderData := map[string]interface{}{}
 
 	folder, err := s.GetData(ctx, folderID)

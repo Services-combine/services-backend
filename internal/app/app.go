@@ -45,8 +45,16 @@ func (s *Server) Run() error {
 	}
 
 	repos := repository.NewRepository(db)
+
 	services := service.NewService(repos)
-	handlers := handler.NewHandler(services)
+	inviting := service.NewInviting(repos)
+	channels := service.NewChannels(repos)
+
+	handlers := handler.NewHandler(
+		services,
+		inviting,
+		channels,
+	)
 	routes := handlers.InitRoutes()
 
 	s.httpServer = &http.Server{

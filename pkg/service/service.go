@@ -14,20 +14,25 @@ type userData struct {
 	UserID       string
 }
 
+// Services
+
 type Authorization interface {
 	Login(ctx context.Context, username, password string) (userData, error)
 	ParseToken(token string) (string, error)
 	CheckUser(ctx context.Context, userID primitive.ObjectID) (domain.UserReduxData, error)
 }
 
+
+// Inviting 
+
 type Folders interface {
-	GetDataMainPage(ctx context.Context) (map[string]interface{}, error)
-	GetListFolders(ctx context.Context, path string) ([]domain.FolderItem, error)
-	Get(ctx context.Context, path string) ([]domain.Folder, error)
+	GetDataMainPage(ctx context.Context) (map[string]interface{}, error) //
+	GetListFolders(ctx context.Context, path string) ([]domain.FolderItem, error) //
+	Get(ctx context.Context, path string) ([]domain.Folder, error) //
 	Create(ctx context.Context, folder domain.Folder) error
-	GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)
-	OpenFolder(ctx context.Context, folderID primitive.ObjectID) (map[string]interface{}, error)
-	GetFoldersMove(ctx context.Context, folderID primitive.ObjectID) ([]domain.DataFolderHash, error)
+	GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error) //
+	GetFolderById(ctx context.Context, folderID primitive.ObjectID) (map[string]interface{}, error)
+	GetFoldersMove(ctx context.Context, folderID primitive.ObjectID) ([]domain.DataFolderHash, error) //
 	Move(ctx context.Context, folderID primitive.ObjectID, path string) error
 	Rename(ctx context.Context, folderID primitive.ObjectID, name string) error
 	ChangeChat(ctx context.Context, folderID primitive.ObjectID, chat string) error
@@ -60,20 +65,45 @@ type UserData interface {
 	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
 }
 
-type Service struct {
+
+// Channels
+
+//...
+
+
+type AuthorizetionService struct {
 	Authorization
+}
+
+type InvitingService struct {
 	Folders
 	Accounts
 	AccountVerify
 	UserData
 }
 
-func NewService(repos *repository.Repository) *Service {
-	return &Service{
+type ChannelsService struct {
+
+}
+
+
+func NewAuthorizetionService(repos *repository.Repository) *AuthorizetionService {
+	return &AuthorizetionService{
 		Authorization: NewAuthService(repos.Authorization),
+	}
+}
+
+func NewInviting(repos *repository.Repository) *InvitingService {
+	return &InvitingService{
 		Folders:       NewFoldersService(repos.Folders),
 		Accounts:      NewAccountsService(repos.Accounts),
 		AccountVerify: NewAccountVerifyService(repos.Accounts),
 		UserData:      NewUserDataService(repos.UserData),
+	}
+}
+
+func NewChannels(repos *repository.Repository) *ChannelsService {
+	return &ChannelsService{
+		
 	}
 }

@@ -28,7 +28,7 @@ func (h *Handler) CreateAccount(c *gin.Context) {
 	}
 	accountCreate.Folder = folderID
 
-	if err := h.services.Accounts.Create(c, accountCreate); err != nil {
+	if err := h.inviting.Accounts.Create(c, accountCreate); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -60,7 +60,7 @@ func (h *Handler) UpdateAccount(c *gin.Context) {
 	}
 	accountUpdate.Folder = folderObjectID
 
-	if err := h.services.Accounts.UpdateAccount(c, accountUpdate); err != nil {
+	if err := h.inviting.Accounts.UpdateAccount(c, accountUpdate); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -77,7 +77,7 @@ func (h *Handler) DeleteAccount(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Accounts.Delete(c, accountID); err != nil {
+	if err := h.inviting.Accounts.Delete(c, accountID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -94,7 +94,7 @@ func (h *Handler) GenerateInterval(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.Accounts.GenerateInterval(c, folderID); err != nil {
+	if err := h.inviting.Accounts.GenerateInterval(c, folderID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -112,7 +112,7 @@ func (h *Handler) CheckBlock(c *gin.Context) {
 	}
 
 	go func() {
-		if err := h.services.Accounts.CheckBlock(c, folderID); err != nil {
+		if err := h.inviting.Accounts.CheckBlock(c, folderID); err != nil {
 			newErrorResponse(c, http.StatusBadRequest, err.Error())
 			return
 		}

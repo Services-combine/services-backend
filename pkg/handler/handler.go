@@ -11,18 +11,26 @@ import (
 )
 
 type Handler struct {
-	services *service.Service
+	authorization *service.AuthorizetionService
+	inviting *service.InvitingService
+	channels *service.ChannelsService
 	logger   logging.Logger
 }
 
-func NewHandler(services *service.Service) *Handler {
+func NewHandler(
+	authorization *service.AuthorizetionService,
+	inviting *service.InvitingService,
+	channels *service.ChannelsService,
+) *Handler {
 	logger := logging.GetLogger()
 	if err := godotenv.Load(); err != nil {
 		logger.Fatalf("Error loading env variables: %s", err.Error())
 	}
 
 	return &Handler{
-		services: services,
+		authorization: authorization,
+		inviting: inviting,
+		channels: channels,
 		logger:   logger,
 	}
 }
@@ -53,16 +61,16 @@ func (h *Handler) InitRoutes() *gin.Engine {
 					inviting.GET("/get-settings", h.GetSettings)
 					inviting.POST("/save-settings", h.SaveSettings)
 					inviting.POST("/create-folder", h.CreateFolder)
-					inviting.GET("/:folderID", h.OpenFolder)
+
+					inviting.GET("/:folderID", h.GetFolderById)
 					inviting.GET("/:folderID/folders-move", h.GetFoldersMove)
 					inviting.POST("/:folderID/create-folder", h.CreateFolder)
-
 					inviting.POST("/:folderID/move", h.MoveFolder)
 					inviting.POST("/:folderID/rename", h.RenameFolder)
-					inviting.POST("/:folderID/change-chat", h.ChangeChatFolder)
-					inviting.POST("/:folderID/change-usernames", h.ChangeUsernamesFolder)
-					inviting.POST("/:folderID/change-message", h.ChangeMessageFolder)
-					inviting.POST("/:folderID/change-groups", h.ChangeGroupsFolder)
+					inviting.POST("/:folderID/change-chat", h.ChangeChat)
+					inviting.POST("/:folderID/change-usernames", h.ChangeUsernames)
+					inviting.POST("/:folderID/change-message", h.ChangeMessage)
+					inviting.POST("/:folderID/change-groups", h.ChangeGroups)
 					inviting.POST("/:folderID/create-account", h.CreateAccount)
 					inviting.GET("/:folderID/generate-interval", h.GenerateInterval)
 					inviting.GET("/:folderID/check-block", h.CheckBlock)

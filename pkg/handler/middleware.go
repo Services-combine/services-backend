@@ -27,7 +27,7 @@ func (h *Handler) userIdentity(c *gin.Context) {
 		return
 	}
 
-	dataUser, err := h.services.Authorization.CheckUser(c, userIdObject)
+	dataUser, err := h.authorization.Authorization.CheckUser(c, userIdObject)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "Нет доступа к этой странице")
 		return
@@ -51,5 +51,5 @@ func (h *Handler) parseAuthHeader(c *gin.Context) (string, error) {
 		return "", errors.New("Токен пустой")
 	}
 
-	return h.services.Authorization.ParseToken(headerParts[1])
+	return h.authorization.Authorization.ParseToken(headerParts[1])
 }

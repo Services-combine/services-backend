@@ -15,7 +15,7 @@ func (h *Handler) LoginApi(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.AccountVerify.LoginApi(c, accountID); err != nil {
+	if err := h.inviting.AccountVerify.LoginApi(c, accountID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -40,7 +40,7 @@ func (h *Handler) ParsingApi(c *gin.Context) {
 	}
 	accountLogin.ID = accountID
 
-	if err := h.services.AccountVerify.ParsingApi(c, accountLogin); err != nil {
+	if err := h.inviting.AccountVerify.ParsingApi(c, accountLogin); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -57,7 +57,7 @@ func (h *Handler) GetCodeSession(c *gin.Context) {
 		return
 	}
 
-	if err := h.services.AccountVerify.GetCodeSession(c, accountID); err != nil {
+	if err := h.inviting.AccountVerify.GetCodeSession(c, accountID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -82,7 +82,7 @@ func (h *Handler) CreateSession(c *gin.Context) {
 	}
 	accountLogin.ID = accountID
 
-	if err := h.services.AccountVerify.CreateSession(c, accountLogin); err != nil {
+	if err := h.inviting.AccountVerify.CreateSession(c, accountLogin); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
