@@ -33,18 +33,18 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) Login(ctx context.Context, username, password string) (userData, error) {
+func (s *AuthService) Login(ctx context.Context, username, password string) (domain.UserDataAuth, error) {
 	user, err := s.repo.GetUser(ctx, username, generatePasswordHash(password))
 	if err != nil {
-		return userData{}, err
+		return domain.UserDataAuth{}, err
 	}
 
 	return s.CreateSession(ctx, user.ID)
 }
 
-func (s *AuthService) CreateSession(ctx context.Context, userId primitive.ObjectID) (userData, error) {
+func (s *AuthService) CreateSession(ctx context.Context, userId primitive.ObjectID) (domain.UserDataAuth, error) {
 	var (
-		res userData
+		res domain.UserDataAuth
 		err error
 	)
 

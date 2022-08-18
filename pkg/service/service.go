@@ -8,31 +8,28 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type userData struct {
-	AccessToken  string
-	RefreshToken string
-	UserID       string
-}
-
-// Services
+// Authorization
 
 type Authorization interface {
-	Login(ctx context.Context, username, password string) (userData, error)
+	Login(ctx context.Context, username, password string) (domain.UserDataAuth, error)
 	ParseToken(token string) (string, error)
 	CheckUser(ctx context.Context, userID primitive.ObjectID) (domain.UserReduxData, error)
 }
 
+// Inviting
 
-// Inviting 
+type Settings interface {
+	GetSettings(ctx context.Context) (domain.Settings, error)
+	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
+}
 
 type Folders interface {
-	GetDataMainPage(ctx context.Context) (map[string]interface{}, error) //
-	GetListFolders(ctx context.Context, path string) ([]domain.FolderItem, error) //
-	Get(ctx context.Context, path string) ([]domain.Folder, error) //
+	GetFolders(ctx context.Context) (map[string]interface{}, error)
 	Create(ctx context.Context, folder domain.Folder) error
-	GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error) //
-	GetFolderById(ctx context.Context, folderID primitive.ObjectID) (map[string]interface{}, error)
-	GetFoldersMove(ctx context.Context, folderID primitive.ObjectID) ([]domain.DataFolderHash, error) //
+	GetAllDataFolderById(ctx context.Context, folderID primitive.ObjectID) (map[string]interface{}, error)
+	GetFoldersMove(ctx context.Context, folderID primitive.ObjectID) ([]domain.AccountDataMove, error)
+	GetFoldersByPath(ctx context.Context, path string) ([]domain.FolderItem, error)
+	GetFolderById(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)
 	Move(ctx context.Context, folderID primitive.ObjectID, path string) error
 	Rename(ctx context.Context, folderID primitive.ObjectID, name string) error
 	ChangeChat(ctx context.Context, folderID primitive.ObjectID, chat string) error
@@ -47,7 +44,7 @@ type Folders interface {
 
 type Accounts interface {
 	Create(ctx context.Context, accountCreate domain.Account) error
-	UpdateAccount(ctx context.Context, account domain.AccountUpdate) error
+	Update(ctx context.Context, account domain.AccountUpdate) error
 	Delete(ctx context.Context, accountID primitive.ObjectID) error
 	GenerateInterval(ctx context.Context, folderID primitive.ObjectID) error
 	CheckBlock(ctx context.Context, folderID primitive.ObjectID) error
@@ -60,50 +57,39 @@ type AccountVerify interface {
 	CreateSession(ctx context.Context, accountLogin domain.AccountLogin) error
 }
 
-type UserData interface {
-	GetSettings(ctx context.Context) (domain.Settings, error)
-	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
-}
-
-
 // Channels
 
 //...
 
-
-type AuthorizetionService struct {
+type AuthorizationService struct {
 	Authorization
 }
 
 type InvitingService struct {
+	Settings
 	Folders
 	Accounts
 	AccountVerify
-	UserData
 }
 
 type ChannelsService struct {
-
 }
 
-
-func NewAuthorizetionService(repos *repository.Repository) *AuthorizetionService {
-	return &AuthorizetionService{
+func NewAuthorizationService(repos *repository.AuthorizationRepository) *AuthorizationService {
+	return &AuthorizationService{
 		Authorization: NewAuthService(repos.Authorization),
 	}
 }
 
-func NewInviting(repos *repository.Repository) *InvitingService {
+func NewInvitingService(repos *repository.InvitingRepository) *InvitingService {
 	return &InvitingService{
+		Settings:      NewSettingsService(repos.Settings),
 		Folders:       NewFoldersService(repos.Folders),
 		Accounts:      NewAccountsService(repos.Accounts),
 		AccountVerify: NewAccountVerifyService(repos.Accounts),
-		UserData:      NewUserDataService(repos.UserData),
 	}
 }
 
-func NewChannels(repos *repository.Repository) *ChannelsService {
-	return &ChannelsService{
-		
-	}
+func NewChannelsService(repos *repository.ChannelsRepository) *ChannelsService {
+	return &ChannelsService{}
 }

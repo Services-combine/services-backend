@@ -33,14 +33,14 @@ func (s *AccountsRepo) Create(ctx context.Context, accountCreate domain.Account)
 	return err
 }
 
-func (s *AccountsRepo) GetData(ctx context.Context, accountID primitive.ObjectID) (domain.Account, error) {
+func (s *AccountsRepo) GetById(ctx context.Context, accountID primitive.ObjectID) (domain.Account, error) {
 	var account domain.Account
 
 	err := s.db.FindOne(ctx, bson.M{"_id": accountID}).Decode(&account)
 	return account, err
 }
 
-func (s *AccountsRepo) GetAccountsFolder(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error) {
+func (s *AccountsRepo) GetAccountsByFolderID(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error) {
 	var accounts []domain.Account
 
 	cur, err := s.db.Find(ctx, bson.M{"folder": folderID})
@@ -55,7 +55,7 @@ func (s *AccountsRepo) GetAccountsFolder(ctx context.Context, folderID primitive
 	return accounts, nil
 }
 
-func (s *AccountsRepo) UpdateAccount(ctx context.Context, account domain.AccountUpdate) error {
+func (s *AccountsRepo) Update(ctx context.Context, account domain.AccountUpdate) error {
 	_, err := s.db.UpdateOne(ctx, bson.M{"_id": account.ID}, bson.M{"$set": bson.M{"name": account.Name, "folder": account.Folder, "interval": account.Interval}})
 	return err
 }
@@ -78,13 +78,13 @@ func (s *AccountsRepo) GenerateInterval(ctx context.Context, folderID primitive.
 	}
 
 	for _, account := range accounts {
-		var accountU domain.AccountUpdate
-		accountU.ID = account.ID
-		accountU.Name = account.Name
-		accountU.Folder = account.Folder
-		accountU.Interval = RandomInterval()
+		var updateAccount domain.AccountUpdate
+		updateAccount.ID = account.ID
+		updateAccount.Name = account.Name
+		updateAccount.Folder = account.Folder
+		updateAccount.Interval = RandomInterval()
 
-		if err := s.UpdateAccount(ctx, accountU); err != nil {
+		if err := s.Update(ctx, updateAccount); err != nil {
 			return err
 		}
 	}

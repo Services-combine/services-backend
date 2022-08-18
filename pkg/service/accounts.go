@@ -47,13 +47,13 @@ func (s *AccountsService) Create(ctx context.Context, accountCreate domain.Accou
 	return err
 }
 
-func (s *AccountsService) UpdateAccount(ctx context.Context, account domain.AccountUpdate) error {
-	err := s.repo.UpdateAccount(ctx, account)
+func (s *AccountsService) Update(ctx context.Context, account domain.AccountUpdate) error {
+	err := s.repo.Update(ctx, account)
 	return err
 }
 
 func (s *AccountsService) Delete(ctx context.Context, accountID primitive.ObjectID) error {
-	account, err := s.repo.GetData(ctx, accountID)
+	account, err := s.repo.GetById(ctx, accountID)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func (s *AccountsService) GenerateInterval(ctx context.Context, folderID primiti
 }
 
 func (s *AccountsService) CheckBlock(ctx context.Context, folderID primitive.ObjectID) error {
-	accounts, err := s.repo.GetAccountsFolder(ctx, folderID)
+	accounts, err := s.repo.GetAccountsByFolderID(ctx, folderID)
 	if err != nil {
 		return err
 	}

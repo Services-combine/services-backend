@@ -9,7 +9,7 @@ import (
 )
 
 func (h *Handler) GetFolders(c *gin.Context) {
-	dataPage, err := h.inviting.Folders.GetDataMainPage(c)
+	dataPage, err := h.inviting.Folders.GetFolders(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -55,7 +55,7 @@ func (h *Handler) GetFolderById(c *gin.Context) {
 		return
 	}
 
-	folderData, err := h.inviting.Folders.GetFolderById(c, folderID)
+	folderData, err := h.inviting.Folders.GetAllDataFolderById(c, folderID)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -231,7 +231,7 @@ func (h *Handler) DeleteFolder(c *gin.Context) {
 		return
 	}
 
-	folder, err := h.inviting.Folders.GetData(c, folderID)
+	folder, err := h.inviting.Folders.GetFolderById(c, folderID)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return

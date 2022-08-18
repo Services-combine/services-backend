@@ -17,7 +17,7 @@ func NewFoldersRepo(db *mongo.Database) *FoldersRepo {
 	return &FoldersRepo{db: db.Collection(foldersCollection)}
 }
 
-func (s *FoldersRepo) GetListFolders(ctx context.Context, path string) ([]domain.FolderItem, error) {
+func (s *FoldersRepo) GetFoldersByPath(ctx context.Context, path string) ([]domain.FolderItem, error) {
 	var folders []domain.FolderItem
 
 	cur, err := s.db.Find(ctx, bson.M{"path": path})
@@ -32,17 +32,38 @@ func (s *FoldersRepo) GetListFolders(ctx context.Context, path string) ([]domain
 	return folders, nil
 }
 
-func (s *FoldersRepo) GetCountAllAccount(ctx context.Context) (domain.AccountsCount, error) {
+func (s *FoldersRepo) GetFolders(ctx context.Context) ([]domain.Folder, error) {
+	var folders []domain.Folder
+
+	cur, err := s.db.Find(ctx, bson.M{})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := cur.All(ctx, &folders); err != nil {
+		return nil, err
+	}
+
+	return folders, err
+}
+
+func (s *FoldersRepo) GetCountAccounts(ctx context.Context, folderID primitive.ObjectID) (domain.AccountsCount, error) {
 	var countAccounts domain.AccountsCount
 	var accounts []domain.Account
+	var cur *mongo.Cursor
+	var err error
 
-	cur, err := s.db.Database().Collection(accountsCollection).Find(ctx, bson.M{})
+	if folderID == primitive.NilObjectID {
+		cur, err = s.db.Database().Collection(accountsCollection).Find(ctx, bson.M{})
+	} else {
+		cur, err = s.db.Database().Collection(accountsCollection).Find(ctx, bson.M{"folder": folderID})
+	}
 	if err != nil {
 		return domain.AccountsCount{}, err
 	}
 
 	if err := cur.All(ctx, &accounts); err != nil {
-		return countAccounts, err
+		return domain.AccountsCount{}, err
 	}
 
 	for _, account := range accounts {
@@ -57,27 +78,12 @@ func (s *FoldersRepo) GetCountAllAccount(ctx context.Context) (domain.AccountsCo
 	return countAccounts, nil
 }
 
-func (s *FoldersRepo) Get(ctx context.Context, path string) ([]domain.Folder, error) {
-	var folders []domain.Folder
-
-	cur, err := s.db.Find(ctx, bson.M{"path": path})
-	if err != nil {
-		return nil, err
-	}
-
-	if err := cur.All(ctx, &folders); err != nil {
-		return nil, err
-	}
-
-	return folders, nil
-}
-
 func (s *FoldersRepo) Create(ctx context.Context, folder domain.Folder) error {
 	_, err := s.db.InsertOne(ctx, folder)
 	return err
 }
 
-func (s *FoldersRepo) GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error) {
+func (s *FoldersRepo) GetFolderById(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error) {
 	var folder domain.Folder
 	var folderPath domain.Folder
 
@@ -105,21 +111,6 @@ func (s *FoldersRepo) GetData(ctx context.Context, folderID primitive.ObjectID) 
 	return folder, nil
 }
 
-func (s *FoldersRepo) GetFolders(ctx context.Context) ([]domain.Folder, error) {
-	var folders []domain.Folder
-
-	cur, err := s.db.Find(ctx, bson.M{})
-	if err != nil {
-		return nil, err
-	}
-
-	if err := cur.All(ctx, &folders); err != nil {
-		return nil, err
-	}
-
-	return folders, err
-}
-
 func (s *FoldersRepo) GetAccountsByFolderID(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error) {
 	var accounts []domain.Account
 
@@ -133,31 +124,6 @@ func (s *FoldersRepo) GetAccountsByFolderID(ctx context.Context, folderID primit
 	}
 
 	return accounts, nil
-}
-
-func (s *FoldersRepo) GetCountAccounts(ctx context.Context, folderID primitive.ObjectID) (domain.AccountsCount, error) {
-	var countAccounts domain.AccountsCount
-	var accounts []domain.Account
-
-	cur, err := s.db.Database().Collection(accountsCollection).Find(ctx, bson.M{"folder": folderID})
-	if err != nil {
-		return domain.AccountsCount{}, err
-	}
-
-	if err := cur.All(ctx, &accounts); err != nil {
-		return domain.AccountsCount{}, err
-	}
-
-	for _, account := range accounts {
-		countAccounts.All++
-		if account.Status_block == "clean" {
-			countAccounts.Clean++
-		} else {
-			countAccounts.Block++
-		}
-	}
-
-	return countAccounts, nil
 }
 
 func (s *FoldersRepo) Move(ctx context.Context, folderID primitive.ObjectID, path string) error {

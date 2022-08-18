@@ -44,16 +44,18 @@ func (s *Server) Run() error {
 		logger.Info("Success connect mongodb")
 	}
 
-	repos := repository.NewRepository(db)
+	authorizationRepos := repository.NewAuthRepository(db)
+	invitingRepos := repository.NewInvitingRepository(db)
+	channelsRepos := repository.NewChannelsRepository(db)
 
-	services := service.NewService(repos)
-	inviting := service.NewInviting(repos)
-	channels := service.NewChannels(repos)
+	authorizationService := service.NewAuthorizationService(authorizationRepos)
+	invitingService := service.NewInvitingService(invitingRepos)
+	channelsService := service.NewChannelsService(channelsRepos)
 
 	handlers := handler.NewHandler(
-		services,
-		inviting,
-		channels,
+		authorizationService,
+		invitingService,
+		channelsService,
 	)
 	routes := handlers.InitRoutes()
 

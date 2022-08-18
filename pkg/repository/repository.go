@@ -9,18 +9,25 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// Authorization
+
 type Authorization interface {
 	GetUser(ctx context.Context, username, password string) (domain.User, error)
 	CheckUser(ctx context.Context, userID primitive.ObjectID) (domain.UserReduxData, error)
 }
 
+// Inviting
+
+type Settings interface {
+	GetSettings(ctx context.Context) (domain.Settings, error)
+	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
+}
+
 type Folders interface {
-	GetCountAllAccount(ctx context.Context) (domain.AccountsCount, error)
-	GetListFolders(ctx context.Context, path string) ([]domain.FolderItem, error)
-	Get(ctx context.Context, path string) ([]domain.Folder, error)
-	Create(ctx context.Context, folder domain.Folder) error
-	GetData(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)
 	GetFolders(ctx context.Context) ([]domain.Folder, error)
+	GetFoldersByPath(ctx context.Context, path string) ([]domain.FolderItem, error)
+	Create(ctx context.Context, folder domain.Folder) error
+	GetFolderById(ctx context.Context, folderID primitive.ObjectID) (domain.Folder, error)
 	GetAccountsByFolderID(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error)
 	GetCountAccounts(ctx context.Context, folderID primitive.ObjectID) (domain.AccountsCount, error)
 	Move(ctx context.Context, folderID primitive.ObjectID, path string) error
@@ -38,10 +45,10 @@ type Folders interface {
 
 type Accounts interface {
 	Create(ctx context.Context, accountCreate domain.Account) error
-	GetData(ctx context.Context, accountID primitive.ObjectID) (domain.Account, error)
-	GetAccountsFolder(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error)
-	UpdateAccount(ctx context.Context, account domain.AccountUpdate) error
+	Update(ctx context.Context, account domain.AccountUpdate) error
 	Delete(ctx context.Context, accountID primitive.ObjectID) error
+	GetById(ctx context.Context, accountID primitive.ObjectID) (domain.Account, error)
+	GetAccountsByFolderID(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error)
 	GenerateInterval(ctx context.Context, folderID primitive.ObjectID) error
 	AddRandomHash(ctx context.Context, accountID primitive.ObjectID, randomHash string) error
 	AddPhoneHash(ctx context.Context, accountID primitive.ObjectID, phoneCodeHash string) error
@@ -50,54 +57,33 @@ type Accounts interface {
 	ChangeVerify(ctx context.Context, accountID primitive.ObjectID) error
 }
 
-type UserData interface {
-	GetSettings(ctx context.Context) (domain.Settings, error)
-	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
-}
-
-type Repository struct {
+type AuthorizationRepository struct {
 	Authorization
-	Folders
-	Accounts
-	UserData
-}
-
-type AuthRepository struct {
-
 }
 
 type InvitingRepository struct {
-
+	Folders
+	Accounts
+	Settings
 }
 
 type ChannelsRepository struct {
-
 }
 
-
-func NewRepository(db *mongo.Client) *Repository {
-	return &Repository{
+func NewAuthRepository(db *mongo.Client) *AuthorizationRepository {
+	return &AuthorizationRepository{
 		Authorization: NewAuthRepo(db.Database(viper.GetString("mongo.databaseName"))),
-		Folders:       NewFoldersRepo(db.Database(viper.GetString("mongo.databaseName"))),
-		Accounts:      NewAccountsRepo(db.Database(viper.GetString("mongo.databaseName"))),
-		UserData:      NewUserDataRepo(db.Database(viper.GetString("mongo.databaseName"))),
-	}
-}
-
-func NewAuthRepository(db *mongo.Client) *AuthRepository {
-	return &AuthRepository{
-
 	}
 }
 
 func NewInvitingRepository(db *mongo.Client) *InvitingRepository {
 	return &InvitingRepository{
-		
+		Folders:  NewFoldersRepo(db.Database(viper.GetString("mongo.databaseName"))),
+		Accounts: NewAccountsRepo(db.Database(viper.GetString("mongo.databaseName"))),
+		Settings: NewUserDataRepo(db.Database(viper.GetString("mongo.databaseName"))),
 	}
 }
 
 func NewChannelsRepository(db *mongo.Client) *ChannelsRepository {
-	return &ChannelsRepository{
-		
-	}
+	return &ChannelsRepository{}
 }

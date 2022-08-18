@@ -9,6 +9,12 @@ type User struct {
 }
 
 type UserReduxData struct {
-	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Username       string             `json:"username" binding:"required"`
+	ID       primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Username string             `json:"username" binding:"required"`
+}
+
+type UserDataAuth struct {
+	AccessToken  string
+	RefreshToken string
+	UserID       string
 }

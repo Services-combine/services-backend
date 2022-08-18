@@ -60,7 +60,7 @@ func (h *Handler) UpdateAccount(c *gin.Context) {
 	}
 	accountUpdate.Folder = folderObjectID
 
-	if err := h.inviting.Accounts.UpdateAccount(c, accountUpdate); err != nil {
+	if err := h.inviting.Accounts.Update(c, accountUpdate); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}

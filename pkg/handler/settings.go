@@ -8,7 +8,7 @@ import (
 )
 
 func (h *Handler) GetSettings(c *gin.Context) {
-	settings, err := h.inviting.UserData.GetSettings(c)
+	settings, err := h.inviting.Settings.GetSettings(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -24,7 +24,7 @@ func (h *Handler) SaveSettings(c *gin.Context) {
 		return
 	}
 
-	if err := h.inviting.UserData.SaveSettings(c, dataSettings); err != nil {
+	if err := h.inviting.Settings.SaveSettings(c, dataSettings); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}

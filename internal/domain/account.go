@@ -17,18 +17,6 @@ type Account struct {
 	Phone_code_hash string             `json:"phone_code_hash"`
 }
 
-type AccountSettings struct {
-	ID           primitive.ObjectID `json:"id" bson:"_id"`
-	Name         string             `json:"name" binding:"required"`
-	Phone        string             `json:"phone" binding:"required"`
-	Launch       bool               `json:"launch"`
-	Interval     uint8              `json:"interval"`
-	Status_block string             `json:"status_block"`
-	FolderName   string             `json:"folder_name"`
-	FolderID     string             `json:"folder_id"`
-	FoldersMove  []DataFolderHash   `json:"folders_move"`
-}
-
 type AccountUpdate struct {
 	ID       primitive.ObjectID `json:"id" bson:"_id"`
 	Name     string             `json:"name" binding:"required"`
@@ -54,7 +42,7 @@ type AccountApi struct {
 	ApiHash string             `json:"api_hash"`
 }
 
-type DataFolderHash struct {
+type AccountDataMove struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
 }

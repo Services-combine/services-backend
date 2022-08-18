@@ -48,7 +48,7 @@ func NewAccountVerifyService(repo repository.Accounts) *AccountVerifyService {
 }
 
 func (s *AccountVerifyService) LoginApi(ctx context.Context, accountID primitive.ObjectID) error {
-	account, err := s.repo.GetData(ctx, accountID)
+	account, err := s.repo.GetById(ctx, accountID)
 	if err != nil {
 		return err
 	}
@@ -100,7 +100,7 @@ func (s *AccountVerifyService) ParsingApi(ctx context.Context, accountLogin doma
 	var accountApi domain.AccountApi
 	accountApi.ID = accountLogin.ID
 
-	account, err := s.repo.GetData(ctx, accountLogin.ID)
+	account, err := s.repo.GetById(ctx, accountLogin.ID)
 	if err != nil {
 		return err
 	}
@@ -297,7 +297,7 @@ func ParsingApiApp(cookie []*http.Cookie, client *http.Client) (int, string, err
 }
 
 func (s *AccountVerifyService) GetCodeSession(ctx context.Context, accountID primitive.ObjectID) error {
-	account, err := s.repo.GetData(ctx, accountID)
+	account, err := s.repo.GetById(ctx, accountID)
 	if err != nil {
 		return err
 	}
@@ -324,11 +324,11 @@ func (s *AccountVerifyService) GetCodeSession(ctx context.Context, accountID pri
 }
 
 func (s *AccountVerifyService) CreateSession(ctx context.Context, accountLogin domain.AccountLogin) error {
-	account, err := s.repo.GetData(ctx, accountLogin.ID)
+	account, err := s.repo.GetById(ctx, accountLogin.ID)
 	if err != nil {
 		return err
 	}
-	
+
 	script := os.Getenv("FOLDER_PYTHON_SCRIPTS_VERIFY") + "verify_account.py"
 	args_phone := fmt.Sprintf("-P %s", account.Phone)
 	args_hash := fmt.Sprintf("-H %s", account.Api_hash)

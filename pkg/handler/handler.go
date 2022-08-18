@@ -11,14 +11,14 @@ import (
 )
 
 type Handler struct {
-	authorization *service.AuthorizetionService
+	authorization *service.AuthorizationService
 	inviting *service.InvitingService
 	channels *service.ChannelsService
 	logger   logging.Logger
 }
 
 func NewHandler(
-	authorization *service.AuthorizetionService,
+	authorization *service.AuthorizationService,
 	inviting *service.InvitingService,
 	channels *service.ChannelsService,
 ) *Handler {
