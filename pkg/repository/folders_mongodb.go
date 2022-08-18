@@ -194,6 +194,6 @@ func (s *FoldersRepo) LaunchMailingGroups(ctx context.Context, folderID primitiv
 func (s *FoldersRepo) GetSettings(ctx context.Context) (domain.Settings, error) {
 	var settings domain.Settings
 
-	err := s.db.Database().Collection(userDataCollection).FindOne(ctx, bson.M{"_id": "admin"}).Decode(&settings)
+	err := s.db.Database().Collection(settingsCollection).FindOne(ctx, bson.M{"service": service_inviting}).Decode(&settings)
 	return settings, err
 }

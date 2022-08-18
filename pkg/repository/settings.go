@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	ID = "admin"
+	service_inviting = "inviting"
 )
 
 type UserDataRepo struct {
@@ -17,17 +17,17 @@ type UserDataRepo struct {
 }
 
 func NewUserDataRepo(db *mongo.Database) *UserDataRepo {
-	return &UserDataRepo{db: db.Collection(userDataCollection)}
+	return &UserDataRepo{db: db.Collection(settingsCollection)}
 }
 
 func (s *UserDataRepo) GetSettings(ctx context.Context) (domain.Settings, error) {
 	var settings domain.Settings
 
-	err := s.db.FindOne(ctx, bson.M{"_id": ID}).Decode(&settings)
+	err := s.db.FindOne(ctx, bson.M{"service": service_inviting}).Decode(&settings)
 	return settings, err
 }
 
 func (s *UserDataRepo) SaveSettings(ctx context.Context, dataSettings domain.Settings) error {
-	_, err := s.db.UpdateOne(ctx, bson.M{"_id": ID}, bson.M{"$set": bson.M{"countInviting": dataSettings.CountInviting, "countMailing": dataSettings.CountMailing}})
+	_, err := s.db.UpdateOne(ctx, bson.M{"service": service_inviting}, bson.M{"$set": bson.M{"countInviting": dataSettings.CountInviting, "countMailing": dataSettings.CountMailing}})
 	return err
 }

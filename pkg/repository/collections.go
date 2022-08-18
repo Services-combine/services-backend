@@ -4,5 +4,5 @@ const (
 	usersCollection    = "users"
 	foldersCollection  = "folders"
 	accountsCollection = "accounts"
-	userDataCollection = "settings"
+	settingsCollection = "settings"
 )
