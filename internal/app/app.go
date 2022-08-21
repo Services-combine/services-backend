@@ -46,11 +46,11 @@ func (s *Server) Run() error {
 
 	authorizationRepos := repository.NewAuthRepository(db)
 	invitingRepos := repository.NewInvitingRepository(db)
-	channelsRepos := repository.NewChannelsRepository(db)
+	channelsRepos := repository.NewAutomaticYoutubeRepository(db)
 
 	authorizationService := service.NewAuthorizationService(authorizationRepos)
 	invitingService := service.NewInvitingService(invitingRepos)
-	channelsService := service.NewChannelsService(channelsRepos)
+	channelsService := service.NewAutomaticYoutubeService(channelsRepos)
 
 	handlers := handler.NewHandler(
 		authorizationService,

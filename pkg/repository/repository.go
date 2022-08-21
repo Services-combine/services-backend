@@ -57,6 +57,12 @@ type Accounts interface {
 	ChangeVerify(ctx context.Context, accountID primitive.ObjectID) error
 }
 
+// AutomaticYoutube
+
+type Channels interface {
+	Add(ctx context.Context, channel domain.ChannelAdd) error
+}
+
 type AuthorizationRepository struct {
 	Authorization
 }
@@ -67,7 +73,8 @@ type InvitingRepository struct {
 	Settings
 }
 
-type ChannelsRepository struct {
+type AutomaticYoutubeRepository struct {
+	Channels
 }
 
 func NewAuthRepository(db *mongo.Client) *AuthorizationRepository {
@@ -84,6 +91,8 @@ func NewInvitingRepository(db *mongo.Client) *InvitingRepository {
 	}
 }
 
-func NewChannelsRepository(db *mongo.Client) *ChannelsRepository {
-	return &ChannelsRepository{}
+func NewAutomaticYoutubeRepository(db *mongo.Client) *AutomaticYoutubeRepository {
+	return &AutomaticYoutubeRepository{
+		Channels: NewChannelsRepo(db.Database(viper.GetString("mongo.databaseName"))),
+	}
 }

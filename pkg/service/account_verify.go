@@ -23,15 +23,17 @@ import (
 )
 
 const (
-	link_get_password  = "https://my.telegram.org/auth/send_password"
-	link_authorized    = "https://my.telegram.org/auth/login"
-	link_apps          = "https://my.telegram.org/apps"
-	link_create_app    = "https://my.telegram.org/apps/create"
-	error_many_request = "Sorry, too many tries. Please try again later."
-	error_invalid_code = "Invalid confirmation code!"
-	symbols            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	numbers            = "1234567890"
-	path_python        = "/usr/bin/python3"
+	link_get_password     = "https://my.telegram.org/auth/send_password"
+	link_authorized       = "https://my.telegram.org/auth/login"
+	link_apps             = "https://my.telegram.org/apps"
+	link_create_app       = "https://my.telegram.org/apps/create"
+	error_many_request    = "Sorry, too many tries. Please try again later."
+	error_invalid_code    = "Invalid confirmation code!"
+	symbols               = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	numbers               = "1234567890"
+	path_python           = "/usr/bin/python3"
+	script_send_code      = "send_code.py"
+	script_verify_account = "verify_account.py"
 )
 
 type AccountVerifyService struct {
@@ -302,7 +304,7 @@ func (s *AccountVerifyService) GetCodeSession(ctx context.Context, accountID pri
 		return err
 	}
 
-	script := os.Getenv("FOLDER_PYTHON_SCRIPTS_VERIFY") + "send_code.py"
+	script := os.Getenv("FOLDER_PYTHON_SCRIPTS_VERIFY") + script_send_code
 	args_phone := fmt.Sprintf("-P %s", account.Phone)
 	args_hash := fmt.Sprintf("-H %s", account.Api_hash)
 	args_id := fmt.Sprintf("-I %d", account.Api_id)
@@ -329,7 +331,7 @@ func (s *AccountVerifyService) CreateSession(ctx context.Context, accountLogin d
 		return err
 	}
 
-	script := os.Getenv("FOLDER_PYTHON_SCRIPTS_VERIFY") + "verify_account.py"
+	script := os.Getenv("FOLDER_PYTHON_SCRIPTS_VERIFY") + script_verify_account
 	args_phone := fmt.Sprintf("-P %s", account.Phone)
 	args_hash := fmt.Sprintf("-H %s", account.Api_hash)
 	args_id := fmt.Sprintf("-I %d", account.Api_id)

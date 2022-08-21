@@ -57,9 +57,13 @@ type AccountVerify interface {
 	CreateSession(ctx context.Context, accountLogin domain.AccountLogin) error
 }
 
-// Channels
+// AutomaticYoutube
 
-//...
+type Channels interface {
+	Add(ctx context.Context, channel domain.ChannelAdd) error
+}
+
+// Structs
 
 type AuthorizationService struct {
 	Authorization
@@ -72,7 +76,8 @@ type InvitingService struct {
 	AccountVerify
 }
 
-type ChannelsService struct {
+type AutomaticYoutubeService struct {
+	Channels
 }
 
 func NewAuthorizationService(repos *repository.AuthorizationRepository) *AuthorizationService {
@@ -90,6 +95,8 @@ func NewInvitingService(repos *repository.InvitingRepository) *InvitingService {
 	}
 }
 
-func NewChannelsService(repos *repository.ChannelsRepository) *ChannelsService {
-	return &ChannelsService{}
+func NewAutomaticYoutubeService(repos *repository.AutomaticYoutubeRepository) *AutomaticYoutubeService {
+	return &AutomaticYoutubeService{
+		Channels: NewChannelsService(repos.Channels),
+	}
 }

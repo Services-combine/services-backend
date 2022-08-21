@@ -5,4 +5,5 @@ const (
 	foldersCollection  = "folders"
 	accountsCollection = "accounts"
 	settingsCollection = "settings"
+	channelsCollection = "channels"
 )
