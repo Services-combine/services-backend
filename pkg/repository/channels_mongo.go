@@ -16,5 +16,6 @@ func NewChannelsRepo(db *mongo.Database) *ChannelsRepo {
 }
 
 func (r *ChannelsRepo) Add(ctx context.Context, channel domain.ChannelAdd) error {
-	return nil
+	_, err := r.db.InsertOne(ctx, channel)
+	return err
 }

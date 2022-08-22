@@ -20,7 +20,7 @@ func (h *Handler) AddChannel(c *gin.Context) {
 	channel.ChannelId = formData.Value["channel_id"][0]
 	channel.ApiKey = formData.Value["api_key"][0]
 	tokenFile := formData.File["token_file"][0]
-	tokenFilePath := os.Getenv("FOLDER_CHANNELS") + channel.ChannelId + ".json"
+	tokenFilePath := os.Getenv("FOLDER_CHANNELS") + "app_token_" + channel.ChannelId + ".json"
 
 	if err := c.SaveUploadedFile(tokenFile, tokenFilePath); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "Ошибка при скачивании токен файла")

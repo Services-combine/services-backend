@@ -2,23 +2,16 @@ package service
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"os"
-	"os/exec"
-	"strings"
 
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
+	"google.golang.org/api/option"
+	"google.golang.org/api/youtube/v3"
 )
 
 const (
 	SCRIPT_GET_DATA_CHANNEL = "get_data_channel.py"
 )
-
-type Test struct {
-	Kind string
-}
 
 type ChannelsService struct {
 	repo repository.Channels
@@ -29,26 +22,39 @@ func NewChannelsService(repo repository.Channels) *ChannelsService {
 }
 
 func (s *ChannelsService) Add(ctx context.Context, channel domain.ChannelAdd) error {
-	script := os.Getenv("FOLDER_PYTHON_SCRIPTS_CHANNELS") + SCRIPT_GET_DATA_CHANNEL
-	args_channel_id := fmt.Sprintf("-C %s", channel.ChannelId)
-	args_api_key := fmt.Sprintf("-A %s", channel.ApiKey)
-
-	data_channel_json, err := exec.Command(path_python, script, args_channel_id, args_api_key).Output()
+	channelData, err := s.GetChannelById(ctx, channel.ChannelId, channel.ApiKey)
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(data_channel_json))
-	if strings.Contains(string(data_channel_json), "ERROR") {
-		return fmt.Errorf("Ошибка при получении данных канала")
-	}
 
-	var data_channel map[string]interface{}
-	//var data_channel Test
-	if err = json.Unmarshal(data_channel_json, &data_channel); err != nil {
-		return err
-	}
-	fmt.Println(data_channel)
-
-	err = s.repo.Add(ctx, channel)
+	err = s.repo.Add(ctx, channelData)
 	return err
+}
+
+func (s *ChannelsService) GetChannelById(ctx context.Context, channelId, apiKey string) (domain.ChannelAdd, error) {
+	channel := domain.ChannelAdd{
+		ChannelId: channelId,
+		ApiKey:    apiKey,
+	}
+
+	youtubeService, err := youtube.NewService(ctx, option.WithAPIKey(apiKey))
+	if err != nil {
+		return domain.ChannelAdd{}, err
+	}
+
+	call := youtubeService.Channels.List([]string{"snippet", "statistics"})
+	call.Id(channelId)
+	response, err := call.Do()
+	if err != nil {
+		return domain.ChannelAdd{}, err
+	}
+
+	channel.Title = response.Items[0].Snippet.Title
+	channel.Description = response.Items[0].Snippet.Description
+	channel.Photo = response.Items[0].Snippet.Thumbnails.Default.Url
+	channel.ViewCount = response.Items[0].Statistics.ViewCount
+	channel.SubscriberCount = response.Items[0].Statistics.SubscriberCount
+	channel.VideoCount = response.Items[0].Statistics.VideoCount
+
+	return channel, nil
 }

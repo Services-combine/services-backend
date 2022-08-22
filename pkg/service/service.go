@@ -61,6 +61,7 @@ type AccountVerify interface {
 
 type Channels interface {
 	Add(ctx context.Context, channel domain.ChannelAdd) error
+	GetChannelById(ctx context.Context, channelId, apiKey string) (domain.ChannelAdd, error)
 }
 
 // Structs

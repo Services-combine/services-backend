@@ -14,7 +14,23 @@ def get_arguments():
 def get_data_channel(channelId, apiKey):
     try:
         data = get_service_simple(apiKey, "youtube", "v3").channels().list(id=channelId, part='snippet, statistics').execute()
-        print(data['items'][0])
+
+        title = data['items'][0]['snippet']['title']
+        description = data['items'][0]['snippet']['description']
+        photo = data['items'][0]['snippet']['thumbnails']['default']['url']
+        viewCount = data['items'][0]['statistics']['viewCount']
+        subscriberCount = data['items'][0]['statistics']['subscriberCount']
+        videoCount = data['items'][0]['statistics']['videoCount']
+
+        data_string = "{" + \
+                    "\"title\":\"" + title + \
+                    "\",\"description\":\"" + description + \
+                    "\",\"photo\":\"" + photo + \
+                    "\",\"viewCount\":" + viewCount + \
+                    ",\"subscriberCount\":" + subscriberCount + \
+                    ",\"videoCount\":" + videoCount + \
+                    "}"
+        print(data_string)
     except Exception as error:
         logger.error(f"[{channelId}] {error}")
         print(f"ERROR: {error}")
@@ -22,6 +38,12 @@ def get_data_channel(channelId, apiKey):
 
 def main():
     options = get_arguments()
+    '''get_service_creds(
+        app_token = f"{FOLDER_CHANNELS}app_token_{options.channelId}.json",
+        user_token = f"{FOLDER_CHANNELS}user_token_{options.channelId}.json",
+        service = 'youtube', 
+        version = 'v3'
+    )'''
     get_data_channel(options.channelId, options.apiKey)
 
 
