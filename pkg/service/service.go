@@ -60,8 +60,12 @@ type AccountVerify interface {
 // AutomaticYoutube
 
 type Channels interface {
-	Add(ctx context.Context, channel domain.ChannelAdd) error
-	GetChannelById(ctx context.Context, channelId, apiKey string) (domain.ChannelAdd, error)
+	Add(ctx context.Context, channel domain.ChannelIdKey) error
+	GetChannels(ctx context.Context) ([]domain.ChannelGet, error)
+	LaunchChannel(ctx context.Context, channelID primitive.ObjectID) error
+	UpdateChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelIdKey) error
+	DeleteChannel(ctx context.Context, channelID primitive.ObjectID, channel_id string) error
+	EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error
 }
 
 // Structs

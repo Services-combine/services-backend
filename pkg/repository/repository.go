@@ -61,6 +61,11 @@ type Accounts interface {
 
 type Channels interface {
 	Add(ctx context.Context, channel domain.ChannelAdd) error
+	GetChannels(ctx context.Context) ([]domain.ChannelGet, error)
+	LaunchChannel(ctx context.Context, channelID primitive.ObjectID) error
+	UpdateChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelAdd) error
+	DeleteChannel(ctx context.Context, channelID primitive.ObjectID) error
+	EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error
 }
 
 type AuthorizationRepository struct {

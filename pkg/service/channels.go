@@ -2,9 +2,11 @@ package service
 
 import (
 	"context"
+	"os"
 
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
 )
@@ -21,8 +23,8 @@ func NewChannelsService(repo repository.Channels) *ChannelsService {
 	return &ChannelsService{repo: repo}
 }
 
-func (s *ChannelsService) Add(ctx context.Context, channel domain.ChannelAdd) error {
-	channelData, err := s.GetChannelById(ctx, channel.ChannelId, channel.ApiKey)
+func (s *ChannelsService) Add(ctx context.Context, channel domain.ChannelIdKey) error {
+	channelData, err := GetChannelById(ctx, channel.ChannelId, channel.ApiKey)
 	if err != nil {
 		return err
 	}
@@ -31,7 +33,7 @@ func (s *ChannelsService) Add(ctx context.Context, channel domain.ChannelAdd) er
 	return err
 }
 
-func (s *ChannelsService) GetChannelById(ctx context.Context, channelId, apiKey string) (domain.ChannelAdd, error) {
+func GetChannelById(ctx context.Context, channelId, apiKey string) (domain.ChannelAdd, error) {
 	channel := domain.ChannelAdd{
 		ChannelId: channelId,
 		ApiKey:    apiKey,
@@ -55,6 +57,46 @@ func (s *ChannelsService) GetChannelById(ctx context.Context, channelId, apiKey 
 	channel.ViewCount = response.Items[0].Statistics.ViewCount
 	channel.SubscriberCount = response.Items[0].Statistics.SubscriberCount
 	channel.VideoCount = response.Items[0].Statistics.VideoCount
+	channel.Launch = false
 
 	return channel, nil
+}
+
+func (s *ChannelsService) GetChannels(ctx context.Context) ([]domain.ChannelGet, error) {
+	channels, err := s.repo.GetChannels(ctx)
+	return channels, err
+}
+
+func (s *ChannelsService) LaunchChannel(ctx context.Context, channelID primitive.ObjectID) error {
+	err := s.repo.LaunchChannel(ctx, channelID)
+	return err
+}
+
+func (s *ChannelsService) UpdateChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelIdKey) error {
+	channelData, err := GetChannelById(ctx, channel.ChannelId, channel.ApiKey)
+	if err != nil {
+		return err
+	}
+
+	err = s.repo.UpdateChannel(ctx, channelID, channelData)
+	return err
+}
+
+func (s *ChannelsService) DeleteChannel(ctx context.Context, channelID primitive.ObjectID, channel_id string) error {
+	if err := s.repo.DeleteChannel(ctx, channelID); err != nil {
+		return err
+	}
+
+	err := os.Remove(os.Getenv("FOLDER_CHANNELS") + "app_token_" + channel_id + ".json")
+	if err != nil {
+		return err
+	}
+
+	err = os.Remove(os.Getenv("FOLDER_CHANNELS") + "user_token_" + channel_id + ".json")
+	return nil
+}
+
+func (s *ChannelsService) EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error {
+	err := s.repo.EditChannel(ctx, channelID, channel)
+	return err
 }
