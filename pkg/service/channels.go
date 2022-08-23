@@ -11,10 +11,6 @@ import (
 	"google.golang.org/api/youtube/v3"
 )
 
-const (
-	SCRIPT_GET_DATA_CHANNEL = "get_data_channel.py"
-)
-
 type ChannelsService struct {
 	repo repository.Channels
 }
@@ -23,32 +19,52 @@ func NewChannelsService(repo repository.Channels) *ChannelsService {
 	return &ChannelsService{repo: repo}
 }
 
+func (s *ChannelsService) CheckingUniqueness(ctx context.Context, channel_id string) (bool, error) {
+	status, err := s.repo.CheckingUniqueness(ctx, channel_id)
+	return status, err
+}
+
 func (s *ChannelsService) Add(ctx context.Context, channel domain.ChannelIdKey) error {
-	channelData, err := GetChannelById(ctx, channel.ChannelId, channel.ApiKey)
+	channelData := domain.ChannelAdd{
+		ChannelId: channel.ChannelId,
+		ApiKey:    channel.ApiKey,
+	}
+
+	channelApi, err := GetById(ctx, channel.ChannelId, channel.ApiKey)
 	if err != nil {
 		return err
 	}
+
+	channelData.Title = channelApi.Title
+	channelData.Description = channelApi.Description
+	channelData.Photo = channelApi.Photo
+	channelData.ViewCount = channelApi.ViewCount
+	channelData.SubscriberCount = channelApi.SubscriberCount
+	channelData.VideoCount = channelApi.VideoCount
+	channelData.Launch = false
+	channelData.Comment = ""
+	channelData.CountCommentedVideos = 0
 
 	err = s.repo.Add(ctx, channelData)
 	return err
 }
 
-func GetChannelById(ctx context.Context, channelId, apiKey string) (domain.ChannelAdd, error) {
-	channel := domain.ChannelAdd{
-		ChannelId: channelId,
-		ApiKey:    apiKey,
-	}
+func GetById(ctx context.Context, channelId, apiKey string) (domain.ChannelUpdate, error) {
+	var channel domain.ChannelUpdate
 
 	youtubeService, err := youtube.NewService(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
-		return domain.ChannelAdd{}, err
+		return domain.ChannelUpdate{}, err
 	}
 
 	call := youtubeService.Channels.List([]string{"snippet", "statistics"})
-	call.Id(channelId)
-	response, err := call.Do()
+	response, err := call.Id(channelId).Do()
 	if err != nil {
-		return domain.ChannelAdd{}, err
+		return domain.ChannelUpdate{}, domain.ErrInvalidApiKey
+	}
+
+	if response.Items == nil {
+		return domain.ChannelUpdate{}, domain.ErrInvalidChannelId
 	}
 
 	channel.Title = response.Items[0].Snippet.Title
@@ -57,33 +73,32 @@ func GetChannelById(ctx context.Context, channelId, apiKey string) (domain.Chann
 	channel.ViewCount = response.Items[0].Statistics.ViewCount
 	channel.SubscriberCount = response.Items[0].Statistics.SubscriberCount
 	channel.VideoCount = response.Items[0].Statistics.VideoCount
-	channel.Launch = false
 
 	return channel, nil
 }
 
-func (s *ChannelsService) GetChannels(ctx context.Context) ([]domain.ChannelGet, error) {
-	channels, err := s.repo.GetChannels(ctx)
+func (s *ChannelsService) Get(ctx context.Context) ([]domain.ChannelGet, error) {
+	channels, err := s.repo.Get(ctx)
 	return channels, err
 }
 
-func (s *ChannelsService) LaunchChannel(ctx context.Context, channelID primitive.ObjectID) error {
-	err := s.repo.LaunchChannel(ctx, channelID)
+func (s *ChannelsService) Launch(ctx context.Context, channelID primitive.ObjectID) error {
+	err := s.repo.Launch(ctx, channelID)
 	return err
 }
 
-func (s *ChannelsService) UpdateChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelIdKey) error {
-	channelData, err := GetChannelById(ctx, channel.ChannelId, channel.ApiKey)
+func (s *ChannelsService) Update(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelIdKey) error {
+	channelData, err := GetById(ctx, channel.ChannelId, channel.ApiKey)
 	if err != nil {
 		return err
 	}
 
-	err = s.repo.UpdateChannel(ctx, channelID, channelData)
+	err = s.repo.Update(ctx, channelID, channelData)
 	return err
 }
 
-func (s *ChannelsService) DeleteChannel(ctx context.Context, channelID primitive.ObjectID, channel_id string) error {
-	if err := s.repo.DeleteChannel(ctx, channelID); err != nil {
+func (s *ChannelsService) Delete(ctx context.Context, channelID primitive.ObjectID, channel_id string) error {
+	if err := s.repo.Delete(ctx, channelID); err != nil {
 		return err
 	}
 
@@ -96,7 +111,7 @@ func (s *ChannelsService) DeleteChannel(ctx context.Context, channelID primitive
 	return nil
 }
 
-func (s *ChannelsService) EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error {
-	err := s.repo.EditChannel(ctx, channelID, channel)
+func (s *ChannelsService) Edit(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error {
+	err := s.repo.Edit(ctx, channelID, channel)
 	return err
 }

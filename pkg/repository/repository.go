@@ -60,12 +60,13 @@ type Accounts interface {
 // AutomaticYoutube
 
 type Channels interface {
+	CheckingUniqueness(ctx context.Context, channel_id string) (bool, error)
 	Add(ctx context.Context, channel domain.ChannelAdd) error
-	GetChannels(ctx context.Context) ([]domain.ChannelGet, error)
-	LaunchChannel(ctx context.Context, channelID primitive.ObjectID) error
-	UpdateChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelAdd) error
-	DeleteChannel(ctx context.Context, channelID primitive.ObjectID) error
-	EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error
+	Get(ctx context.Context) ([]domain.ChannelGet, error)
+	Launch(ctx context.Context, channelID primitive.ObjectID) error
+	Update(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelUpdate) error
+	Delete(ctx context.Context, channelID primitive.ObjectID) error
+	Edit(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error
 }
 
 type AuthorizationRepository struct {

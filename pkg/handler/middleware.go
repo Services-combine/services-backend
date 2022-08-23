@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/korpgoodness/service.git/internal/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -29,7 +29,7 @@ func (h *Handler) userIdentity(c *gin.Context) {
 
 	dataUser, err := h.authorization.Authorization.CheckUser(c, userIdObject)
 	if err != nil {
-		newErrorResponse(c, http.StatusBadRequest, "Нет доступа к этой странице")
+		newErrorResponse(c, http.StatusBadRequest, domain.ErrNoAccessThisPage.Error())
 		return
 	}
 
@@ -39,16 +39,16 @@ func (h *Handler) userIdentity(c *gin.Context) {
 func (h *Handler) parseAuthHeader(c *gin.Context) (string, error) {
 	header := c.GetHeader(authorizationHeader)
 	if header == "" {
-		return "", errors.New("Пустой заголовок Authorized")
+		return "", domain.ErrHeaderAuthorizedIsEmpty
 	}
 
 	headerParts := strings.Split(header, " ")
 	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-		return "", errors.New("Н валидный заголовок Authorized")
+		return "", domain.ErrInvalidHeaderAuthorized
 	}
 
 	if len(headerParts[1]) == 0 {
-		return "", errors.New("Токен пустой")
+		return "", domain.ErrTokenIsEmpty
 	}
 
 	return h.authorization.Authorization.ParseToken(headerParts[1])
