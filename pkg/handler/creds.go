@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -12,20 +12,54 @@ import (
 	"runtime"
 
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"google.golang.org/api/youtube/v3"
 )
 
-func getClient(ctx context.Context, config *oauth2.Config) *http.Client {
-	cacheFile := "user_token.json"
-	tok, err := tokenFromFile(cacheFile)
+func getClient(ctx context.Context, appTokenPath, userTokenFile string) (*http.Client, error) {
+	fileBytes, err := ioutil.ReadFile(appTokenPath)
 	if err != nil {
-		tok = getTokenFromWeb(config)
-		saveToken(cacheFile, tok)
+		return nil, err
 	}
-	return config.Client(ctx, tok)
+
+	config, err := generateConfig(fileBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := readUserToken(userTokenFile)
+	if err != nil || !token.Valid() {
+		token, err = getUserTokenFromWeb(config)
+		if err != nil {
+			return nil, err
+		}
+
+		token.Expiry = token.Expiry.AddDate(0, 1, 0)
+		err = saveUserToken(userTokenFile, token)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return config.Client(ctx, token), nil
 }
 
-func tokenFromFile(file string) (*oauth2.Token, error) {
-	f, err := os.Open(file)
+func readAppToken(appTokenPath string) ([]byte, error) {
+	b, err := ioutil.ReadFile(appTokenPath)
+	return b, err
+}
+
+func generateConfig(fileBytes []byte) (*oauth2.Config, error) {
+	config, err := google.ConfigFromJSON(fileBytes, youtube.YoutubeForceSslScope, youtube.YoutubeUploadScope)
+	if err != nil {
+		return nil, err
+	}
+	config.RedirectURL = "http://" + os.Getenv("URL_LISTEN_OAUTH_CODE")
+
+	return config, nil
+}
+
+func readUserToken(userTokenFile string) (*oauth2.Token, error) {
+	f, err := os.Open(userTokenFile)
 	if err != nil {
 		return nil, err
 	}
@@ -35,38 +69,25 @@ func tokenFromFile(file string) (*oauth2.Token, error) {
 	return t, err
 }
 
-func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
+func getUserTokenFromWeb(config *oauth2.Config) (*oauth2.Token, error) {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 
 	codeCh, err := startWebServer()
 	if err != nil {
-		fmt.Printf("Unable to start a web server.")
-		return nil
+		return nil, err
 	}
 
 	err = openURL(authURL)
 	if err != nil {
-		log.Fatalf("Unable to open authorization URL in web server: %v", err)
-	} else {
-		fmt.Println("Your browser has been opened to an authorization URL.")
-		fmt.Println(authURL)
+		return nil, err
 	}
 
 	code := <-codeCh
 	tok, err := config.Exchange(oauth2.NoContext, code)
 	if err != nil {
-		log.Fatalf("Unable to retrieve token from web %v", err)
+		return nil, err
 	}
-	return tok
-}
-
-func saveToken(file string, token *oauth2.Token) {
-	f, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
-	if err != nil {
-		log.Fatalf("Unable to cache oauth token: %v", err)
-	}
-	defer f.Close()
-	json.NewEncoder(f).Encode(token)
+	return tok, nil
 }
 
 func startWebServer() (codeCh chan string, err error) {
@@ -100,4 +121,14 @@ func openURL(url string) error {
 		err = fmt.Errorf("Cannot open URL %s on this platform", url)
 	}
 	return err
+}
+
+func saveUserToken(userTokenFile string, token *oauth2.Token) error {
+	f, err := os.OpenFile(userTokenFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	json.NewEncoder(f).Encode(token)
+	return nil
 }

@@ -91,7 +91,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				{
 					channels.GET("/", h.GetChannels)
 					channels.POST("/add", h.AddChannel)
-					channels.GET("/:channelID/launch", h.LaunchChannel)
+					channels.POST("/:channelID/launch", h.LaunchChannel)
 					channels.POST("/:channelID/update", h.UpdateChannel)
 					channels.POST("/:channelID/delete", h.DeleteChannel)
 					channels.POST("/:channelID/edit", h.EditChannel)

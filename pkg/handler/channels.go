@@ -1,15 +1,12 @@
 package handler
 
 import (
-	"io/ioutil"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/korpgoodness/service.git/internal/domain"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"golang.org/x/oauth2/google"
-	"google.golang.org/api/youtube/v3"
 )
 
 func (h *Handler) GetChannels(c *gin.Context) {
@@ -41,36 +38,22 @@ func (h *Handler) AddChannel(c *gin.Context) {
 	}
 
 	if status {
-		tokenFile := formData.File["token_file"][0]
-		tokenFilePath := os.Getenv("FOLDER_CHANNELS") + "app_token_" + channel.ChannelId + ".json"
-		if err := c.SaveUploadedFile(tokenFile, tokenFilePath); err != nil {
+		appToken := formData.File["token_file"][0]
+		appTokenPath := os.Getenv("FOLDER_CHANNELS") + "app_token_" + channel.ChannelId + ".json"
+		userTokenPath := os.Getenv("FOLDER_CHANNELS") + "user_token_" + channel.ChannelId + ".json"
+
+		if err := c.SaveUploadedFile(appToken, appTokenPath); err != nil {
 			newErrorResponse(c, http.StatusBadRequest, domain.ErrByDownloadTokenFile.Error())
+			h.logger.Error(err)
 			return
 		}
 
-		// create user_token.json
-
-		b, err := ioutil.ReadFile(tokenFilePath)
+		_, err = getClient(c, appTokenPath, userTokenPath)
 		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, "Unable to read client secret file")
+			newErrorResponse(c, http.StatusBadRequest, domain.ErrUnableCreateUserToken.Error())
+			h.logger.Error(err)
 			return
 		}
-
-		config, err := google.ConfigFromJSON(b, youtube.YoutubeForceSslScope, youtube.YoutubeUploadScope)
-		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, "Unable to parse client secret file to config")
-			return
-		}
-		config.RedirectURL = os.Getenv("URL_LISTEN_OAUTH_CODE")
-
-		client := getClient(c, config)
-		_, err = youtube.New(client)
-		if err != nil {
-			newErrorResponse(c, http.StatusBadRequest, "Error creating YouTube client")
-			return
-		}
-
-		//
 
 		if err := h.automaticYoutube.Add(c, channel); err != nil {
 			newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -89,6 +72,22 @@ func (h *Handler) LaunchChannel(c *gin.Context) {
 	channelID, err := primitive.ObjectIDFromHex(c.Param("channelID"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	var channel domain.ChannelIdKey
+	if err := c.BindJSON(&channel); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	appTokenPath := os.Getenv("FOLDER_CHANNELS") + "app_token_" + channel.ChannelId + ".json"
+	userTokenPath := os.Getenv("FOLDER_CHANNELS") + "user_token_" + channel.ChannelId + ".json"
+
+	_, err = getClient(c, appTokenPath, userTokenPath)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, domain.ErrUnableCreateUserToken.Error())
+		h.logger.Error(err)
 		return
 	}
 
