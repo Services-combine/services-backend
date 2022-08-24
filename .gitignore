@@ -1,5 +1,6 @@
 .env
 accounts/
+channels/
 logs/
 python/account_telethon/logs/
 python/account_telethon/__pycache__/

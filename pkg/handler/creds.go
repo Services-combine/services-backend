@@ -10,45 +10,54 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"time"
 
+	"github.com/korpgoodness/service.git/internal/domain"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/youtube/v3"
 )
 
-func getClient(ctx context.Context, appTokenPath, userTokenFile string) (*http.Client, error) {
+func (h *Handler) GetClient(ctx context.Context, appTokenPath, userTokenFile string) (*http.Client, error) {
 	fileBytes, err := ioutil.ReadFile(appTokenPath)
 	if err != nil {
 		return nil, err
 	}
 
-	config, err := generateConfig(fileBytes)
+	config, err := h.GenerateConfig(fileBytes)
 	if err != nil {
 		return nil, err
 	}
 
-	token, err := readUserToken(userTokenFile)
-	if err != nil || !token.Valid() {
-		token, err = getUserTokenFromWeb(config)
+	token, err := h.ReadUserToken(userTokenFile)
+	if err != nil || !token.Valid() || time.Until(token.Expiry).Hours() <= 1 {
+		token, err = h.GetUserTokenFromWeb(config)
 		if err != nil {
 			return nil, err
 		}
+		token.Expiry = token.Expiry.AddDate(0, 3, 0)
 
-		token.Expiry = token.Expiry.AddDate(0, 1, 0)
-		err = saveUserToken(userTokenFile, token)
+		var mapToken map[string]interface{}
+		bytesToken, _ := json.Marshal(token)
+		json.Unmarshal(bytesToken, &mapToken)
+		mapToken["client_id"] = config.ClientID
+		mapToken["client_secret"] = config.ClientSecret
+
+		err = h.SaveUserToken(userTokenFile, mapToken)
 		if err != nil {
 			return nil, err
 		}
 	}
+
 	return config.Client(ctx, token), nil
 }
 
-func readAppToken(appTokenPath string) ([]byte, error) {
+func (h *Handler) ReadAppToken(appTokenPath string) ([]byte, error) {
 	b, err := ioutil.ReadFile(appTokenPath)
 	return b, err
 }
 
-func generateConfig(fileBytes []byte) (*oauth2.Config, error) {
+func (h *Handler) GenerateConfig(fileBytes []byte) (*oauth2.Config, error) {
 	config, err := google.ConfigFromJSON(fileBytes, youtube.YoutubeForceSslScope, youtube.YoutubeUploadScope)
 	if err != nil {
 		return nil, err
@@ -58,7 +67,7 @@ func generateConfig(fileBytes []byte) (*oauth2.Config, error) {
 	return config, nil
 }
 
-func readUserToken(userTokenFile string) (*oauth2.Token, error) {
+func (h *Handler) ReadUserToken(userTokenFile string) (*oauth2.Token, error) {
 	f, err := os.Open(userTokenFile)
 	if err != nil {
 		return nil, err
@@ -69,15 +78,15 @@ func readUserToken(userTokenFile string) (*oauth2.Token, error) {
 	return t, err
 }
 
-func getUserTokenFromWeb(config *oauth2.Config) (*oauth2.Token, error) {
+func (h *Handler) GetUserTokenFromWeb(config *oauth2.Config) (*oauth2.Token, error) {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 
-	codeCh, err := startWebServer()
+	codeCh, err := h.StartWebServer()
 	if err != nil {
 		return nil, err
 	}
 
-	err = openURL(authURL)
+	err = h.OpenURL(authURL)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +99,7 @@ func getUserTokenFromWeb(config *oauth2.Config) (*oauth2.Token, error) {
 	return tok, nil
 }
 
-func startWebServer() (codeCh chan string, err error) {
+func (h *Handler) StartWebServer() (codeCh chan string, err error) {
 	listener, err := net.Listen("tcp", os.Getenv("URL_LISTEN_OAUTH_CODE"))
 	if err != nil {
 		return nil, err
@@ -108,7 +117,7 @@ func startWebServer() (codeCh chan string, err error) {
 	return codeCh, nil
 }
 
-func openURL(url string) error {
+func (h *Handler) OpenURL(url string) error {
 	var err error
 	switch runtime.GOOS {
 	case "linux":
@@ -118,12 +127,12 @@ func openURL(url string) error {
 	case "darwin":
 		err = exec.Command("open", url).Start()
 	default:
-		err = fmt.Errorf("Cannot open URL %s on this platform", url)
+		err = domain.ErrUnableOpenUrl
 	}
 	return err
 }
 
-func saveUserToken(userTokenFile string, token *oauth2.Token) error {
+func (h *Handler) SaveUserToken(userTokenFile string, token map[string]interface{}) error {
 	f, err := os.OpenFile(userTokenFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return err

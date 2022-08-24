@@ -48,7 +48,7 @@ func (h *Handler) AddChannel(c *gin.Context) {
 			return
 		}
 
-		_, err = getClient(c, appTokenPath, userTokenPath)
+		_, err = h.GetClient(c, appTokenPath, userTokenPath)
 		if err != nil {
 			newErrorResponse(c, http.StatusBadRequest, domain.ErrUnableCreateUserToken.Error())
 			h.logger.Error(err)
@@ -84,7 +84,7 @@ func (h *Handler) LaunchChannel(c *gin.Context) {
 	appTokenPath := os.Getenv("FOLDER_CHANNELS") + "app_token_" + channel.ChannelId + ".json"
 	userTokenPath := os.Getenv("FOLDER_CHANNELS") + "user_token_" + channel.ChannelId + ".json"
 
-	_, err = getClient(c, appTokenPath, userTokenPath)
+	_, err = h.GetClient(c, appTokenPath, userTokenPath)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, domain.ErrUnableCreateUserToken.Error())
 		h.logger.Error(err)

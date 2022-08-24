@@ -14,6 +14,7 @@ var (
 	ErrInvalidChannelId        = errors.New("Не верный channel id")
 	ErrChannelIdNoUniqueness   = errors.New("Такое channel id уже используется")
 	ErrUnableCreateUserToken   = errors.New("Неудалось создать токен пользователя")
+	ErrUnableOpenUrl           = errors.New("Неудалось открыть ссылку в браузере")
 
 	ErrUnableReadAppToken  = errors.New("Неудалось прочитать токен приложения")
 	ErrUnableCreateConfig  = errors.New("Неудалось создать config на основании токена приложения")
