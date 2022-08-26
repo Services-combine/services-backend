@@ -61,12 +61,13 @@ type AccountVerify interface {
 
 type Channels interface {
 	CheckingUniqueness(ctx context.Context, channel_id string) (bool, error)
-	Add(ctx context.Context, channel domain.ChannelIdKey) error
+	Add(ctx context.Context, channel domain.ChannelAdd) error
 	Get(ctx context.Context) ([]domain.ChannelGet, error)
 	Launch(ctx context.Context, channelID primitive.ObjectID) error
 	Update(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelIdKey) error
 	Delete(ctx context.Context, channelID primitive.ObjectID, channel_id string) error
-	Edit(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error
+	EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error
+	EditProxy(ctx context.Context, channelID primitive.ObjectID, channel domain.ProxyEdit) error
 }
 
 // Structs

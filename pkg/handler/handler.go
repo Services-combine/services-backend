@@ -94,7 +94,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 					channels.POST("/:channelID/launch", h.LaunchChannel)
 					channels.POST("/:channelID/update", h.UpdateChannel)
 					channels.POST("/:channelID/delete", h.DeleteChannel)
-					channels.POST("/:channelID/edit", h.EditChannel)
+					channels.POST("/:channelID/edit-channel", h.EditChannel)
+					channels.POST("/:channelID/edit-proxy", h.EditProxy)
 				}
 			}
 		}

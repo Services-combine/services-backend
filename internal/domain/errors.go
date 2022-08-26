@@ -9,10 +9,11 @@ var (
 	ErrHeaderAuthorizedIsEmpty = errors.New("Пустой заголовок Authorized")
 	ErrInvalidHeaderAuthorized = errors.New("Не валидный заголовок Authorized")
 	ErrTokenIsEmpty            = errors.New("Токен пустой")
-	ErrByDownloadTokenFile     = errors.New("Ошибка при скачивании токена приложения")
+	ErrByDownloadAppTokenFile  = errors.New("Ошибка при скачивании токена приложения")
+	ErrByDownloadUserTokenFile = errors.New("Ошибка при скачивании токена клиента")
 	ErrInvalidApiKey           = errors.New("Не верный api key")
 	ErrInvalidChannelId        = errors.New("Не верный channel id")
-	ErrChannelIdNoUniqueness   = errors.New("Такое channel id уже используется")
+	ErrChannelIdNoUniqueness   = errors.New("Такой channel id уже используется")
 	ErrUnableCreateUserToken   = errors.New("Неудалось создать токен пользователя")
 	ErrUnableOpenUrl           = errors.New("Неудалось открыть ссылку в браузере")
 

@@ -24,28 +24,23 @@ func (s *ChannelsService) CheckingUniqueness(ctx context.Context, channel_id str
 	return status, err
 }
 
-func (s *ChannelsService) Add(ctx context.Context, channel domain.ChannelIdKey) error {
-	channelData := domain.ChannelAdd{
-		ChannelId: channel.ChannelId,
-		ApiKey:    channel.ApiKey,
-	}
-
+func (s *ChannelsService) Add(ctx context.Context, channel domain.ChannelAdd) error {
 	channelApi, err := GetById(ctx, channel.ChannelId, channel.ApiKey)
 	if err != nil {
 		return err
 	}
 
-	channelData.Title = channelApi.Title
-	channelData.Description = channelApi.Description
-	channelData.Photo = channelApi.Photo
-	channelData.ViewCount = channelApi.ViewCount
-	channelData.SubscriberCount = channelApi.SubscriberCount
-	channelData.VideoCount = channelApi.VideoCount
-	channelData.Launch = false
-	channelData.Comment = ""
-	channelData.CountCommentedVideos = 0
+	channel.Title = channelApi.Title
+	channel.Description = channelApi.Description
+	channel.Photo = channelApi.Photo
+	channel.ViewCount = channelApi.ViewCount
+	channel.SubscriberCount = channelApi.SubscriberCount
+	channel.VideoCount = channelApi.VideoCount
+	channel.Launch = false
+	channel.Comment = ""
+	channel.CountCommentedVideos = 0
 
-	err = s.repo.Add(ctx, channelData)
+	err = s.repo.Add(ctx, channel)
 	return err
 }
 
@@ -111,7 +106,12 @@ func (s *ChannelsService) Delete(ctx context.Context, channelID primitive.Object
 	return nil
 }
 
-func (s *ChannelsService) Edit(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error {
-	err := s.repo.Edit(ctx, channelID, channel)
+func (s *ChannelsService) EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error {
+	err := s.repo.EditChannel(ctx, channelID, channel)
+	return err
+}
+
+func (s *ChannelsService) EditProxy(ctx context.Context, channelID primitive.ObjectID, channel domain.ProxyEdit) error {
+	err := s.repo.EditProxy(ctx, channelID, channel)
 	return err
 }

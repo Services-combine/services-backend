@@ -66,7 +66,8 @@ type Channels interface {
 	Launch(ctx context.Context, channelID primitive.ObjectID) error
 	Update(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelUpdate) error
 	Delete(ctx context.Context, channelID primitive.ObjectID) error
-	Edit(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error
+	EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error
+	EditProxy(ctx context.Context, channelID primitive.ObjectID, channel domain.ProxyEdit) error
 }
 
 type AuthorizationRepository struct {

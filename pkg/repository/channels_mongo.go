@@ -71,7 +71,16 @@ func (r *ChannelsRepo) Delete(ctx context.Context, channelID primitive.ObjectID)
 	return err
 }
 
-func (r *ChannelsRepo) Edit(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error {
+func (r *ChannelsRepo) EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error {
+	_, err := r.db.UpdateOne(
+		ctx,
+		bson.M{"_id": channelID},
+		bson.M{"$set": channel},
+	)
+	return err
+}
+
+func (r *ChannelsRepo) EditProxy(ctx context.Context, channelID primitive.ObjectID, channel domain.ProxyEdit) error {
 	_, err := r.db.UpdateOne(
 		ctx,
 		bson.M{"_id": channelID},

@@ -62,7 +62,8 @@ func (h *Handler) GenerateConfig(fileBytes []byte) (*oauth2.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	config.RedirectURL = "http://" + os.Getenv("URL_LISTEN_OAUTH_CODE")
+	pathRedirect := "http://" + os.Getenv("URL_LISTEN_OAUTH_CODE")
+	config.RedirectURL = pathRedirect
 
 	return config, nil
 }
@@ -80,6 +81,7 @@ func (h *Handler) ReadUserToken(userTokenFile string) (*oauth2.Token, error) {
 
 func (h *Handler) GetUserTokenFromWeb(config *oauth2.Config) (*oauth2.Token, error) {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	fmt.Println(authURL)
 
 	codeCh, err := h.StartWebServer()
 	if err != nil {
@@ -96,6 +98,7 @@ func (h *Handler) GetUserTokenFromWeb(config *oauth2.Config) (*oauth2.Token, err
 	if err != nil {
 		return nil, err
 	}
+
 	return tok, nil
 }
 

@@ -20,7 +20,7 @@ func (h *Handler) GetChannels(c *gin.Context) {
 }
 
 func (h *Handler) AddChannel(c *gin.Context) {
-	var channel domain.ChannelIdKey
+	var channel domain.ChannelAdd
 
 	formData, err := c.MultipartForm()
 	if err != nil {
@@ -30,6 +30,10 @@ func (h *Handler) AddChannel(c *gin.Context) {
 
 	channel.ChannelId = formData.Value["channel_id"][0]
 	channel.ApiKey = formData.Value["api_key"][0]
+	channel.IpProxy = formData.Value["ip_proxy"][0]
+	channel.PortProxy = formData.Value["port_proxy"][0]
+	channel.LoginProxy = formData.Value["login_proxy"][0]
+	channel.PasswordProxy = formData.Value["password_proxy"][0]
 
 	status, err := h.automaticYoutube.CheckingUniqueness(c, channel.ChannelId)
 	if err != nil {
@@ -38,22 +42,29 @@ func (h *Handler) AddChannel(c *gin.Context) {
 	}
 
 	if status {
-		appToken := formData.File["token_file"][0]
+		appToken := formData.File["app_token_file"][0]
+		userToken := formData.File["user_token_file"][0]
 		appTokenPath := os.Getenv("FOLDER_CHANNELS") + "app_token_" + channel.ChannelId + ".json"
 		userTokenPath := os.Getenv("FOLDER_CHANNELS") + "user_token_" + channel.ChannelId + ".json"
 
 		if err := c.SaveUploadedFile(appToken, appTokenPath); err != nil {
-			newErrorResponse(c, http.StatusBadRequest, domain.ErrByDownloadTokenFile.Error())
+			newErrorResponse(c, http.StatusBadRequest, domain.ErrByDownloadAppTokenFile.Error())
 			h.logger.Error(err)
 			return
 		}
 
-		_, err = h.GetClient(c, appTokenPath, userTokenPath)
+		if err := c.SaveUploadedFile(userToken, userTokenPath); err != nil {
+			newErrorResponse(c, http.StatusBadRequest, domain.ErrByDownloadUserTokenFile.Error())
+			h.logger.Error(err)
+			return
+		}
+
+		/*_, err = h.GetClient(c, appTokenPath, userTokenPath)
 		if err != nil {
 			newErrorResponse(c, http.StatusBadRequest, domain.ErrUnableCreateUserToken.Error())
 			h.logger.Error(err)
 			return
-		}
+		}*/
 
 		if err := h.automaticYoutube.Add(c, channel); err != nil {
 			newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -81,15 +92,15 @@ func (h *Handler) LaunchChannel(c *gin.Context) {
 		return
 	}
 
-	appTokenPath := os.Getenv("FOLDER_CHANNELS") + "app_token_" + channel.ChannelId + ".json"
-	userTokenPath := os.Getenv("FOLDER_CHANNELS") + "user_token_" + channel.ChannelId + ".json"
+	//appTokenPath := os.Getenv("FOLDER_CHANNELS") + "app_token_" + channel.ChannelId + ".json"
+	//userTokenPath := os.Getenv("FOLDER_CHANNELS") + "user_token_" + channel.ChannelId + ".json"
 
-	_, err = h.GetClient(c, appTokenPath, userTokenPath)
+	/*_, err = h.GetClient(c, appTokenPath, userTokenPath)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, domain.ErrUnableCreateUserToken.Error())
 		h.logger.Error(err)
 		return
-	}
+	}*/
 
 	if err := h.automaticYoutube.Channels.Launch(c, channelID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -160,7 +171,30 @@ func (h *Handler) EditChannel(c *gin.Context) {
 		return
 	}
 
-	if err := h.automaticYoutube.Channels.Edit(c, channelID, channel); err != nil {
+	if err := h.automaticYoutube.Channels.EditChannel(c, channelID, channel); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
+}
+
+func (h *Handler) EditProxy(c *gin.Context) {
+	channelID, err := primitive.ObjectIDFromHex(c.Param("channelID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	var channel domain.ProxyEdit
+	if err := c.BindJSON(&channel); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.automaticYoutube.Channels.EditProxy(c, channelID, channel); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
