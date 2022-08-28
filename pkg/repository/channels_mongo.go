@@ -80,11 +80,11 @@ func (r *ChannelsRepo) EditChannel(ctx context.Context, channelID primitive.Obje
 	return err
 }
 
-func (r *ChannelsRepo) EditProxy(ctx context.Context, channelID primitive.ObjectID, channel domain.ProxyEdit) error {
+func (r *ChannelsRepo) EditProxy(ctx context.Context, channelID primitive.ObjectID, proxy string) error {
 	_, err := r.db.UpdateOne(
 		ctx,
 		bson.M{"_id": channelID},
-		bson.M{"$set": channel},
+		bson.M{"$set": bson.M{"proxy": proxy}},
 	)
 	return err
 }

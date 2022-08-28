@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/korpgoodness/service.git/internal/domain"
@@ -55,6 +56,7 @@ func GetById(ctx context.Context, channelId, apiKey string) (domain.ChannelUpdat
 	call := youtubeService.Channels.List([]string{"snippet", "statistics"})
 	response, err := call.Id(channelId).Do()
 	if err != nil {
+		fmt.Println(err)
 		return domain.ChannelUpdate{}, domain.ErrInvalidApiKey
 	}
 
@@ -111,7 +113,7 @@ func (s *ChannelsService) EditChannel(ctx context.Context, channelID primitive.O
 	return err
 }
 
-func (s *ChannelsService) EditProxy(ctx context.Context, channelID primitive.ObjectID, channel domain.ProxyEdit) error {
-	err := s.repo.EditProxy(ctx, channelID, channel)
+func (s *ChannelsService) EditProxy(ctx context.Context, channelID primitive.ObjectID, proxy string) error {
+	err := s.repo.EditProxy(ctx, channelID, proxy)
 	return err
 }

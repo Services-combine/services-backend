@@ -67,7 +67,7 @@ type Channels interface {
 	Update(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelIdKey) error
 	Delete(ctx context.Context, channelID primitive.ObjectID, channel_id string) error
 	EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error
-	EditProxy(ctx context.Context, channelID primitive.ObjectID, channel domain.ProxyEdit) error
+	EditProxy(ctx context.Context, channelID primitive.ObjectID, proxy string) error
 }
 
 // Structs

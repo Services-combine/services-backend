@@ -10,10 +10,7 @@ type ChannelIdKey struct {
 type ChannelAdd struct {
 	ChannelId            string `json:"channel_id" binding:"required"`
 	ApiKey               string `json:"api_key" binding:"required"`
-	IpProxy              string `json:"ip_proxy" binding:"required"`
-	PortProxy            string `json:"port_proxy" binding:"required"`
-	LoginProxy           string `json:"login_proxy" binding:"required"`
-	PasswordProxy        string `json:"password_proxy" binding:"required"`
+	Proxy                string `json:"proxy" binding:"required"`
 	Title                string `json:"title"`
 	Description          string `json:"description"`
 	Photo                string `json:"photo"`
@@ -29,10 +26,7 @@ type ChannelGet struct {
 	ID                   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	ChannelId            string             `json:"channel_id" binding:"required"`
 	ApiKey               string             `json:"api_key" binding:"required"`
-	IpProxy              string             `json:"ip_proxy" binding:"required"`
-	PortProxy            string             `json:"port_proxy" binding:"required"`
-	LoginProxy           string             `json:"login_proxy" binding:"required"`
-	PasswordProxy        string             `json:"password_proxy" binding:"required"`
+	Proxy                string             `json:"proxy" binding:"required"`
 	Title                string             `json:"title"`
 	Description          string             `json:"description"`
 	Photo                string             `json:"photo"`
@@ -59,8 +53,5 @@ type ChannelEdit struct {
 }
 
 type ProxyEdit struct {
-	IpProxy       string `json:"ip_proxy" binding:"required"`
-	PortProxy     string `json:"port_proxy" binding:"required"`
-	LoginProxy    string `json:"login_proxy" binding:"required"`
-	PasswordProxy string `json:"password_proxy" binding:"required"`
+	Proxy string `json:"proxy"`
 }
