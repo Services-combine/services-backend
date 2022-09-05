@@ -18,11 +18,6 @@ type Authorization interface {
 
 // Inviting
 
-type Settings interface {
-	GetSettings(ctx context.Context) (domain.Settings, error)
-	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
-}
-
 type Folders interface {
 	GetFolders(ctx context.Context) (map[string]interface{}, error)
 	Create(ctx context.Context, folder domain.Folder) error
@@ -70,6 +65,16 @@ type Channels interface {
 	EditProxy(ctx context.Context, channelID primitive.ObjectID, proxy string) error
 }
 
+// Settings
+
+type Settings interface {
+	GetSettings(ctx context.Context) (domain.Settings, error)
+	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
+	GetMarks(ctx context.Context) ([]domain.Mark, error)
+	SaveMarks(ctx context.Context, marks []domain.Mark) error
+	DeleteMark(ctx context.Context, mark domain.Mark) error
+}
+
 // Structs
 
 type AuthorizationService struct {
@@ -77,7 +82,6 @@ type AuthorizationService struct {
 }
 
 type InvitingService struct {
-	Settings
 	Folders
 	Accounts
 	AccountVerify
@@ -85,6 +89,10 @@ type InvitingService struct {
 
 type AutomaticYoutubeService struct {
 	Channels
+}
+
+type ServiceSettings struct {
+	Settings
 }
 
 func NewAuthorizationService(repos *repository.AuthorizationRepository) *AuthorizationService {
@@ -95,7 +103,6 @@ func NewAuthorizationService(repos *repository.AuthorizationRepository) *Authori
 
 func NewInvitingService(repos *repository.InvitingRepository) *InvitingService {
 	return &InvitingService{
-		Settings:      NewSettingsService(repos.Settings),
 		Folders:       NewFoldersService(repos.Folders),
 		Accounts:      NewAccountsService(repos.Accounts),
 		AccountVerify: NewAccountVerifyService(repos.Accounts),
@@ -105,5 +112,11 @@ func NewInvitingService(repos *repository.InvitingRepository) *InvitingService {
 func NewAutomaticYoutubeService(repos *repository.AutomaticYoutubeRepository) *AutomaticYoutubeService {
 	return &AutomaticYoutubeService{
 		Channels: NewChannelsService(repos.Channels),
+	}
+}
+
+func NewServiceSettings(repos *repository.SettingsRepository) *ServiceSettings {
+	return &ServiceSettings{
+		Settings: NewSettingsService(repos.Settings),
 	}
 }

@@ -14,6 +14,7 @@ type Handler struct {
 	authorization    *service.AuthorizationService
 	inviting         *service.InvitingService
 	automaticYoutube *service.AutomaticYoutubeService
+	settings         *service.ServiceSettings
 	logger           logging.Logger
 }
 
@@ -21,6 +22,7 @@ func NewHandler(
 	authorization *service.AuthorizationService,
 	inviting *service.InvitingService,
 	automaticYoutube *service.AutomaticYoutubeService,
+	serviceSettings *service.ServiceSettings,
 ) *Handler {
 	logger := logging.GetLogger()
 	if err := godotenv.Load(); err != nil {
@@ -31,6 +33,7 @@ func NewHandler(
 		authorization:    authorization,
 		inviting:         inviting,
 		automaticYoutube: automaticYoutube,
+		settings:         serviceSettings,
 		logger:           logger,
 	}
 }
@@ -90,6 +93,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				channels := user.Group("/channels")
 				{
 					channels.GET("/", h.GetChannels)
+					channels.GET("/get-marks", h.GetMarks)
+					channels.POST("/save-marks", h.SaveMarks)
 					channels.POST("/add", h.AddChannel)
 					channels.GET("/:channelID/launch", h.LaunchChannel)
 					channels.POST("/:channelID/update", h.UpdateChannel)
