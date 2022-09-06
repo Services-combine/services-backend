@@ -33,7 +33,26 @@ func (r *ChannelsRepo) CheckingUniqueness(ctx context.Context, channel_id string
 }
 
 func (r *ChannelsRepo) Add(ctx context.Context, channel domain.ChannelAdd) error {
-	_, err := r.db.InsertOne(ctx, channel)
+	markID, err := primitive.ObjectIDFromHex(channel.Mark)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.db.InsertOne(ctx, bson.M{
+		"channel_id":             channel.ChannelId,
+		"api_key":                channel.ApiKey,
+		"proxy":                  channel.Proxy,
+		"mark":                   markID,
+		"title":                  channel.Title,
+		"description":            channel.Description,
+		"photo":                  channel.Photo,
+		"video_count":            channel.VideoCount,
+		"view_count":             channel.ViewCount,
+		"subscriber_count":       channel.SubscriberCount,
+		"launch":                 false,
+		"comment":                "",
+		"count_commented_videos": 0,
+	})
 	return err
 }
 
@@ -71,7 +90,7 @@ func (r *ChannelsRepo) Delete(ctx context.Context, channelID primitive.ObjectID)
 	return err
 }
 
-func (r *ChannelsRepo) EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error {
+func (r *ChannelsRepo) EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.CommentEdit) error {
 	_, err := r.db.UpdateOne(
 		ctx,
 		bson.M{"_id": channelID},
@@ -85,6 +104,15 @@ func (r *ChannelsRepo) EditProxy(ctx context.Context, channelID primitive.Object
 		ctx,
 		bson.M{"_id": channelID},
 		bson.M{"$set": bson.M{"proxy": proxy}},
+	)
+	return err
+}
+
+func (r *ChannelsRepo) EditMark(ctx context.Context, channelID, mark primitive.ObjectID) error {
+	_, err := r.db.UpdateOne(
+		ctx,
+		bson.M{"_id": channelID},
+		bson.M{"$set": bson.M{"mark": mark}},
 	)
 	return err
 }

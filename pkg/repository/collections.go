@@ -6,4 +6,5 @@ const (
 	accountsCollection = "accounts"
 	settingsCollection = "settings"
 	channelsCollection = "channels"
+	marksCollection    = "marks"
 )

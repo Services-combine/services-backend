@@ -7,29 +7,29 @@ import (
 	"github.com/korpgoodness/service.git/internal/domain"
 )
 
-func (h *Handler) GetSettings(c *gin.Context) {
-	settings, err := h.inviting.SettingsInviting.GetSettings(c)
+func (h *Handler) GetMarks(c *gin.Context) {
+	marks, err := h.automaticYoutube.Marks.GetMarks(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, settings)
+
+	c.JSON(http.StatusOK, marks)
 }
 
-func (h *Handler) SaveSettings(c *gin.Context) {
-	var dataSettings domain.Settings
-
-	if err := c.BindJSON(&dataSettings); err != nil {
+func (h *Handler) UpdateMark(c *gin.Context) {
+	var marks domain.MarkGet
+	if err := c.BindJSON(&marks); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := h.inviting.SettingsInviting.SaveSettings(c, dataSettings); err != nil {
+	if err := h.automaticYoutube.Marks.UpdateMark(c, marks); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	h.logger.Info("Save new settings")
+	h.logger.Info("Save marks")
 
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",

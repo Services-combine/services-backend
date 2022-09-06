@@ -18,6 +18,11 @@ type Authorization interface {
 
 // Inviting
 
+type SettingsInviting interface {
+	GetSettings(ctx context.Context) (domain.Settings, error)
+	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
+}
+
 type Folders interface {
 	GetFolders(ctx context.Context) ([]domain.Folder, error)
 	GetFoldersByPath(ctx context.Context, path string) ([]domain.FolderItem, error)
@@ -61,18 +66,14 @@ type Channels interface {
 	Launch(ctx context.Context, channelID primitive.ObjectID) error
 	Update(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelUpdate) error
 	Delete(ctx context.Context, channelID primitive.ObjectID) error
-	EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error
+	EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.CommentEdit) error
 	EditProxy(ctx context.Context, channelID primitive.ObjectID, proxy string) error
+	EditMark(ctx context.Context, channelID, mark primitive.ObjectID) error
 }
 
-// Settings
-
-type Settings interface {
-	GetSettings(ctx context.Context) (domain.Settings, error)
-	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
-	GetMarks(ctx context.Context) ([]domain.Mark, error)
-	SaveMarks(ctx context.Context, marks []domain.Mark) error
-	DeleteMark(ctx context.Context, mark domain.Mark) error
+type Marks interface {
+	GetMarks(ctx context.Context) ([]domain.MarkGet, error)
+	UpdateMark(ctx context.Context, mark domain.MarkGet) error
 }
 
 type AuthorizationRepository struct {
@@ -80,16 +81,14 @@ type AuthorizationRepository struct {
 }
 
 type InvitingRepository struct {
+	SettingsInviting
 	Folders
 	Accounts
 }
 
 type AutomaticYoutubeRepository struct {
 	Channels
-}
-
-type SettingsRepository struct {
-	Settings
+	Marks
 }
 
 func NewAuthRepository(db *mongo.Client) *AuthorizationRepository {
@@ -100,19 +99,15 @@ func NewAuthRepository(db *mongo.Client) *AuthorizationRepository {
 
 func NewInvitingRepository(db *mongo.Client) *InvitingRepository {
 	return &InvitingRepository{
-		Folders:  NewFoldersRepo(db.Database(viper.GetString("mongo.databaseName"))),
-		Accounts: NewAccountsRepo(db.Database(viper.GetString("mongo.databaseName"))),
+		SettingsInviting: NewSettingsRepo(db.Database(viper.GetString("mongo.databaseName"))),
+		Folders:          NewFoldersRepo(db.Database(viper.GetString("mongo.databaseName"))),
+		Accounts:         NewAccountsRepo(db.Database(viper.GetString("mongo.databaseName"))),
 	}
 }
 
 func NewAutomaticYoutubeRepository(db *mongo.Client) *AutomaticYoutubeRepository {
 	return &AutomaticYoutubeRepository{
 		Channels: NewChannelsRepo(db.Database(viper.GetString("mongo.databaseName"))),
-	}
-}
-
-func NewSettingsRepository(db *mongo.Client) *SettingsRepository {
-	return &SettingsRepository{
-		Settings: NewSettingsRepo(db.Database(viper.GetString("mongo.databaseName"))),
+		Marks:    NewMarksRepo(db.Database(viper.GetString("mongo.databaseName"))),
 	}
 }

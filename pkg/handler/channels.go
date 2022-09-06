@@ -31,6 +31,7 @@ func (h *Handler) AddChannel(c *gin.Context) {
 	channel.ChannelId = formData.Value["channel_id"][0]
 	channel.ApiKey = formData.Value["api_key"][0]
 	channel.Proxy = formData.Value["proxy"][0]
+	channel.Mark = formData.Value["mark"][0]
 
 	status, err := h.automaticYoutube.CheckingUniqueness(c, channel.ChannelId)
 	if err != nil {
@@ -139,14 +140,14 @@ func (h *Handler) DeleteChannel(c *gin.Context) {
 	})
 }
 
-func (h *Handler) EditChannel(c *gin.Context) {
+func (h *Handler) EditComment(c *gin.Context) {
 	channelID, err := primitive.ObjectIDFromHex(c.Param("channelID"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	var channel domain.ChannelEdit
+	var channel domain.CommentEdit
 	if err := c.BindJSON(&channel); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -176,6 +177,35 @@ func (h *Handler) EditProxy(c *gin.Context) {
 	}
 
 	if err := h.automaticYoutube.Channels.EditProxy(c, channelID, channel.Proxy); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
+}
+
+func (h *Handler) EditMark(c *gin.Context) {
+	channelID, err := primitive.ObjectIDFromHex(c.Param("channelID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	var channel domain.MarkEdit
+	if err := c.BindJSON(&channel); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	markID, err := primitive.ObjectIDFromHex(channel.Mark)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.automaticYoutube.Channels.EditMark(c, channelID, markID); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}

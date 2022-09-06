@@ -37,9 +37,6 @@ func (s *ChannelsService) Add(ctx context.Context, channel domain.ChannelAdd) er
 	channel.ViewCount = channelApi.ViewCount
 	channel.SubscriberCount = channelApi.SubscriberCount
 	channel.VideoCount = channelApi.VideoCount
-	channel.Launch = false
-	channel.Comment = ""
-	channel.CountCommentedVideos = 0
 
 	err = s.repo.Add(ctx, channel)
 	return err
@@ -108,12 +105,17 @@ func (s *ChannelsService) Delete(ctx context.Context, channelID primitive.Object
 	return nil
 }
 
-func (s *ChannelsService) EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error {
+func (s *ChannelsService) EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.CommentEdit) error {
 	err := s.repo.EditChannel(ctx, channelID, channel)
 	return err
 }
 
 func (s *ChannelsService) EditProxy(ctx context.Context, channelID primitive.ObjectID, proxy string) error {
 	err := s.repo.EditProxy(ctx, channelID, proxy)
+	return err
+}
+
+func (s *ChannelsService) EditMark(ctx context.Context, channelID, mark primitive.ObjectID) error {
+	err := s.repo.EditMark(ctx, channelID, mark)
 	return err
 }

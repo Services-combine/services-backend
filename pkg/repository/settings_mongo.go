@@ -32,23 +32,3 @@ func (r *SettingsRepo) SaveSettings(ctx context.Context, dataSettings domain.Set
 	_, err := r.db.UpdateOne(ctx, bson.M{"service": service_inviting}, bson.M{"$set": bson.M{"countInviting": dataSettings.CountInviting, "countMailing": dataSettings.CountMailing}})
 	return err
 }
-
-func (r *SettingsRepo) GetMarks(ctx context.Context) ([]domain.Mark, error) {
-	var marks domain.Marks
-
-	err := r.db.FindOne(ctx, bson.M{"service": service_automatic_youtube}).Decode(&marks)
-	if err != nil {
-		return nil, err
-	} else {
-		return marks.Marks, nil
-	}
-}
-
-func (r *SettingsRepo) SaveMarks(ctx context.Context, marks []domain.Mark) error {
-	_, err := r.db.UpdateOne(ctx, bson.M{"service": service_automatic_youtube}, bson.M{"$set": bson.M{"marks": marks}})
-	return err
-}
-
-func (r *SettingsRepo) DeleteMark(ctx context.Context, mark domain.Mark) error {
-	return nil
-}

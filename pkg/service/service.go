@@ -18,6 +18,11 @@ type Authorization interface {
 
 // Inviting
 
+type SettingsInviting interface {
+	GetSettings(ctx context.Context) (domain.Settings, error)
+	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
+}
+
 type Folders interface {
 	GetFolders(ctx context.Context) (map[string]interface{}, error)
 	Create(ctx context.Context, folder domain.Folder) error
@@ -61,18 +66,14 @@ type Channels interface {
 	Launch(ctx context.Context, channelID primitive.ObjectID) error
 	Update(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelIdKey) error
 	Delete(ctx context.Context, channelID primitive.ObjectID, channel_id string) error
-	EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.ChannelEdit) error
+	EditChannel(ctx context.Context, channelID primitive.ObjectID, channel domain.CommentEdit) error
 	EditProxy(ctx context.Context, channelID primitive.ObjectID, proxy string) error
+	EditMark(ctx context.Context, channelID, mark primitive.ObjectID) error
 }
 
-// Settings
-
-type Settings interface {
-	GetSettings(ctx context.Context) (domain.Settings, error)
-	SaveSettings(ctx context.Context, dataSettings domain.Settings) error
-	GetMarks(ctx context.Context) ([]domain.Mark, error)
-	SaveMarks(ctx context.Context, marks []domain.Mark) error
-	DeleteMark(ctx context.Context, mark domain.Mark) error
+type Marks interface {
+	GetMarks(ctx context.Context) ([]domain.MarkGet, error)
+	UpdateMark(ctx context.Context, mark domain.MarkGet) error
 }
 
 // Structs
@@ -82,6 +83,7 @@ type AuthorizationService struct {
 }
 
 type InvitingService struct {
+	SettingsInviting
 	Folders
 	Accounts
 	AccountVerify
@@ -89,10 +91,7 @@ type InvitingService struct {
 
 type AutomaticYoutubeService struct {
 	Channels
-}
-
-type ServiceSettings struct {
-	Settings
+	Marks
 }
 
 func NewAuthorizationService(repos *repository.AuthorizationRepository) *AuthorizationService {
@@ -103,20 +102,16 @@ func NewAuthorizationService(repos *repository.AuthorizationRepository) *Authori
 
 func NewInvitingService(repos *repository.InvitingRepository) *InvitingService {
 	return &InvitingService{
-		Folders:       NewFoldersService(repos.Folders),
-		Accounts:      NewAccountsService(repos.Accounts),
-		AccountVerify: NewAccountVerifyService(repos.Accounts),
+		SettingsInviting: NewSettingsService(repos.SettingsInviting),
+		Folders:          NewFoldersService(repos.Folders),
+		Accounts:         NewAccountsService(repos.Accounts),
+		AccountVerify:    NewAccountVerifyService(repos.Accounts),
 	}
 }
 
 func NewAutomaticYoutubeService(repos *repository.AutomaticYoutubeRepository) *AutomaticYoutubeService {
 	return &AutomaticYoutubeService{
 		Channels: NewChannelsService(repos.Channels),
-	}
-}
-
-func NewServiceSettings(repos *repository.SettingsRepository) *ServiceSettings {
-	return &ServiceSettings{
-		Settings: NewSettingsService(repos.Settings),
+		Marks:    NewMarksService(repos.Marks),
 	}
 }
