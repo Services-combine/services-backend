@@ -56,5 +56,5 @@ type ProxyEdit struct {
 }
 
 type MarkEdit struct {
-	Mark string `json:"mark"`
+	Mark string `json:"mark" binding:"required"`
 }

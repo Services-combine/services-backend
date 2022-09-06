@@ -3,7 +3,7 @@ package domain
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type MarkCreate struct {
-	Title string `json:"title" binding:"required"`
+	Title string `json:"title"`
 	Color string `json:"color" binding:"required"`
 }
 
