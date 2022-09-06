@@ -5,6 +5,7 @@ import (
 
 	"github.com/korpgoodness/service.git/internal/domain"
 	"github.com/korpgoodness/service.git/pkg/repository"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type MarksService struct {
@@ -20,7 +21,17 @@ func (s *MarksService) GetMarks(ctx context.Context) ([]domain.MarkGet, error) {
 	return marks, err
 }
 
-func (s *MarksService) UpdateMark(ctx context.Context, mark domain.MarkGet) error {
-	err := s.repo.UpdateMark(ctx, mark)
+func (s *MarksService) AddMark(ctx context.Context, mark domain.MarkCreate) error {
+	err := s.repo.AddMark(ctx, mark)
+	return err
+}
+
+func (s *MarksService) UpdateMark(ctx context.Context, markID primitive.ObjectID, mark domain.MarkCreate) error {
+	err := s.repo.UpdateMark(ctx, markID, mark)
+	return err
+}
+
+func (s *MarksService) DeleteMark(ctx context.Context, markID primitive.ObjectID) error {
+	err := s.repo.DeleteMark(ctx, markID)
 	return err
 }

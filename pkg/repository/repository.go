@@ -73,7 +73,9 @@ type Channels interface {
 
 type Marks interface {
 	GetMarks(ctx context.Context) ([]domain.MarkGet, error)
-	UpdateMark(ctx context.Context, mark domain.MarkGet) error
+	AddMark(ctx context.Context, mark domain.MarkCreate) error
+	UpdateMark(ctx context.Context, markID primitive.ObjectID, mark domain.MarkCreate) error
+	DeleteMark(ctx context.Context, markID primitive.ObjectID) error
 }
 
 type AuthorizationRepository struct {
