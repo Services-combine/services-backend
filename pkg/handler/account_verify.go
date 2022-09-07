@@ -20,6 +20,7 @@ func (h *Handler) LoginApi(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("LoginApi %s", c.Param("accountID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -45,6 +46,7 @@ func (h *Handler) ParsingApi(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("ParsingApi %s", c.Param("accountID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -62,6 +64,7 @@ func (h *Handler) GetCodeSession(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("GetCodeSession %s", c.Param("accountID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -87,6 +90,7 @@ func (h *Handler) CreateSession(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("CreateSession %s", c.Param("accountID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})

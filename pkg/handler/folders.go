@@ -15,6 +15,7 @@ func (h *Handler) GetFolders(c *gin.Context) {
 		return
 	}
 
+	h.logger.Info("GetFolders")
 	c.JSON(http.StatusOK, dataPage)
 }
 
@@ -43,6 +44,7 @@ func (h *Handler) CreateFolder(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("CreateFolder %s", path)
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -61,6 +63,7 @@ func (h *Handler) GetFolderById(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("GetFolderById %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, folderData)
 }
 
@@ -77,19 +80,19 @@ func (h *Handler) GetFoldersMove(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("GetFoldersMove %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, folderData)
 }
 
 func (h *Handler) MoveFolder(c *gin.Context) {
-	var folderMove domain.FolderMove
-
-	if err := c.BindJSON(&folderMove); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
-	if err != nil {
+	var folderMove domain.FolderMove
+	if err := c.BindJSON(&folderMove); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -99,21 +102,21 @@ func (h *Handler) MoveFolder(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("MoveFolder %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
 }
 
 func (h *Handler) RenameFolder(c *gin.Context) {
-	var folderName domain.FolderRename
-
-	if err := c.BindJSON(&folderName); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
-	if err != nil {
+	var folderName domain.FolderRename
+	if err := c.BindJSON(&folderName); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -123,21 +126,21 @@ func (h *Handler) RenameFolder(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("RenameFolder %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
 }
 
 func (h *Handler) ChangeChat(c *gin.Context) {
-	var folderChat domain.FolderChat
-
-	if err := c.BindJSON(&folderChat); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
-	if err != nil {
+	var folderChat domain.FolderChat
+	if err := c.BindJSON(&folderChat); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -147,21 +150,21 @@ func (h *Handler) ChangeChat(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("ChangeChat %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
 }
 
 func (h *Handler) ChangeUsernames(c *gin.Context) {
-	var folderUsernames domain.FolderUsernames
-
-	if err := c.BindJSON(&folderUsernames); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
-	if err != nil {
+	var folderUsernames domain.FolderUsernames
+	if err := c.BindJSON(&folderUsernames); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -171,21 +174,21 @@ func (h *Handler) ChangeUsernames(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("ChangeUsernames %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
 }
 
 func (h *Handler) ChangeMessage(c *gin.Context) {
-	var folderMessage domain.FolderMessage
-
-	if err := c.BindJSON(&folderMessage); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
-	if err != nil {
+	var folderMessage domain.FolderMessage
+	if err := c.BindJSON(&folderMessage); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -195,21 +198,21 @@ func (h *Handler) ChangeMessage(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("ChangeMessage %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
 }
 
 func (h *Handler) ChangeGroups(c *gin.Context) {
-	var folderGroups domain.FolderGroups
-
-	if err := c.BindJSON(&folderGroups); err != nil {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
-	if err != nil {
+	var folderGroups domain.FolderGroups
+	if err := c.BindJSON(&folderGroups); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -219,6 +222,7 @@ func (h *Handler) ChangeGroups(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("ChangeGroups %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -242,6 +246,7 @@ func (h *Handler) DeleteFolder(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("DeleteFolder %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, folder.Path)
 }
 
@@ -257,6 +262,7 @@ func (h *Handler) LaunchInviting(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("LaunchInviting %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -274,6 +280,7 @@ func (h *Handler) LaunchMailingUsernames(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("LaunchMailingUsernames %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -291,6 +298,7 @@ func (h *Handler) LaunchMailingGroups(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("LaunchMailingGroups %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})

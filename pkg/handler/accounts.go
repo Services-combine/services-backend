@@ -33,6 +33,7 @@ func (h *Handler) CreateAccount(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("CreateAccount %s", phoneNew)
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -65,6 +66,7 @@ func (h *Handler) UpdateAccount(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("UpdateAccount %s", c.Param("accountID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -82,6 +84,7 @@ func (h *Handler) DeleteAccount(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("DeleteAccount %s", c.Param("accountID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -99,6 +102,7 @@ func (h *Handler) GenerateInterval(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("GenerateInterval %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -118,6 +122,7 @@ func (h *Handler) CheckBlock(c *gin.Context) {
 		}
 	}()
 
+	h.logger.Infof("CheckBlock %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})

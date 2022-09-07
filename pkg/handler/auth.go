@@ -26,7 +26,6 @@ func (h *Handler) Login(c *gin.Context) {
 	}
 
 	h.logger.Infof("Login user %s", res.UserID)
-
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"accessToken": res.AccessToken,
 		"id":          res.UserID,

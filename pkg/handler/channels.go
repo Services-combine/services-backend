@@ -69,6 +69,7 @@ func (h *Handler) AddChannel(c *gin.Context) {
 			return
 		}
 
+		h.logger.Infof("AddChannel %s", channel.ChannelId)
 		c.JSON(http.StatusOK, map[string]interface{}{
 			"status": "ok",
 		})
@@ -89,6 +90,7 @@ func (h *Handler) LaunchChannel(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("LaunchChannel %s", c.Param("channelID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -112,6 +114,7 @@ func (h *Handler) UpdateChannel(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("UpdateChannel %s", c.Param("channelID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -135,6 +138,7 @@ func (h *Handler) DeleteChannel(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("DeleteChannel %s", c.Param("channelID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -158,6 +162,7 @@ func (h *Handler) EditComment(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("EditComment %s", c.Param("channelID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -181,6 +186,7 @@ func (h *Handler) EditProxy(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("EditProxy %s", c.Param("channelID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -210,6 +216,7 @@ func (h *Handler) EditMark(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("EditMark %s", c.Param("channelID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})

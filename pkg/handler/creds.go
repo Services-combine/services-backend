@@ -23,13 +23,16 @@ func (h *Handler) GetClient(ctx context.Context, appTokenPath, userTokenFile str
 	if err != nil {
 		return nil, err
 	}
+	h.logger.Info("Read file")
 
 	config, err := h.GenerateConfig(fileBytes)
 	if err != nil {
 		return nil, err
 	}
+	h.logger.Info("Generate config")
 
 	token, err := h.ReadUserToken(userTokenFile)
+	h.logger.Info("Read user token")
 	if err != nil || !token.Valid() || time.Until(token.Expiry).Hours() <= 1 {
 		token, err = h.GetUserTokenFromWeb(config)
 		if err != nil {
@@ -47,6 +50,7 @@ func (h *Handler) GetClient(ctx context.Context, appTokenPath, userTokenFile str
 		if err != nil {
 			return nil, err
 		}
+		h.logger.Info("Save user token")
 	}
 
 	return config.Client(ctx, token), nil

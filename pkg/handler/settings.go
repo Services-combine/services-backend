@@ -13,6 +13,8 @@ func (h *Handler) GetSettings(c *gin.Context) {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	h.logger.Info("Get settings")
 	c.JSON(http.StatusOK, settings)
 }
 
@@ -30,7 +32,6 @@ func (h *Handler) SaveSettings(c *gin.Context) {
 	}
 
 	h.logger.Info("Save new settings")
-
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})

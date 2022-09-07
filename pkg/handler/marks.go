@@ -16,7 +16,6 @@ func (h *Handler) GetMarks(c *gin.Context) {
 	}
 
 	h.logger.Info("Get marks")
-
 	c.JSON(http.StatusOK, marks)
 }
 
@@ -33,7 +32,6 @@ func (h *Handler) AddMark(c *gin.Context) {
 	}
 
 	h.logger.Infof("Add mark %s", mark.Title)
-
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -58,7 +56,6 @@ func (h *Handler) UpdateMark(c *gin.Context) {
 	}
 
 	h.logger.Infof("Update mark %s", markID)
-
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})
@@ -77,7 +74,6 @@ func (h *Handler) DeleteMark(c *gin.Context) {
 	}
 
 	h.logger.Infof("Delete mark %s", markID)
-
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})

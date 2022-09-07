@@ -33,6 +33,7 @@ func (h *Handler) userIdentity(c *gin.Context) {
 		return
 	}
 
+	h.logger.Infof("userIdentity %s", userID)
 	c.JSON(http.StatusOK, dataUser)
 }
 
@@ -51,5 +52,6 @@ func (h *Handler) parseAuthHeader(c *gin.Context) (string, error) {
 		return "", domain.ErrTokenIsEmpty
 	}
 
+	h.logger.Info("parseAuthHeader")
 	return h.authorization.Authorization.ParseToken(headerParts[1])
 }
