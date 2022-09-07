@@ -32,6 +32,15 @@ func (s *MarksService) UpdateMark(ctx context.Context, markID primitive.ObjectID
 }
 
 func (s *MarksService) DeleteMark(ctx context.Context, markID primitive.ObjectID) error {
-	err := s.repo.DeleteMark(ctx, markID)
-	return err
+	status, err := s.repo.CheckMarkToDelete(ctx, markID)
+	if err != nil {
+		return err
+	}
+	
+	if status {
+		err = s.repo.DeleteMark(ctx, markID)
+		return err
+	} else {
+		return domain.ErrMarkIsUses
+	}
 }

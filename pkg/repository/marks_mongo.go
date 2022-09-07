@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/korpgoodness/service.git/internal/domain"
 	"go.mongodb.org/mongo-driver/bson"
@@ -40,6 +41,20 @@ func (r *MarksRepo) AddMark(ctx context.Context, mark domain.MarkCreate) error {
 func (r *MarksRepo) UpdateMark(ctx context.Context, markID primitive.ObjectID, mark domain.MarkCreate) error {
 	_, err := r.db.UpdateOne(ctx, bson.M{"_id": markID}, bson.M{"$set": mark})
 	return err
+}
+
+func (r *MarksRepo) CheckMarkToDelete(ctx context.Context, markID primitive.ObjectID) (bool, error) {
+	var channel domain.ChannelGet
+
+	err := r.db.Database().Collection(channelsCollection).FindOne(ctx, bson.M{"mark": markID}).Decode(&channel)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return true, nil
+		}
+		return false, err
+	}
+
+	return false, nil
 }
 
 func (r *MarksRepo) DeleteMark(ctx context.Context, markID primitive.ObjectID) error {

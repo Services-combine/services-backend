@@ -75,6 +75,7 @@ type Marks interface {
 	GetMarks(ctx context.Context) ([]domain.MarkGet, error)
 	AddMark(ctx context.Context, mark domain.MarkCreate) error
 	UpdateMark(ctx context.Context, markID primitive.ObjectID, mark domain.MarkCreate) error
+	CheckMarkToDelete(ctx context.Context, markID primitive.ObjectID) (bool, error)
 	DeleteMark(ctx context.Context, markID primitive.ObjectID) error
 }
 
