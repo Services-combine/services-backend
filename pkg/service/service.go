@@ -43,6 +43,7 @@ type Folders interface {
 }
 
 type Accounts interface {
+	CheckingUniqueness(ctx context.Context, phone string) (bool, error)
 	Create(ctx context.Context, accountCreate domain.Account) error
 	Update(ctx context.Context, account domain.AccountUpdate) error
 	Delete(ctx context.Context, accountID primitive.ObjectID) error

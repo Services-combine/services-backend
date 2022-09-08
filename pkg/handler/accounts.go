@@ -10,33 +10,43 @@ import (
 )
 
 func (h *Handler) CreateAccount(c *gin.Context) {
-	var accountCreate domain.Account
-
-	if err := c.BindJSON(&accountCreate); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
-		return
-	}
-	phoneNew := strings.Replace(accountCreate.Phone, "+", "", 1)
-	phoneNew = strings.Replace(phoneNew, "-", "", -1)
-	phoneNew = strings.Replace(phoneNew, " ", "", -1)
-	accountCreate.Phone = phoneNew
-
 	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
-	accountCreate.Folder = folderID
 
-	if err := h.inviting.Accounts.Create(c, accountCreate); err != nil {
+	var accountCreate domain.Account
+	if err := c.BindJSON(&accountCreate); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	h.logger.Infof("CreateAccount %s", phoneNew)
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"status": "ok",
-	})
+	phoneNew := strings.Replace(accountCreate.Phone, "+", "", 1)
+	phoneNew = strings.Replace(phoneNew, "-", "", -1)
+	phoneNew = strings.Replace(phoneNew, " ", "", -1)
+	accountCreate.Phone = phoneNew
+	accountCreate.Folder = folderID
+
+	status, err := h.inviting.CheckingUniqueness(c, phoneNew)
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if status {
+		if err := h.inviting.Accounts.Create(c, accountCreate); err != nil {
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		h.logger.Infof("CreateAccount %s", phoneNew)
+		c.JSON(http.StatusOK, map[string]interface{}{
+			"status": "ok",
+		})
+	} else {
+		newErrorResponse(c, http.StatusBadRequest, domain.ErrPhoneNoUniqueness.Error())
+	}
 }
 
 func (h *Handler) UpdateAccount(c *gin.Context) {

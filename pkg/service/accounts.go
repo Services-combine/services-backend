@@ -37,6 +37,11 @@ func RandomInterval() uint8 {
 	return uint8(interval)
 }
 
+func (s *AccountsService) CheckingUniqueness(ctx context.Context, phone string) (bool, error) {
+	status, err := s.repo.CheckingUniqueness(ctx, phone)
+	return status, err
+}
+
 func (s *AccountsService) Create(ctx context.Context, accountCreate domain.Account) error {
 	accountCreate.Interval = RandomInterval()
 	accountCreate.Verify = false
