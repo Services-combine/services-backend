@@ -39,19 +39,19 @@ func (r *ChannelsRepo) Add(ctx context.Context, channel domain.ChannelAdd) error
 	}
 
 	_, err = r.db.InsertOne(ctx, bson.M{
-		"channel_id":             channel.ChannelId,
-		"api_key":                channel.ApiKey,
-		"proxy":                  channel.Proxy,
-		"mark":                   markID,
-		"title":                  channel.Title,
-		"description":            channel.Description,
-		"photo":                  channel.Photo,
-		"video_count":            channel.VideoCount,
-		"view_count":             channel.ViewCount,
-		"subscriber_count":       channel.SubscriberCount,
-		"launch":                 false,
-		"comment":                "",
-		"count_commented_videos": 0,
+		"channelid":            channel.ChannelId,
+		"apikey":               channel.ApiKey,
+		"proxy":                channel.Proxy,
+		"mark":                 markID,
+		"title":                channel.Title,
+		"description":          channel.Description,
+		"photo":                channel.Photo,
+		"videocount":           channel.VideoCount,
+		"viewcount":            channel.ViewCount,
+		"subscribercount":      channel.SubscriberCount,
+		"launch":               false,
+		"comment":              "",
+		"countcommentedvideos": 0,
 	})
 	return err
 }

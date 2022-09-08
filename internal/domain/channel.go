@@ -3,7 +3,7 @@ package domain
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type ChannelIdKey struct {
-	ChannelId string `json:"channel_id" binding:"required"`
+	ChannelId string `json:"channel_id"`
 	ApiKey    string `json:"api_key"`
 }
 
