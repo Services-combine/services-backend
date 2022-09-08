@@ -26,7 +26,8 @@ SALT - a combination of characters to generate a password hash
 SECRET_KEY - key for generating authentication tokens
 FRONTEND_URL - the link from which the request will come from the frontend
 FOLDER_PYTHON_SCRIPTS_VERIFY - the path to the folder where the script with account verification lies, in the project it is located along the path services-backend/python/account-telethon
-FOLDER_ACCOUNTS - tthe path to the folder where the .session files of the added accounts will be located, in the project it is located along the path services-backend/accounts
+FOLDER_ACCOUNTS - the path to the folder where the .session files of the added accounts will be located, in the project it is located along the path services-backend/accounts
+FOLDER_CHANNELS - the path to the folder where the tokens of the applications and clients of the added channels will be located, in the project it is located along the path services-backend/channels
 ```
 
 Also, in the `configs/config.yml` file, specify your mongodb login and the name of the database
