@@ -9,12 +9,9 @@ type Account struct {
 	Folder          primitive.ObjectID `json:"folder"`
 	Api_id          int                `json:"api_id"`
 	Api_hash        string             `json:"api_hash"`
-	Verify          bool               `json:"verify"`
 	Launch          bool               `json:"launch"`
 	Interval        uint8              `json:"interval"`
 	Status_block    string             `json:"status_block"`
-	Random_hash     string             `json:"random_hash"`
-	Phone_code_hash string             `json:"phone_code_hash"`
 }
 
 type AccountUpdate struct {
@@ -36,11 +33,11 @@ type AccountLogin struct {
 	Password string             `json:"password"`
 }
 
-type AccountApi struct {
-	ID      primitive.ObjectID `json:"id" bson:"_id"`
-	ApiId   int                `json:"api_id"`
-	ApiHash string             `json:"api_hash"`
-}
+// type AccountApi struct {
+// 	ID      primitive.ObjectID `json:"id" bson:"_id"`
+// 	ApiId   int                `json:"api_id"`
+// 	ApiHash string             `json:"api_hash"`
+// }
 
 type AccountDataMove struct {
 	Name  string `json:"name"`

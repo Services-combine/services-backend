@@ -1,5 +1,4 @@
 import re
-import os
 import argparse
 import asyncio
 from telethon.sync import TelegramClient

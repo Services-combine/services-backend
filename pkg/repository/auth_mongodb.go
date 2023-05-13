@@ -26,7 +26,6 @@ func (r *AuthRepo) GetUser(ctx context.Context, username, password string) (doma
 			return domain.User{}, domain.ErrUserNotFound
 		}
 		return domain.User{}, err
-
 	}
 
 	return user, nil

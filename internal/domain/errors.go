@@ -18,6 +18,7 @@ var (
 	ErrUnableOpenUrl           = errors.New("Неудалось открыть ссылку в браузере")
 	ErrMarkIsUses              = errors.New("Эта метка используется")
 	ErrPhoneNoUniqueness       = errors.New("Такой номер уже используется")
+	ErrByDownloadSessionFile = errors.New("Ошибка при скачивании .session файла")
 
 	ErrUnableReadAppToken  = errors.New("Неудалось прочитать токен приложения")
 	ErrUnableCreateConfig  = errors.New("Неудалось создать config на основании токена приложения")

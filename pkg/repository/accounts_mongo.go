@@ -107,27 +107,38 @@ func (r *AccountsRepo) GenerateInterval(ctx context.Context, folderID primitive.
 	return nil
 }
 
-func (r *AccountsRepo) AddRandomHash(ctx context.Context, accountID primitive.ObjectID, randomHash string) error {
-	_, err := r.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"random_hash": randomHash}})
-	return err
-}
+// func (r *AccountsRepo) AddRandomHash(ctx context.Context, accountID primitive.ObjectID, randomHash string) error {
+// 	_, err := r.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"random_hash": randomHash}})
+// 	return err
+// }
 
-func (r *AccountsRepo) AddPhoneHash(ctx context.Context, accountID primitive.ObjectID, phoneCodeHash string) error {
-	_, err := r.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"phone_code_hash": phoneCodeHash}})
-	return err
-}
+// func (r *AccountsRepo) AddPhoneHash(ctx context.Context, accountID primitive.ObjectID, phoneCodeHash string) error {
+// 	_, err := r.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"phone_code_hash": phoneCodeHash}})
+// 	return err
+// }
 
-func (r *AccountsRepo) AddApi(ctx context.Context, accountSettings domain.AccountApi) error {
-	_, err := r.db.UpdateOne(ctx, bson.M{"_id": accountSettings.ID}, bson.M{"$set": bson.M{"api_id": accountSettings.ApiId, "api_hash": accountSettings.ApiHash}})
-	return err
-}
+// func (r *AccountsRepo) AddApi(ctx context.Context, accountSettings domain.AccountApi) error {
+// 	_, err := r.db.UpdateOne(ctx, bson.M{"_id": accountSettings.ID}, bson.M{"$set": bson.M{"api_id": accountSettings.ApiId, "api_hash": accountSettings.ApiHash}})
+// 	return err
+// }
 
 func (r *AccountsRepo) ChangeStatusBlock(ctx context.Context, accountID primitive.ObjectID, status string) error {
 	_, err := r.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"status_block": status}})
 	return err
 }
 
-func (r *AccountsRepo) ChangeVerify(ctx context.Context, accountID primitive.ObjectID) error {
-	_, err := r.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"verify": true}})
-	return err
+// func (r *AccountsRepo) ChangeVerify(ctx context.Context, accountID primitive.ObjectID) error {
+// 	_, err := r.db.UpdateOne(ctx, bson.M{"_id": accountID}, bson.M{"$set": bson.M{"verify": true}})
+// 	return err
+// }
+
+func (r *AccountsRepo) GetGroupById(ctx context.Context, folderID primitive.ObjectID) (string, error) {
+	var folder domain.Folder
+
+	err := r.db.Database().Collection(foldersCollection).FindOne(ctx, bson.M{"_id": folderID}).Decode(&folder)
+	if err != nil {
+		return "", err
+	}
+
+	return folder.Chat, nil
 }

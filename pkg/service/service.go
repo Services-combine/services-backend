@@ -49,14 +49,15 @@ type Accounts interface {
 	Delete(ctx context.Context, accountID primitive.ObjectID) error
 	GenerateInterval(ctx context.Context, folderID primitive.ObjectID) error
 	CheckBlock(ctx context.Context, folderID primitive.ObjectID) error
+	JoinGroup(ctx context.Context, folderID primitive.ObjectID) error
 }
 
-type AccountVerify interface {
-	LoginApi(ctx context.Context, accountID primitive.ObjectID) error
-	ParsingApi(ctx context.Context, accountLogin domain.AccountLogin) error
-	GetCodeSession(ctx context.Context, accountID primitive.ObjectID) error
-	CreateSession(ctx context.Context, accountLogin domain.AccountLogin) error
-}
+// type AccountVerify interface {
+// 	LoginApi(ctx context.Context, accountID primitive.ObjectID) error
+// 	ParsingApi(ctx context.Context, accountLogin domain.AccountLogin) error
+// 	GetCodeSession(ctx context.Context, accountID primitive.ObjectID) error
+// 	CreateSession(ctx context.Context, accountLogin domain.AccountLogin) error
+// }
 
 // AutomaticYoutube
 
@@ -89,7 +90,7 @@ type InvitingService struct {
 	SettingsInviting
 	Folders
 	Accounts
-	AccountVerify
+	// AccountVerify
 }
 
 type AutomaticYoutubeService struct {
@@ -108,7 +109,7 @@ func NewInvitingService(repos *repository.InvitingRepository) *InvitingService {
 		SettingsInviting: NewSettingsService(repos.SettingsInviting),
 		Folders:          NewFoldersService(repos.Folders),
 		Accounts:         NewAccountsService(repos.Accounts),
-		AccountVerify:    NewAccountVerifyService(repos.Accounts),
+		// AccountVerify:    NewAccountVerifyService(repos.Accounts),
 	}
 }
 

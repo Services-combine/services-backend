@@ -40,7 +40,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{os.Getenv("FRONTEND_URL")},
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+		AllowMethods:     []string{"GET", "POST"},
 		AllowHeaders:     []string{"Content-Type,access-control-allow-origin, access-control-allow-headers,authorization,my-custom-header"},
 		AllowCredentials: true,
 		ExposeHeaders:    []string{"Content-Length"},
@@ -78,13 +78,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 					inviting.GET("/:folderID/launch-inviting", h.LaunchInviting)
 					inviting.GET("/:folderID/launch-mailing-usernames", h.LaunchMailingUsernames)
 					inviting.GET("/:folderID/launch-mailing-groups", h.LaunchMailingGroups)
+					inviting.GET("/:folderID/join-group", h.JoinGroup)
 
 					inviting.POST("/:folderID/:accountID", h.UpdateAccount)
 					inviting.GET("/:folderID/:accountID/delete", h.DeleteAccount)
-					inviting.GET("/:folderID/:accountID/login-api", h.LoginApi)
-					inviting.POST("/:folderID/:accountID/parsing-api", h.ParsingApi)
-					inviting.GET("/:folderID/:accountID/get-code-session", h.GetCodeSession)
-					inviting.POST("/:folderID/:accountID/create-session", h.CreateSession)
+					// inviting.GET("/:folderID/:accountID/login-api", h.LoginApi)
+					// inviting.POST("/:folderID/:accountID/parsing-api", h.ParsingApi)
+					// inviting.GET("/:folderID/:accountID/get-code-session", h.GetCodeSession)
+					// inviting.POST("/:folderID/:accountID/create-session", h.CreateSession)
 				}
 
 				channels := user.Group("/channels")

@@ -51,11 +51,12 @@ type Accounts interface {
 	GetById(ctx context.Context, accountID primitive.ObjectID) (domain.Account, error)
 	GetAccountsByFolderID(ctx context.Context, folderID primitive.ObjectID) ([]domain.Account, error)
 	GenerateInterval(ctx context.Context, folderID primitive.ObjectID) error
-	AddRandomHash(ctx context.Context, accountID primitive.ObjectID, randomHash string) error
-	AddPhoneHash(ctx context.Context, accountID primitive.ObjectID, phoneCodeHash string) error
-	AddApi(ctx context.Context, accountSettings domain.AccountApi) error
+	// AddRandomHash(ctx context.Context, accountID primitive.ObjectID, randomHash string) error
+	// AddPhoneHash(ctx context.Context, accountID primitive.ObjectID, phoneCodeHash string) error
+	// AddApi(ctx context.Context, accountSettings domain.AccountApi) error
 	ChangeStatusBlock(ctx context.Context, accountID primitive.ObjectID, status string) error
-	ChangeVerify(ctx context.Context, accountID primitive.ObjectID) error
+	// ChangeVerify(ctx context.Context, accountID primitive.ObjectID) error
+	GetGroupById(ctx context.Context, folderID primitive.ObjectID) (string, error)
 }
 
 // AutomaticYoutube

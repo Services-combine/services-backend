@@ -7,7 +7,7 @@ dotenv_path = '../../.env'
 load_dotenv(dotenv_path)
 
 FOLDER_ACCOUNTS = os.getenv("FOLDER_ACCOUNTS")
-PYTHON_SCRIPTS = os.getenv("FOLDER_PYTHON_SCRIPTS_VERIFY")
+PYTHON_SCRIPTS = os.getenv("FOLDER_PYTHON_SCRIPTS")
 
 if not os.path.exists(f'{PYTHON_SCRIPTS}logs'):
 	os.mkdir(f'{PYTHON_SCRIPTS}logs')

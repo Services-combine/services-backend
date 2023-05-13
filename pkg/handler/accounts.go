@@ -3,6 +3,8 @@ package handler
 import (
 	"net/http"
 	"strings"
+	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/korpgoodness/service.git/internal/domain"
@@ -16,31 +18,51 @@ func (h *Handler) CreateAccount(c *gin.Context) {
 		return
 	}
 
-	var accountCreate domain.Account
-	if err := c.BindJSON(&accountCreate); err != nil {
+	formData, err := c.MultipartForm()
+	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	phoneNew := strings.Replace(accountCreate.Phone, "+", "", 1)
-	phoneNew = strings.Replace(phoneNew, "-", "", -1)
-	phoneNew = strings.Replace(phoneNew, " ", "", -1)
-	accountCreate.Phone = phoneNew
+	var accountCreate domain.Account
+	accountCreate.Name = formData.Value["name"][0]
 	accountCreate.Folder = folderID
 
-	status, err := h.inviting.CheckingUniqueness(c, phoneNew)
+	phone := strings.Replace(formData.Value["phone"][0], "+", "", 1)
+	phone = strings.Replace(phone, "-", "", -1)
+	phone = strings.Replace(phone, " ", "", -1)
+	accountCreate.Phone = phone
+
+	apiId, err := strconv.Atoi(formData.Value["api_id"][0])
+    if err != nil {
+        newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+    }
+	accountCreate.Api_id = apiId
+	accountCreate.Api_hash = formData.Value["api_hash"][0]
+
+	status, err := h.inviting.CheckingUniqueness(c, phone)
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if status {
+		sessionFile := formData.File["session_file"][0]
+		sessionFilePath := os.Getenv("FOLDER_ACCOUNTS") + phone + ".session"
+
+		if err := c.SaveUploadedFile(sessionFile, sessionFilePath); err != nil {
+			newErrorResponse(c, http.StatusBadRequest, domain.ErrByDownloadSessionFile.Error())
+			h.logger.Error(err)
+			return
+		}
+
 		if err := h.inviting.Accounts.Create(c, accountCreate); err != nil {
 			newErrorResponse(c, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		h.logger.Infof("CreateAccount %s", phoneNew)
+		h.logger.Infof("CreateAccount %s", phone)
 		c.JSON(http.StatusOK, map[string]interface{}{
 			"status": "ok",
 		})
@@ -133,6 +155,26 @@ func (h *Handler) CheckBlock(c *gin.Context) {
 	}()
 
 	h.logger.Infof("CheckBlock %s", c.Param("folderID"))
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"status": "ok",
+	})
+}
+
+func (h *Handler) JoinGroup(c *gin.Context) {
+	folderID, err := primitive.ObjectIDFromHex(c.Param("folderID"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	go func() {
+		if err := h.inviting.Accounts.JoinGroup(c, folderID); err != nil {
+			newErrorResponse(c, http.StatusBadRequest, err.Error())
+			return
+		}
+	}()
+
+	h.logger.Infof("JoinGroup %s", c.Param("folderID"))
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"status": "ok",
 	})

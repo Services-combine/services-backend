@@ -15,6 +15,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+
+const (
+	path_python = "/usr/bin/python3"
+)
+
 type AccountsService struct {
 	repo repository.Accounts
 }
@@ -44,7 +49,6 @@ func (s *AccountsService) CheckingUniqueness(ctx context.Context, phone string) 
 
 func (s *AccountsService) Create(ctx context.Context, accountCreate domain.Account) error {
 	accountCreate.Interval = RandomInterval()
-	accountCreate.Verify = false
 	accountCreate.Launch = false
 	accountCreate.Status_block = "clean"
 
@@ -82,9 +86,12 @@ func (s *AccountsService) CheckBlock(ctx context.Context, folderID primitive.Obj
 		return err
 	}
 
+	fmt.Println("CheckBlock")
+
 	for _, account := range accounts {
-		if account.Api_id != 0 && account.Api_hash != "" && account.Verify {
-			script := os.Getenv("FOLDER_PYTHON_SCRIPTS_VERIFY") + "check_block.py"
+		fmt.Println(account)
+		if account.Api_id != 0 && account.Api_hash != "" {
+			script := os.Getenv("FOLDER_PYTHON_SCRIPTS") + "check_block.py"
 			args_phone := fmt.Sprintf("-P %s", account.Phone)
 			args_hash := fmt.Sprintf("-H %s", account.Api_hash)
 			args_id := fmt.Sprintf("-I %d", account.Api_id)
@@ -100,6 +107,36 @@ func (s *AccountsService) CheckBlock(ctx context.Context, folderID primitive.Obj
 					return err
 				}
 			}
+		}
+	}
+
+	return nil
+}
+
+func (s *AccountsService) JoinGroup(ctx context.Context, folderID primitive.ObjectID) error {
+	accounts, err := s.repo.GetAccountsByFolderID(ctx, folderID)
+	if err != nil {
+		return err
+	}
+
+	group, err := s.repo.GetGroupById(ctx, folderID)
+	if err != nil {
+		return err
+	}
+
+	for _, account := range accounts {
+		if account.Api_id != 0 && account.Api_hash != "" {
+			script := os.Getenv("FOLDER_PYTHON_SCRIPTS") + "join_channel.py"
+			args_phone := fmt.Sprintf("-P %s", account.Phone)
+			args_hash := fmt.Sprintf("-H %s", account.Api_hash)
+			args_id := fmt.Sprintf("-I %d", account.Api_id)
+			args_group := fmt.Sprintf("-G %s", group)
+
+			status, err := exec.Command(path_python, script, args_phone, args_hash, args_id, args_group).Output()
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(status))
 		}
 	}
 

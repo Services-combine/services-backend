@@ -1,9 +1,9 @@
 http:
-  port: 8080
-  maxHeaderBytes: 1
+  port: 8000
+  maxHeaderBytes: 1 << 20
   readTimeout: 10s
   writeTimeout: 10s
 
 mongo:
-  username: korpgoodness
+  username: b0shka
   databaseName: services

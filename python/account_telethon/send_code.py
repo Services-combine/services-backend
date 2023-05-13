@@ -19,7 +19,7 @@ def send_code_account(phone, hash, id):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
-        path_to_file = FOLDER_ACCOUNTS + f"{phone}.session"
+        path_to_file = f"{FOLDER_ACCOUNTS}{phone}.session"
         client = TelegramClient(path_to_file, id, hash)
         client.connect()
         client.send_code_request(phone)
