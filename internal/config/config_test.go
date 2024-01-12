@@ -9,8 +9,7 @@ import (
 
 func TestInitConfig(t *testing.T) {
 	type env struct {
-		postgresqlURL        string
-		migrationURL         string
+		mongodbURL           string
 		redisAddress         string
 		emailServiceName     string
 		emailServiceAddress  string
@@ -19,6 +18,8 @@ func TestInitConfig(t *testing.T) {
 		codedSalt            string
 		appEnv               string
 		httpHost             string
+		folderAccounts       string
+		folderPythonScripts  string
 	}
 
 	type args struct {
@@ -27,8 +28,7 @@ func TestInitConfig(t *testing.T) {
 	}
 
 	setEnv := func(env env) {
-		os.Setenv("POSTGRESQL_URL", env.postgresqlURL)
-		os.Setenv("MIGRATION_URL", env.migrationURL)
+		os.Setenv("MONGODB_URL", env.mongodbURL)
 		os.Setenv("REDIS_ADDRESS", env.redisAddress)
 		os.Setenv("EMAIL_SERVICE_NAME", env.emailServiceName)
 		os.Setenv("EMAIL_SERVICE_ADDRESS", env.emailServiceAddress)
@@ -37,6 +37,8 @@ func TestInitConfig(t *testing.T) {
 		os.Setenv("CODE_SALT", env.codedSalt)
 		os.Setenv("ENV", env.appEnv)
 		os.Setenv("HTTP_HOST", env.httpHost)
+		os.Setenv("FOLDER_ACCOUNTS", env.folderAccounts)
+		os.Setenv("FOLDER_PYTHON_SCRIPTS", env.folderPythonScripts)
 	}
 
 	tests := []struct {
@@ -50,8 +52,7 @@ func TestInitConfig(t *testing.T) {
 			args: args{
 				path: "fixtures",
 				env: env{
-					postgresqlURL:        "postgresql://root:qwerty@localhost:5432/service?sslmode=disable",
-					migrationURL:         "file://internal/repository/postgresql/migration",
+					mongodbURL:           "mongodb://127.0.0.1:27017",
 					redisAddress:         "0.0.0.0:6379",
 					emailServiceName:     "Service",
 					emailServiceAddress:  "service@gmail.com",
@@ -60,15 +61,16 @@ func TestInitConfig(t *testing.T) {
 					codedSalt:            "code_salt",
 					appEnv:               "local",
 					httpHost:             "localhost",
+					folderAccounts:       "accounts",
+					folderPythonScripts:  "python",
 				},
 			},
 			want: &Config{
 				Environment: "local",
-				Postgres: PostgresConfig{
-					URL:          "postgresql://root:qwerty@localhost:5432/service?sslmode=disable",
-					MigrationURL: "file://internal/repository/postgresql/migration",
-					MaxAttempts:  5,
-					MaxDelay:     time.Second * 3,
+				Mongo: MongoConfig{
+					URL:          "mongodb://127.0.0.1:27017",
+					Username:     "vanya",
+					DatabaseName: "services",
 				},
 				Redis: RedisConfig{
 					Address: "0.0.0.0:6379",
@@ -78,11 +80,9 @@ func TestInitConfig(t *testing.T) {
 					ServiceAddress:  "service@gmail.com",
 					ServicePassword: "qwerty123",
 					Templates: EmailTemplates{
-						VerifyEmail:       "./templates/verify_email.html",
 						LoginNotification: "./templates/login_notification.html",
 					},
 					Subjects: EmailSubjects{
-						VerifyEmail:       "Код подтверждения для входа в аккаунт",
 						LoginNotification: "Уведомление о входе в аккаунт",
 					},
 				},
@@ -91,7 +91,7 @@ func TestInitConfig(t *testing.T) {
 						AccessTokenTTL:  time.Minute * 15,
 						RefreshTokenTTL: time.Hour * 720,
 					},
-					SercetCodeLifetime:     time.Minute * 5,
+					SecretCodeLifetime:     time.Minute * 5,
 					VerificationCodeLength: 6,
 					SecretKey:              "secret_key",
 					CodeSalt:               "code_salt",
@@ -106,6 +106,10 @@ func TestInitConfig(t *testing.T) {
 				SMTP: SMTPConfig{
 					Host: "smtp.gmail.com",
 					Port: 587,
+				},
+				Folders: FoldersConfig{
+					Accounts:      "accounts",
+					PythonScripts: "python",
 				},
 			},
 		},

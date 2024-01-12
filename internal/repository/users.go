@@ -20,6 +20,11 @@ func NewUsersRepo(db *mongo.Database) *UsersRepo {
 	return &UsersRepo{db: db.Collection(usersCollection)}
 }
 
+type CreateUserParams struct {
+	Email        string `json:"email"`
+	PasswordHash string `json:"password_hash"`
+}
+
 type GetUserParams struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`

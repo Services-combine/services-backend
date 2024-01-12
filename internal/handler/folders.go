@@ -480,7 +480,5 @@ func (h *Handler) launchMailingGroups(c *gin.Context) {
 	}
 
 	logger.Infof("LaunchMailingGroups %s", c.Param("folderID"))
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"status": "ok",
-	})
+	c.Status(http.StatusOK)
 }

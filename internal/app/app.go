@@ -83,11 +83,13 @@ func Run(configPath string) {
 		TokenManager:    tokenManager,
 		AuthConfig:      cfg.Auth,
 		TaskDistributor: taskDistributor,
+		FoldersConfig:   cfg.Folders,
 	})
 
 	handlers := handler.NewHandler(
 		services,
 		tokenManager,
+		cfg.Folders,
 	)
 	routes := handlers.InitRoutes(cfg)
 	srv := server.NewServer(cfg, routes)

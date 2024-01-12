@@ -14,6 +14,7 @@ def get_arguments():
     options = parser.parse_args()
     return options
 
+
 def check_block(phone, hash, id):
     try:
         status_text = asyncio.run(get_status_block(phone, hash, id))
@@ -35,6 +36,7 @@ def check_block(phone, hash, id):
         logger.error(f"[{phone}] {error}")
         print("ERROR")
 
+
 async def get_status_block(phone, hash, id):
     try:
         BOT = "@SpamBot"
@@ -53,6 +55,7 @@ async def get_status_block(phone, hash, id):
     except Exception as error:
         logger.error(f"[{phone}] {error}")
         return 0
+
 
 def main():
     options = get_arguments()

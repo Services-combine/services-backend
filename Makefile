@@ -45,7 +45,7 @@ swag:
 mock:
 	mockgen -source=internal/repository/repository.go -destination=internal/repository/mocks/mock_service.go
 	mockgen -source=internal/service/service.go -destination=internal/service/mocks/mock_service.go
-#mockgen -destination internal/worker/mocks/mock_worker.go github.com/b0shka/backend/internal/worker TaskDistributor
+	mockgen -destination internal/worker/mocks/mock_worker.go github.com/b0shka/services/internal/worker TaskDistributor
 
 docker-build:
 	docker build -f Dockerfile -t cr.selcloud.ru/${REGISTRY}/${API_IMAGE}:${TAG} .

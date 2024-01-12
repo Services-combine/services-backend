@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -73,7 +72,7 @@ func (h *Handler) createAccount(c *gin.Context) {
 
 	if status {
 		sessionFile := formData.File["session_file"][0]
-		sessionFilePath := os.Getenv("FOLDER_ACCOUNTS") + phone + ".session"
+		sessionFilePath := h.foldersConfig.Accounts + phone + ".session"
 
 		if err := c.SaveUploadedFile(sessionFile, sessionFilePath); err != nil {
 			newResponse(c, http.StatusBadRequest, domain.ErrByDownloadSessionFile.Error())

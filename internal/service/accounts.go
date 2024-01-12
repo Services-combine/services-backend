@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/b0shka/services/internal/config"
 	"github.com/b0shka/services/internal/repository"
 	"math/rand"
 	"os"
@@ -14,15 +15,24 @@ import (
 )
 
 const (
-	path_python = "/usr/bin/python3"
+	pathPython        = "/usr/bin/python3"
+	checkBlockScript  = "check_block.py"
+	joinChannelScript = "join_channel.py"
 )
 
 type AccountsService struct {
-	repo repository.Accounts
+	repo          repository.Accounts
+	foldersConfig config.FoldersConfig
 }
 
-func NewAccountsService(repo repository.Accounts) *AccountsService {
-	return &AccountsService{repo: repo}
+func NewAccountsService(
+	repo repository.Accounts,
+	foldersConfig config.FoldersConfig,
+) *AccountsService {
+	return &AccountsService{
+		repo:          repo,
+		foldersConfig: foldersConfig,
+	}
 }
 
 func RandomInterval() uint8 {
@@ -63,7 +73,7 @@ func (s *AccountsService) Delete(ctx context.Context, accountID primitive.Object
 		return err
 	}
 
-	os.Remove(os.Getenv("FOLDER_ACCOUNTS") + account.Phone + ".session")
+	os.Remove(s.foldersConfig.Accounts + account.Phone + ".session")
 	return nil
 }
 
@@ -80,12 +90,12 @@ func (s *AccountsService) CheckBlock(ctx context.Context, folderID primitive.Obj
 
 	for _, account := range accounts {
 		if account.Api_id != 0 && account.Api_hash != "" {
-			script := os.Getenv("FOLDER_PYTHON_SCRIPTS") + "check_block.py"
+			script := s.foldersConfig.PythonScripts + checkBlockScript
 			args_phone := fmt.Sprintf("-P %s", account.Phone)
 			args_hash := fmt.Sprintf("-H %s", account.Api_hash)
 			args_id := fmt.Sprintf("-I %d", account.Api_id)
 
-			status, err := exec.Command(path_python, script, args_phone, args_hash, args_id).Output()
+			status, err := exec.Command(pathPython, script, args_phone, args_hash, args_id).Output()
 			if err != nil {
 				return err
 			}
@@ -115,13 +125,13 @@ func (s *AccountsService) JoinGroup(ctx context.Context, folderID primitive.Obje
 
 	for _, account := range accounts {
 		if account.Api_id != 0 && account.Api_hash != "" {
-			script := os.Getenv("FOLDER_PYTHON_SCRIPTS") + "join_channel.py"
+			script := s.foldersConfig.PythonScripts + joinChannelScript
 			args_phone := fmt.Sprintf("-P %s", account.Phone)
 			args_hash := fmt.Sprintf("-H %s", account.Api_hash)
 			args_id := fmt.Sprintf("-I %d", account.Api_id)
 			args_group := fmt.Sprintf("-G %s", group)
 
-			status, err := exec.Command(path_python, script, args_phone, args_hash, args_id, args_group).Output()
+			status, err := exec.Command(pathPython, script, args_phone, args_hash, args_id, args_group).Output()
 			if err != nil {
 				return err
 			}

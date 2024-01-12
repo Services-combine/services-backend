@@ -8,16 +8,12 @@ auth:
   jwt:
     accessTokenTTL: 15m
     refreshTokenTTL: 720h
-  sercetCodeLifetime: 5m
+  secretCodeLifetime: 5m
   verificationCodeLength: 6
 
 smtp:
   host: "smtp.gmail.com"
   port: 587
-
-postgresql:
-  max_attempts: 5
-  max_delay: 3s
 
 mongodb:
   username: vanya
@@ -25,8 +21,6 @@ mongodb:
 
 email:
   templates:
-    verify_email: "./templates/verify_email.html"
     login_notification: "./templates/login_notification.html"
   subjects:
-    verify_email: "Код подтверждения для входа в аккаунт"
     login_notification: "Уведомление о входе в аккаунт"

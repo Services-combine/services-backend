@@ -39,7 +39,6 @@ type Folders interface {
 	LaunchInviting(ctx context.Context, folderID primitive.ObjectID) error
 	LaunchMailingUsernames(ctx context.Context, folderID primitive.ObjectID) error
 	LaunchMailingGroups(ctx context.Context, folderID primitive.ObjectID) error
-	//GetSettings(ctx context.Context) (settings.Settings, error)
 }
 
 type Accounts interface {

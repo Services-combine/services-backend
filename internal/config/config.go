@@ -16,23 +16,14 @@ const (
 
 type (
 	Config struct {
-		Environment        string         `env:"ENV"`
-		Postgres           PostgresConfig `mapstructure:"postgresql"`
-		Mongo              MongoConfig    `mapstructure:"mongodb"`
-		Redis              RedisConfig
-		HTTP               HTTPConfig  `mapstructure:"http"`
-		Auth               AuthConfig  `mapstructure:"auth"`
-		SMTP               SMTPConfig  `mapstructure:"smtp"`
-		Email              EmailConfig `mapstructure:"email"`
-		UrlListenOAuthCode string      `env:"URL_LISTEN_OAUTH_CODE"`
-		Folders            FoldersConfig
-	}
-
-	PostgresConfig struct {
-		URL          string        `env:"POSTGRESQL_URL"`
-		MigrationURL string        `env:"MIGRATION_URL"`
-		MaxAttempts  int           `mapstructure:"max_attempts"`
-		MaxDelay     time.Duration `mapstructure:"max_delay"`
+		Environment string      `env:"ENV"`
+		Mongo       MongoConfig `mapstructure:"mongodb"`
+		Redis       RedisConfig
+		HTTP        HTTPConfig  `mapstructure:"http"`
+		Auth        AuthConfig  `mapstructure:"auth"`
+		SMTP        SMTPConfig  `mapstructure:"smtp"`
+		Email       EmailConfig `mapstructure:"email"`
+		Folders     FoldersConfig
 	}
 
 	MongoConfig struct {
@@ -54,18 +45,16 @@ type (
 	}
 
 	EmailTemplates struct {
-		VerifyEmail       string `mapstructure:"verify_email"`
 		LoginNotification string `mapstructure:"login_notification"`
 	}
 
 	EmailSubjects struct {
-		VerifyEmail       string `mapstructure:"verify_email"`
 		LoginNotification string `mapstructure:"login_notification"`
 	}
 
 	AuthConfig struct {
 		JWT                    JWTConfig     `mapstructure:"jwt"`
-		SercetCodeLifetime     time.Duration `mapstructure:"sercetCodeLifetime"`
+		SecretCodeLifetime     time.Duration `mapstructure:"secretCodeLifetime"`
 		VerificationCodeLength int           `mapstructure:"verificationCodeLength"`
 		SecretKey              string        `env:"SECRET_KEY"`
 		CodeSalt               string        `env:"CODE_SALT"`
@@ -91,7 +80,6 @@ type (
 
 	FoldersConfig struct {
 		Accounts      string `env:"FOLDER_ACCOUNTS"`
-		Channels      string `env:"FOLDER_CHANNELS"`
 		PythonScripts string `env:"FOLDER_PYTHON_SCRIPTS"`
 	}
 )

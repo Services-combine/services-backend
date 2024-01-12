@@ -62,12 +62,11 @@ type Services struct {
 }
 
 type Deps struct {
-	Repos        *repository.Repositories
-	Hasher       hash.Hasher
-	TokenManager auth.Manager
-	//OTPGenerator    otp.Generator
-	//IDGenerator     identity.Generator
+	Repos           *repository.Repositories
+	Hasher          hash.Hasher
+	TokenManager    auth.Manager
 	AuthConfig      config.AuthConfig
+	FoldersConfig   config.FoldersConfig
 	TaskDistributor worker.TaskDistributor
 }
 
@@ -85,6 +84,9 @@ func NewServices(deps Deps) *Services {
 			deps.Repos.Folders,
 			deps.Repos.Settings,
 		),
-		Accounts: NewAccountsService(deps.Repos.Accounts),
+		Accounts: NewAccountsService(
+			deps.Repos.Accounts,
+			deps.FoldersConfig,
+		),
 	}
 }

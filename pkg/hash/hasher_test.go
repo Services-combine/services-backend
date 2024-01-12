@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/b0shka/backend/pkg/utils"
+	"github.com/b0shka/services/pkg/utils"
 	"github.com/stretchr/testify/require"
 )
 

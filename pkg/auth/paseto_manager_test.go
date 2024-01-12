@@ -1,13 +1,13 @@
 package auth
 
 import (
+	"github.com/b0shka/services/pkg/identity"
 	"testing"
 	"time"
 
 	"github.com/aead/chacha20poly1305"
-	"github.com/b0shka/backend/internal/domain"
-	"github.com/b0shka/backend/pkg/utils"
-	"github.com/google/uuid"
+	"github.com/b0shka/services/internal/domain"
+	"github.com/b0shka/services/pkg/utils"
 	"github.com/stretchr/testify/require"
 )
 
@@ -60,8 +60,7 @@ func TestAuthPaseto_CreateTokenAndVerify(t *testing.T) {
 	manager, err := NewPasetoManager(symmetricKey)
 	require.NoError(t, err)
 
-	userID, err := uuid.NewRandom()
-	require.NoError(t, err)
+	userID := identity.NewIDGenerator().GenerateObjectID()
 
 	duration := time.Minute
 	testPayload, err := NewPayload(userID, duration)

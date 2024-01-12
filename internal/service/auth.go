@@ -5,7 +5,6 @@ import (
 	"github.com/b0shka/services/internal/config"
 	"github.com/b0shka/services/internal/domain"
 	domain_auth "github.com/b0shka/services/internal/domain/auth"
-	domain_user "github.com/b0shka/services/internal/domain/user"
 	"github.com/b0shka/services/internal/repository"
 	"github.com/b0shka/services/internal/worker"
 	"github.com/b0shka/services/pkg/auth"
@@ -122,11 +121,6 @@ func (s *AuthService) createSession(ctx *gin.Context, id primitive.ObjectID) (do
 	}
 
 	return res, nil
-}
-
-func (s *AuthService) CheckUser(ctx context.Context, userID primitive.ObjectID) (domain_user.UserReduxData, error) {
-	user, err := s.repo.Check(ctx, userID)
-	return user, err
 }
 
 func (s *AuthService) RefreshToken(

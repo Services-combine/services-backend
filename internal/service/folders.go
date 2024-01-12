@@ -86,7 +86,7 @@ func (s *FoldersService) GetAllDataFolderById(ctx context.Context, folderID prim
 		}
 	}
 
-	folders, err := s.GetFoldersByPath(ctx, folderID.Hex())
+	folders, err := s.GetFoldersByPath(ctx, folder.Path)
 	if err != nil {
 		return domain_folders.GetFolderOutput{}, err
 	}
