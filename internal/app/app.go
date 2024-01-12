@@ -1,72 +1,158 @@
 package app
 
 import (
+	"context"
+	"errors"
+	"github.com/b0shka/services/internal/config"
+	"github.com/b0shka/services/internal/handler"
+	"github.com/b0shka/services/internal/repository"
+	"github.com/b0shka/services/internal/server"
+	"github.com/b0shka/services/internal/service"
+	"github.com/b0shka/services/internal/worker"
+	"github.com/b0shka/services/pkg/auth"
+	"github.com/b0shka/services/pkg/database/mongodb"
+	"github.com/b0shka/services/pkg/email"
+	"github.com/b0shka/services/pkg/hash"
+	"github.com/b0shka/services/pkg/identity"
+	"github.com/b0shka/services/pkg/logger"
+	"github.com/hibiken/asynq"
+	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 	"os"
-
-	"github.com/joho/godotenv"
-	"github.com/korpgoodness/service.git/pkg/handler"
-	"github.com/korpgoodness/service.git/pkg/logging"
-	"github.com/korpgoodness/service.git/pkg/repository"
-	"github.com/korpgoodness/service.git/pkg/service"
-	"github.com/spf13/viper"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
-type Server struct {
-	httpServer *http.Server
-}
+//	@title			Services API
+//	@version		1.0
+//	@description	REST API for Services App
 
-func initConfig() error {
-	viper.AddConfigPath("configs")
-	viper.SetConfigName("config")
-	return viper.ReadInConfig()
-}
+//	@host		localhost:8080
+//	@BasePath	/api/v1/
 
-func (s *Server) Run() error {
-	logger := logging.GetLogger()
+//	@securityDefinitions.apikey	UsersAuth
+//	@in							header
+//	@name						Authorization
 
-	if err := initConfig(); err != nil {
-		logger.Fatalf("Error initializing configs: %s", err.Error())
-	} else {
-		logger.Info("Success initializing configs")
-	}
-
-	if err := godotenv.Load(); err != nil {
-		logger.Fatalf("Error loading env variables: %s", err.Error())
-	} else {
-		logger.Info("Success loading env variables")
-	}
-
-	db, err := repository.NewMongoDB(os.Getenv("MONDO_DB_URL"))
+func Run(configPath string) {
+	cfg, err := config.InitConfig(configPath)
 	if err != nil {
-		logger.Fatalf("Error connect mongodb: %s", err.Error())
-	} else {
-		logger.Info("Success connect mongodb")
+		logger.Error(err)
+
+		return
 	}
 
-	authorizationRepos := repository.NewAuthRepository(db)
-	invitingRepos := repository.NewInvitingRepository(db)
-	channelsRepos := repository.NewAutomaticYoutubeRepository(db)
+	hasher, err := hash.NewSHA256Hasher(cfg.Auth.CodeSalt)
+	if err != nil {
+		logger.Error(err)
 
-	authorizationService := service.NewAuthorizationService(authorizationRepos)
-	invitingService := service.NewInvitingService(invitingRepos)
-	channelsService := service.NewAutomaticYoutubeService(channelsRepos)
+		return
+	}
+
+	tokenManager, err := auth.NewPasetoManager(cfg.Auth.SecretKey)
+	if err != nil {
+		logger.Error(err)
+
+		return
+	}
+
+	idGenerator := identity.NewIDGenerator()
+
+	mongoClient, err := mongodb.NewClient(cfg.Mongo.URL)
+	if err != nil {
+		logger.Errorf("Error connect mongodb: %s", err.Error())
+
+		return
+	}
+
+	logger.Info("Success connect mongodb")
+
+	repos := repository.NewRepositories(mongoClient, cfg.Mongo.DatabaseName)
+
+	redisOpt := asynq.RedisClientOpt{
+		Addr: cfg.Redis.Address,
+	}
+	taskDistributor := worker.NewRedisTaskDistributor(redisOpt)
+
+	go runTaskProcessor(redisOpt, repos, hasher, idGenerator, cfg)
+
+	services := service.NewServices(service.Deps{
+		Repos:           repos,
+		Hasher:          hasher,
+		TokenManager:    tokenManager,
+		AuthConfig:      cfg.Auth,
+		TaskDistributor: taskDistributor,
+	})
 
 	handlers := handler.NewHandler(
-		authorizationService,
-		invitingService,
-		channelsService,
+		services,
+		tokenManager,
 	)
-	routes := handlers.InitRoutes()
+	routes := handlers.InitRoutes(cfg)
+	srv := server.NewServer(cfg, routes)
 
-	s.httpServer = &http.Server{
-		Addr:           ":" + viper.GetString("http.port"),
-		Handler:        routes,
-		MaxHeaderBytes: viper.GetInt("http.maxHeaderBytes"),
-		ReadTimeout:    viper.GetDuration("http.readTimeout"),
-		WriteTimeout:   viper.GetDuration("http.writeTimeout"),
+	go func() {
+		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
+			logger.Errorf("error occurred while running http server: %s\n", err.Error())
+		}
+	}()
+
+	logger.Info("Server started")
+	gracefulShutdown(srv, mongoClient)
+}
+
+func gracefulShutdown(srv *server.Server, mongoClient *mongo.Client) {
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	const timeout = 5 * time.Second
+	ctx, shutdown := context.WithTimeout(context.Background(), timeout)
+
+	defer shutdown()
+
+	if err := srv.Stop(ctx); err != nil {
+		logger.Errorf("Failed to stop server: %v", err)
 	}
 
-	logger.Info("Listen server...")
-	return s.httpServer.ListenAndServe()
+	logger.Info("Server stopped")
+
+	if err := mongoClient.Disconnect(ctx); err != nil {
+		logger.Errorf("Failed to disconnect mongodb: %v", err)
+	}
+
+	logger.Info("Mongodb disconnected")
+}
+
+func runTaskProcessor(
+	redisOpt asynq.RedisClientOpt,
+	repos *repository.Repositories,
+	hasher hash.Hasher,
+	idGenerator identity.Generator,
+	cfg *config.Config,
+) {
+	emailService := email.NewEmailService(
+		cfg.Email.ServiceName,
+		cfg.Email.ServiceAddress,
+		cfg.Email.ServicePassword,
+		cfg.SMTP.Host,
+		cfg.SMTP.Port,
+	)
+
+	taskProcessor := worker.NewRedisTaskProcessor(
+		redisOpt,
+		repos,
+		hasher,
+		idGenerator,
+		emailService,
+		cfg.Email,
+		cfg.Auth,
+	)
+
+	logger.Info("Start task processor")
+
+	if err := taskProcessor.Start(); err != nil {
+		logger.Error("Failed to start task processor")
+	}
 }

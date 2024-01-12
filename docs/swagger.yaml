@@ -1,0 +1,1066 @@
+basePath: /api/v1/
+definitions:
+  domain.Account:
+    properties:
+      api_hash:
+        type: string
+      api_id:
+        type: integer
+      folder:
+        type: string
+      id:
+        type: string
+      interval:
+        type: integer
+      launch:
+        type: boolean
+      name:
+        type: string
+      phone:
+        type: string
+      status_block:
+        type: string
+    required:
+    - name
+    - phone
+    type: object
+  domain.AccountDataMove:
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  domain.AccountUpdate:
+    properties:
+      folder:
+        type: string
+      folder_id:
+        type: string
+      id:
+        type: string
+      interval:
+        type: integer
+      name:
+        type: string
+    required:
+    - folder_id
+    - interval
+    - name
+    type: object
+  domain.AccountsCount:
+    properties:
+      all:
+        type: integer
+      block:
+        type: integer
+      clean:
+        type: integer
+    type: object
+  domain.Folder:
+    properties:
+      chat:
+        type: string
+      groups:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      inviting:
+        type: boolean
+      mailing_groups:
+        type: boolean
+      mailing_usernames:
+        type: boolean
+      message:
+        type: string
+      name:
+        type: string
+      name_path:
+        type: string
+      path:
+        type: string
+      usernames:
+        items:
+          type: string
+        type: array
+    required:
+    - name
+    type: object
+  domain.FolderChat:
+    properties:
+      chat:
+        type: string
+    required:
+    - chat
+    type: object
+  domain.FolderGroups:
+    properties:
+      groups:
+        items:
+          type: string
+        type: array
+    type: object
+  domain.FolderItem:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  domain.FolderMessage:
+    properties:
+      message:
+        type: string
+    type: object
+  domain.FolderMove:
+    properties:
+      path:
+        type: string
+    required:
+    - path
+    type: object
+  domain.FolderRename:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  domain.FolderUsernames:
+    properties:
+      usernames:
+        items:
+          type: string
+        type: array
+    type: object
+  handler.DeleteFolderResponse:
+    properties:
+      path:
+        type: string
+    type: object
+  handler.GetFolderResponse:
+    properties:
+      accounts:
+        items:
+          $ref: '#/definitions/domain.Account'
+        type: array
+      accounts_move:
+        items:
+          $ref: '#/definitions/domain.AccountDataMove'
+        type: array
+      count_accounts:
+        $ref: '#/definitions/domain.AccountsCount'
+      folder:
+        $ref: '#/definitions/domain.Folder'
+      folders:
+        items:
+          $ref: '#/definitions/domain.FolderItem'
+        type: array
+      path_hash:
+        items:
+          $ref: '#/definitions/domain.AccountDataMove'
+        type: array
+    type: object
+  handler.GetFoldersResponse:
+    properties:
+      count_accounts:
+        $ref: '#/definitions/domain.AccountsCount'
+      folders:
+        items:
+          $ref: '#/definitions/domain.FolderItem'
+        type: array
+    type: object
+  handler.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  handler.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+      session_id:
+        type: string
+    type: object
+  handler.RefreshTokenRequest:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  handler.RefreshTokenResponse:
+    properties:
+      access_token:
+        type: string
+    type: object
+  handler.SaveSettingsRequest:
+    properties:
+      count_inviting:
+        type: integer
+      count_mailing:
+        type: integer
+    type: object
+  handler.response:
+    properties:
+      message:
+        type: string
+    type: object
+  settings.Settings:
+    properties:
+      countInviting:
+        type: integer
+      countMailing:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST API for Services App
+  title: Services API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: user login
+      parameters:
+      - description: login info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: User Login
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      description: user refresh token
+      parameters:
+      - description: refresh info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.RefreshTokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.RefreshTokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: User Refresh Token
+      tags:
+      - auth
+  /inviting/folders:
+    get:
+      consumes:
+      - application/json
+      description: get folders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.GetFoldersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Get Folders
+      tags:
+      - folders
+  /inviting/folders/:folderID:
+    delete:
+      consumes:
+      - application/json
+      description: delete folder
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.DeleteFolderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Delete Folder
+      tags:
+      - folders
+    get:
+      consumes:
+      - application/json
+      description: get folders
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.GetFolderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Get Folder
+      tags:
+      - folders
+  /inviting/folders/:folderID/:accountID:
+    delete:
+      consumes:
+      - application/json
+      description: delete account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Delete Account
+      tags:
+      - accounts
+    patch:
+      consumes:
+      - application/json
+      description: update account
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.AccountUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Update Account
+      tags:
+      - accounts
+  /inviting/folders/:folderID/change-chat:
+    post:
+      consumes:
+      - application/json
+      description: change chat folder
+      parameters:
+      - description: folder chat info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.FolderChat'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Change Chat Folder
+      tags:
+      - folders
+  /inviting/folders/:folderID/change-groups:
+    post:
+      consumes:
+      - application/json
+      description: change groups folder
+      parameters:
+      - description: folder groups info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.FolderGroups'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Change Groups Folder
+      tags:
+      - folders
+  /inviting/folders/:folderID/change-message:
+    post:
+      consumes:
+      - application/json
+      description: change message folder
+      parameters:
+      - description: folder message info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.FolderMessage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Change Message Folder
+      tags:
+      - folders
+  /inviting/folders/:folderID/change-usernames:
+    post:
+      consumes:
+      - application/json
+      description: change usernames folder
+      parameters:
+      - description: folder usernames info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.FolderUsernames'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Change Usernames Folder
+      tags:
+      - folders
+  /inviting/folders/:folderID/check-block:
+    get:
+      consumes:
+      - application/json
+      description: check block for accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Check Block For Accounts
+      tags:
+      - accounts
+  /inviting/folders/:folderID/create-account:
+    post:
+      consumes:
+      - application/json
+      description: create a new account
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Account'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Create Account
+      tags:
+      - accounts
+  /inviting/folders/:folderID/folders-move:
+    get:
+      consumes:
+      - application/json
+      description: get folders for move
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.AccountDataMove'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Get Folders For Move
+      tags:
+      - folders
+  /inviting/folders/:folderID/generate-interval:
+    get:
+      consumes:
+      - application/json
+      description: generate interval for accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Generate Interval For Accounts
+      tags:
+      - accounts
+  /inviting/folders/:folderID/join-group:
+    get:
+      consumes:
+      - application/json
+      description: join group accounts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Join Group Accounts
+      tags:
+      - accounts
+  /inviting/folders/:folderID/launch-inviting:
+    get:
+      consumes:
+      - application/json
+      description: launch inviting folder
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Launch Inviting Folder
+      tags:
+      - folders
+  /inviting/folders/:folderID/launch-mailing-groups:
+    get:
+      consumes:
+      - application/json
+      description: launch mailing groups folder
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Launch Mailing Groups Folder
+      tags:
+      - folders
+  /inviting/folders/:folderID/launch-mailing-usernames:
+    get:
+      consumes:
+      - application/json
+      description: launch mailing usernames folder
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Launch Mailing Usernames Folder
+      tags:
+      - folders
+  /inviting/folders/:folderID/move:
+    post:
+      consumes:
+      - application/json
+      description: move folder
+      parameters:
+      - description: folder move info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.FolderMove'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Move Folder
+      tags:
+      - folders
+  /inviting/folders/:folderID/rename:
+    post:
+      consumes:
+      - application/json
+      description: rename folder
+      parameters:
+      - description: folder rename info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.FolderRename'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Rename Folder
+      tags:
+      - folders
+  /inviting/folders/create:
+    post:
+      consumes:
+      - application/json
+      description: create folders
+      parameters:
+      - description: folder info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Folder'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Create Folders
+      tags:
+      - folders
+  /inviting/settings:
+    get:
+      consumes:
+      - application/json
+      description: get settings
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/settings.Settings'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Get Settings
+      tags:
+      - settings
+    patch:
+      consumes:
+      - application/json
+      description: save settings
+      parameters:
+      - description: settings info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.SaveSettingsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.response'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.response'
+      summary: Save Settings
+      tags:
+      - settings
+securityDefinitions:
+  UsersAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
